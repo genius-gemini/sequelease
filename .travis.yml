@@ -1,0 +1,27 @@
+language: node_js
+node_js:
+  - node # uses most recent stable node version
+services:
+  - postgresql # starts up postgres
+addons:
+  postgresql: '9.6' # highest available postgres version on Travis
+dist: trusty # uses trusty environment
+sudo: false # when on trusty, uses Docker containers for speed
+notifications:
+  email:
+    on_success: change # default: change (only when going from broken to fixed)
+    on_failure: always # default: always (which is annoying, as it should be)
+install:
+  - npm ci # faster, goes only from package-lock
+before_script:
+  - psql -c 'create database "stickr-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
+
+before_deploy:
+  - npm run build-client # make the bundle
+  - rm -rf node_modules # omit from the tarball, since we skip cleanup
+deploy:
+  skip_cleanup: true # prevents travis from deleting the build
+  provider: heroku
+  app: stickr-shop # see README
+  api_key:
+    secure: "QsnUXwAi1sUoJp9trjql2BY5j6XNprWqBqxY1+5VtNXfo/Us8R3NqtZrVSpIiTP6QxyE7hGmAm8UsfZyBFQaKFXcVEOaO7v4iCQpKtuBqwPbjKO3zgMMrqUKEdDYRdd86yZZWBn31kr54x6dlo5pblWC5fgcv+n39J0WJbwuG7w6hcnE4PX1tAZ4lIlMUBbakWIyMf+uKkYsYYPn4Qgp51hpQCXaPHtQlMLQE+kkHtB04C9Y4eRRCFjqhFzDhAbdKrwYQBYS5C2VITJS8ulRnqmNige+i/qlF4utxFnwQ6CyMf6Ewqk6diTAAWsgyItzGlDSIvXnSbMm5906cdbiLnIS22SwRGjQcZS2/YHT8FHP1GDYtnfl8MUPeLqgogQRP1v2zPQrCfs4lCA57xLEsFTLbu9wMH0TWsctaXYtjD37nkQn5KPq4SjXF7CE8FrKk85d61pv7NRBDapbvqtOtGtt6sl4ycZcUmWqXsJq1bDxBoBe4Ux3m/m3irmOz8g0HhhVi5kVOKtsmCjlkOXRabNvCJg79A2wzws/P3qElebF21aOJ7OyAK0utkuitJAiSuWOYpBcgLn5v6jHdY/q7BS0KDviki3H/xEp9XldmxrOZUOx8jSVUntodZ9cpbQo6eFdYlh4k4Rv1g0OqUNbVKD2NFybE1YybhGykCyqTpY=" # see README
