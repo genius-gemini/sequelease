@@ -14,7 +14,7 @@ notifications:
 install:
   - npm ci # faster, goes only from package-lock
 before_script:
-  - psql -c 'create database "stickr-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
+  - psql -c 'create database "sequelease-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
 
 before_deploy:
   - npm run build-client # make the bundle
@@ -24,4 +24,4 @@ deploy:
   provider: heroku
   app: sequelease # see README
   api_key:
-    secure: "kJ5XHNZ1I6e4zTOz1Ix3QBs+CJdtb0reh1ZKQQwqdqeVuDAOMMwvmCAhj0okHOaJQcrLk+Sw3m6LFaXwmjks15jCCIw9IHi8dkYgt3S6yIOW4qu24WqkcHYEZOWeIz5Sc9xnumBijOvoMbwn4DFryjMbBc/Y6bkiVQbX843o8N+xR50ePgrDK4AsKgcJHOsGkQjrCImjpcLXvsizdltMuU+Yxs834lkpJqzqALCNufFLQzqS+u2O/TOcj/n4olz9QO4/YXS+00ejn5jektL2uKrPZIL/LYBcGZolgIoUGgsoWmuvR5J+YV/JodPLIMeBu3ZiJHkKD03wo16yJ5gmbFq3HxkQNXtLEcnFVWKcPc7Gb1eV9a50tGeN9cC/VvgdHxGKIIWgw4elmLx5sGYFgsFR0XY5oP+SPYAEzxZQ9Gcvc45dAohafCua35Du1JjOQjfo35P1wA5IS+NF/TgRdvulHM5mgzoaDXYYu/ReHHQ96uTF2diJrmvEzxO3HIrgTEneoHcdQBIc/s7sZi4gfmEhEBphBrAb1hroWf/4Lug6/Urq56gUUbsAvNW2K0NT9w6swjI13dp+EowS1umBJxmhye8lR/8grjLCciwZEEatYcgh6OsnAusQdDbUCPDmA62+ORJDSDfdBQOtX8c1FoAxkysl9YW9L25L+IvKZbo=" # see README
+    secure: 'kJ5XHNZ1I6e4zTOz1Ix3QBs+CJdtb0reh1ZKQQwqdqeVuDAOMMwvmCAhj0okHOaJQcrLk+Sw3m6LFaXwmjks15jCCIw9IHi8dkYgt3S6yIOW4qu24WqkcHYEZOWeIz5Sc9xnumBijOvoMbwn4DFryjMbBc/Y6bkiVQbX843o8N+xR50ePgrDK4AsKgcJHOsGkQjrCImjpcLXvsizdltMuU+Yxs834lkpJqzqALCNufFLQzqS+u2O/TOcj/n4olz9QO4/YXS+00ejn5jektL2uKrPZIL/LYBcGZolgIoUGgsoWmuvR5J+YV/JodPLIMeBu3ZiJHkKD03wo16yJ5gmbFq3HxkQNXtLEcnFVWKcPc7Gb1eV9a50tGeN9cC/VvgdHxGKIIWgw4elmLx5sGYFgsFR0XY5oP+SPYAEzxZQ9Gcvc45dAohafCua35Du1JjOQjfo35P1wA5IS+NF/TgRdvulHM5mgzoaDXYYu/ReHHQ96uTF2diJrmvEzxO3HIrgTEneoHcdQBIc/s7sZi4gfmEhEBphBrAb1hroWf/4Lug6/Urq56gUUbsAvNW2K0NT9w6swjI13dp+EowS1umBJxmhye8lR/8grjLCciwZEEatYcgh6OsnAusQdDbUCPDmA62+ORJDSDfdBQOtX8c1FoAxkysl9YW9L25L+IvKZbo=' # see README
