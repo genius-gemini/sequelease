@@ -1,7 +1,7 @@
 /* global describe beforeEach afterEach it */
 
 import { expect } from 'chai';
-import { getMe, logout, getOauthError } from './user';
+import { getMe, logout } from './user';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import configureMockStore from 'redux-mock-store';
@@ -29,25 +29,28 @@ describe('thunk creators', () => {
 
   describe('getMe', () => {
     it('eventually dispatches the GOT_USER action', async () => {
-      const fakeUser = { email: 'Cody' };
+      const fakeUser = { email: 'cody@email.com' };
       mockAxios.onGet('/auth/me').replyOnce(200, fakeUser);
       await store.dispatch(getMe());
       const actions = store.getActions();
       expect(actions[0].type).to.be.equal('GOT_USER');
-      expect(actions[0].user.userData).to.be.deep.equal(fakeUser);
+      expect(actions[0].user).to.be.deep.equal(fakeUser);
     });
   });
 
   describe('logout', () => {
     it('logout: eventually dispatches the GOT_USER action', async () => {
-      mockAxios.onPost('/auth/logout').replyOnce(204);
+      mockAxios.onDelete('/auth/logout').replyOnce(204);
       await store.dispatch(logout());
       const actions = store.getActions();
+
+      console.log(actions);
       expect(actions[0].type).to.be.equal('GOT_USER');
-      expect(history.location.pathname).to.be.equal('/login');
+      expect(history.location.pathname).to.be.equal('/');
     });
   });
 
+  /*
   describe('getOauthError', () => {
     it('getOauthError: eventually dispatches the GOT_OAUTH_ERROR action', async () => {
       const errorMessage = 'Uh oh!';
@@ -59,4 +62,5 @@ describe('thunk creators', () => {
       expect(actions[0].user.oauthError).to.be.equal(errorMessage);
     });
   });
+  */
 });

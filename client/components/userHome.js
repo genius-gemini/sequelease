@@ -18,13 +18,14 @@ export const UserHome = props => {
 /**
  * CONTAINER
  */
+/*
 const mapState = state => {
   return {
     email: Object.keys(state.user.userData) ? state.user.userData.email : null,
   };
 };
-
-export default connect(mapState)(UserHome);
+*/
+export default /*connect(/*mapState)*/ UserHome;
 
 /**
  * PROP TYPES
