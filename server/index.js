@@ -32,7 +32,7 @@ const createApp = () => {
   // express session
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
+      secret: process.env.SESSION_SECRET || 'my best friend is Cody',
       resave: false,
       store: sessionStore,
       saveUninitialized: false,
