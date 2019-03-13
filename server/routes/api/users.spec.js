@@ -25,6 +25,8 @@ describe('User routes', () => {
         .get('/api/users')
         .expect(200);
 
+      console.log(res.body);
+
       expect(res.body).to.be.an('array');
       expect(res.body[0].email).to.be.equal(codysEmail);
     });

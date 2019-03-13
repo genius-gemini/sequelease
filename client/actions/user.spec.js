@@ -44,7 +44,6 @@ describe('thunk creators', () => {
       await store.dispatch(logout());
       const actions = store.getActions();
 
-      console.log(actions);
       expect(actions[0].type).to.be.equal('GOT_USER');
       expect(history.location.pathname).to.be.equal('/');
     });
