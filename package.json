@@ -65,6 +65,8 @@
     "connect-session-sequelize": "^6.0.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
+    "faker": "^4.1.0",
+    "lodash": "^4.17.11",
     "morgan": "^1.9.1",
     "npm-merge-driver": "^2.3.5",
     "passport": "^0.4.0",
@@ -78,6 +80,7 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
+    "semantic-ui-react": "^0.86.0",
     "sequelize": "^5.1.0"
   }
 }

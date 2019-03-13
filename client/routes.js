@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Login, Signup, UserHome } from './components';
-import { getMe, getOauthError } from './actions/user';
-import { setLoading, unsetLoading } from './actions/root';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { withRouter, Route, Switch, Redirect } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Login, Signup, UserHome } from "./components";
+import { getMe, getOauthError } from "./actions/user";
+import { setLoading, unsetLoading } from "./actions/root";
 
 /**
  * COMPONENT
@@ -16,7 +16,7 @@ class Routes extends Component {
 
     loadInitialData();
 
-    if ('/login' === location.pathname) {
+    if ("/login" === location.pathname) {
       loadOauthError();
     }
   }
@@ -34,7 +34,7 @@ class Routes extends Component {
             <Switch>
               {isLoggedIn && (
                 <Switch>
-                  {['/login', '/signup', '/'].includes(location.pathname) && (
+                  {["/login", "/signup", "/"].includes(location.pathname) && (
                     <Redirect to="/home" />
                   )}
 
@@ -43,12 +43,12 @@ class Routes extends Component {
                   <Route path="/home" component={UserHome} />
                 </Switch>
               )}
-              {['/home'].includes(location.pathname) && (
+              {["/home"].includes(location.pathname) && (
                 <Redirect to="/login" />
               )}
               <Route path="/login" component={Login} />
               <Route path="/signup" component={Signup} />
-              <Route component={Login} />
+              {/* <Route component={Login} /> */}
             </Switch>
           </div>
         )}
@@ -74,15 +74,15 @@ const mapState = state => {
 const mapDispatch = dispatch => {
   return {
     async loadInitialData() {
-      dispatch(setLoading('me'));
+      dispatch(setLoading("me"));
       await dispatch(getMe());
-      dispatch(unsetLoading('me'));
+      dispatch(unsetLoading("me"));
     },
 
     async loadOauthError() {
-      dispatch(setLoading('oauthError'));
+      dispatch(setLoading("oauthError"));
       await dispatch(getOauthError());
-      dispatch(unsetLoading('oauthError'));
+      dispatch(unsetLoading("oauthError"));
     },
   };
 };
@@ -90,8 +90,8 @@ const mapDispatch = dispatch => {
 export default withRouter(
   connect(
     mapState,
-    mapDispatch
-  )(Routes)
+    mapDispatch,
+  )(Routes),
 );
 
 /**
