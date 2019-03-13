@@ -34,6 +34,7 @@
     "@babel/plugin-syntax-import-meta": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "axios-mock-adapter": "^1.16.0",
     "babel-loader": "^8.0.5",
     "chai": "^4.2.0",
@@ -41,14 +42,18 @@
     "chai-enzyme": "^1.0.0-beta.1",
     "chai-things": "^0.2.0",
     "css-loader": "^2.1.0",
+    "enzyme": "^3.0.0",
     "enzyme-adapter-react-16": "^1.9.1",
     "mocha": "^6.0.0",
+    "prettier": "1.16.4",
+    "npm-merge-driver": "^2.3.5",
+    "react-test-renderer": "^16.4.2",
     "redux-devtools-extension": "^2.13.8",
     "redux-mock-store": "^1.5.3",
     "sinon": "^7.2.4",
     "sinon-as-promised": "^4.0.3",
     "style-loader": "^0.23.1",
-    "supertest": "^3.4.2",
+    "supertest": "^4.0.0",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"
   },
@@ -73,6 +78,6 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "sequelize": "^4.42.0"
+    "sequelize": "^5.1.0"
   }
 }
