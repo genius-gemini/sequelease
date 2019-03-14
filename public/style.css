@@ -27,3 +27,17 @@ form div {
 #cont {
   max-width: 1200px !important;
 }
+
+#consoleBox {
+  display: flex;
+  justify-content: center;
+}
+
+#console {
+  position: fixed;
+  padding-bottom: 11px;
+  padding-top: 11px;
+  bottom: 0;
+  width: 80%;
+  text-align: center;
+}
