@@ -11,10 +11,12 @@ export default class JoinSearchBar extends Component {
         // eslint-disable-next-line no-param-reassign
         memo[table.name] = {
           name: table.name,
-          results: table.fields.map(column => ({
-            tableName: table.name,
-            title: column.name,
-          })),
+          results: table.fields
+            ? table.fields.map(column => ({
+                tableName: table.name,
+                title: column.name,
+              }))
+            : [],
         };
 
         return memo;
@@ -38,10 +40,12 @@ export default class JoinSearchBar extends Component {
         // eslint-disable-next-line no-param-reassign
         memo[table.name] = {
           name: table.name,
-          results: table.fields.map(column => ({
-            tableName: table.name,
-            title: column.name,
-          })),
+          results: table.fields
+            ? table.fields.map(column => ({
+                tableName: table.name,
+                title: column.name,
+              }))
+            : [],
         };
         return memo;
       }, {}),

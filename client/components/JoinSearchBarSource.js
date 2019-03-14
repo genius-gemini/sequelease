@@ -45,12 +45,14 @@ export default class JoinSearchBarSource extends Component {
       this.setState({
         isLoading: false,
         results: _.filter(
-          this.props.selectedTable.fields.map(column => {
-            return {
-              tableName: this.props.selectedTable.name,
-              title: column.name,
-            };
-          }),
+          this.props.selectedTable.fields
+            ? this.props.selectedTable.fields.map(column => {
+                return {
+                  tableName: this.props.selectedTable.name,
+                  title: column.name,
+                };
+              })
+            : [],
           isMatch
         ),
       });
