@@ -7,14 +7,13 @@ export default class JoinSearchBar extends Component {
     this.resetComponent();
 
     this.setState({
-      value: this.props.selectedColumn,
       columnsToSelect: this.props.columnsToSelect.reduce((memo, table) => {
         // eslint-disable-next-line no-param-reassign
         memo[table.name] = {
           name: table.name,
-          results: table.columns.map(column => ({
+          results: table.fields.map(column => ({
             tableName: table.name,
-            title: column,
+            title: column.name,
           })),
         };
 
@@ -24,24 +23,44 @@ export default class JoinSearchBar extends Component {
   }
 
   resetComponent = () =>
-    this.setState({ isLoading: false, results: [], value: '' });
+    this.setState({ isLoading: false, results: [] /*value: ''*/ });
 
   handleResultSelect = (e, { result }) =>
-    this.setState({ value: `${result.tableName}.${result.title}` });
+    this.props.modifyTargetColumn(
+      this.props.joinSequence,
+      `${result.tableName}.${result.title}`
+    );
 
   handleSearchChange = (e, { value }) => {
-    this.setState({ isLoading: true, value });
+    this.props.modifyTargetColumn(this.props.joinSequence, value);
+    this.setState({
+      columnsToSelect: this.props.columnsToSelect.reduce((memo, table) => {
+        // eslint-disable-next-line no-param-reassign
+        memo[table.name] = {
+          name: table.name,
+          results: table.fields.map(column => ({
+            tableName: table.name,
+            title: column.name,
+          })),
+        };
+        return memo;
+      }, {}),
+      isLoading: true,
+    });
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
       const re = new RegExp(
-        _.escapeRegExp(this.state.value.split('.')[1] || this.state.value),
+        _.escapeRegExp(
+          this.props.selectedColumn.split('.')[1] ||
+            this.props.selectedColumn.value
+        ),
         'i'
       );
 
       const isMatch = result => {
-        if (this.state.value) {
+        if (this.props.selectedColumn) {
           return re.test(result.title) || re.test(result.tableName);
         } else {
           return true;
@@ -82,7 +101,7 @@ export default class JoinSearchBar extends Component {
         onFocus={this.handleSearchChange}
         onMouseDown={this.handleSearchChange}
         results={results}
-        value={value}
+        value={this.props.selectedColumn}
       />
     );
   }

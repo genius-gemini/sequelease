@@ -8,26 +8,29 @@ const resultRenderer = ({ title }) => {
 export default class TableSearchBar extends Component {
   componentWillMount() {
     this.resetComponent();
-    this.setState({ value: this.props.selectedTable });
+    //this.setState({ value: this.props.selectedTable });
   }
 
   resetComponent = () =>
     this.setState({
       isLoading: false,
       results: [],
-      value: '',
+      //value: '',
     });
 
-  handleResultSelect = (e, { result }) =>
-    this.setState({ value: result.title });
+  handleResultSelect = (e, { result }) => {
+    this.props.modifyTable(this.props.joinSequence, result.title);
+    //this.setState({ value: result.title });
+  };
 
   handleSearchChange = (e, { value }) => {
-    this.setState({ isLoading: true, value });
+    this.props.modifyTable(this.props.joinSequence, value);
+    this.setState({ isLoading: true /*value */ });
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
-      const re = new RegExp(_.escapeRegExp(this.state.value), 'i');
+      const re = new RegExp(_.escapeRegExp(this.props.selectedTableText), 'i');
       const isMatch = result => re.test(result.title);
 
       this.setState({
@@ -55,7 +58,7 @@ export default class TableSearchBar extends Component {
         onFocus={this.handleSearchChange}
         onMouseDown={this.handleSearchChange}
         results={results}
-        value={value}
+        value={this.props.selectedTableText}
         minCharacters={0}
       />
     );
