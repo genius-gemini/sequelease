@@ -350,3 +350,35 @@ const HRDb = {
 
 // roles -> employees: 1 -> M
 // departments -> roles: 1 -> M
+
+
+from = {
+  tablesToSelect: ['employees', 'departments'],
+  selectedTables: [
+    {
+      joinCondition: null,
+      table: {
+        name: 'employees',
+        columns: [...]
+      },
+      sourceJoinColumn: null,
+      targetJoinColumns: null,
+      targetJoinColumn: null,
+    },
+    {
+      joinCondition: 'INNER JOIN',
+      table: {
+        name: 'departments',
+        columns: [...]
+      },
+      sourceJoinColumn: 'departments.id',
+      targetJoinColumns: [
+        {
+          name: 'employees',
+          columns: [...]
+        }
+      ],
+      targetJoinColumn: 'employees.departmentId',
+      }
+    ]
+  };

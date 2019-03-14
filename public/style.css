@@ -19,3 +19,11 @@ form div {
   margin: 1em;
   display: inline-block;
 }
+
+.column-search-bar .ui.icon.input {
+  width: 250px;
+}
+
+#cont {
+  max-width: 1000px !important;
+}

@@ -1,14 +1,14 @@
-import _ from "lodash";
-import faker from "faker";
-import React, { Component } from "react";
-import { Search } from "semantic-ui-react";
+import _ from 'lodash';
+import faker from 'faker';
+import React, { Component } from 'react';
+import { Search } from 'semantic-ui-react';
 
 const getResults = () =>
   _.times(5, () => ({
     title: faker.company.companyName(),
     description: faker.company.catchPhrase(),
     image: faker.internet.avatar(),
-    price: faker.finance.amount(0, 100, 2, "$"),
+    price: faker.finance.amount(0, 100, 2, '$'),
   }));
 
 const source = _.range(0, 3).reduce(memo => {
@@ -29,7 +29,7 @@ export default class SearchBar extends Component {
   }
 
   resetComponent = () =>
-    this.setState({ isLoading: false, results: [], value: "" });
+    this.setState({ isLoading: false, results: [], value: '' });
 
   handleResultSelect = (e, { result }) =>
     this.setState({ value: result.title });
@@ -38,9 +38,9 @@ export default class SearchBar extends Component {
     this.setState({ isLoading: true, value });
 
     setTimeout(() => {
-        if (this.state.value.length < 1) return this.resetComponent();
+      if (this.state.value.length < 1) return this.resetComponent();
 
-      const re = new RegExp(_.escapeRegExp(this.state.value), "i");
+      const re = new RegExp(_.escapeRegExp(this.state.value), 'i');
       const isMatch = result => re.test(result.title);
 
       const filteredResults = _.reduce(
@@ -51,7 +51,7 @@ export default class SearchBar extends Component {
 
           return memo;
         },
-        {},
+        {}
       );
 
       this.setState({
@@ -74,7 +74,7 @@ export default class SearchBar extends Component {
         //   { tableName: "Employee4" },
         //   { tableName: "Employees5" },
         // ]}
-        searchFields={["tableName"]}
+        searchFields={['tableName']}
         minCharacters={0}
         loading={isLoading}
         onResultSelect={this.handleResultSelect}
@@ -83,7 +83,6 @@ export default class SearchBar extends Component {
         })}
         results={results}
         value={value}
-        {...this.props}
       />
     );
   }
