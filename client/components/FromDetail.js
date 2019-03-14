@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TableSearchBar from './TableSearchBar';
 import JoinSearchBarSource from './JoinSearchBarSource';
 import JoinSearchBar from './JoinSearchBar';
-import { join } from 'path';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 const hrDb = {
   tables: [
@@ -410,9 +410,11 @@ class FromDetail extends Component {
 
       from.selectedTables[joinSequence].sourceJoinColumn = '';
 
-      for (let otherTable of from.selectedTables.slice(joinSequence + 1)) {
+      for (let i = joinSequence; i < from.selectedTables.length; i++) {
+        let otherTable = from.selectedTables[i];
         otherTable.targetJoinColumns = [];
-        for (let prevTable of from.selectedTables.slice(0, joinSequence)) {
+        for (let j = 0; j < i; j++) {
+          let prevTable = from.selectedTables[j];
           otherTable.targetJoinColumns.push(prevTable.table);
         }
 
@@ -446,21 +448,28 @@ class FromDetail extends Component {
 
     from.selectedTables[joinSequence + 1].targetJoinColumns = [];
     for (let prevTable of from.selectedTables.slice(0, joinSequence + 1)) {
-      from.selectedTables[joinSequence + 1].targetJoinColumns.push(
-        prevTable.table
-      );
+      if (Object.keys(prevTable.table).length) {
+        from.selectedTables[joinSequence + 1].targetJoinColumns.push(
+          prevTable.table
+        );
+      }
     }
 
     this.setState({ from: { ...from } });
+    console.log(from);
   };
 
   handleRemoveClick = joinSequence => {
     from.selectedTables.splice(joinSequence, 1);
 
-    for (let otherTable of from.selectedTables.slice(joinSequence)) {
+    for (let i = joinSequence; i < from.selectedTables.length; i++) {
+      let otherTable = from.selectedTables[i];
       otherTable.targetJoinColumns = [];
-      for (let prevTable of from.selectedTables.slice(0, joinSequence)) {
-        otherTable.targetJoinColumns.push(prevTable.table);
+      for (let j = 0; j < i; j++) {
+        let prevTable = from.selectedTables[j];
+        if (Object.keys(prevTable.table).length) {
+          otherTable.targetJoinColumns.push(prevTable.table);
+        }
       }
 
       let targetColumnName = otherTable.targetJoinColumn.split('.');
@@ -479,97 +488,183 @@ class FromDetail extends Component {
     console.log(from);
   };
 
+  // eslint-disable-next-line complexity
+  onDragEnd = result => {
+    if (result.destination) {
+      let sourceJoin = from.selectedTables.splice(result.source.index, 1)[0];
+      from.selectedTables.splice(result.destination.index, 0, sourceJoin);
+
+      let startIndex =
+        result.destination.index < result.source.index
+          ? result.destination.index
+          : result.source.index;
+
+      let endIndex =
+        result.destination.index < result.source.index
+          ? result.source.index
+          : result.destination.index;
+
+      for (let i = startIndex; i <= endIndex; i++) {
+        let otherTable = from.selectedTables[i];
+        otherTable.targetJoinColumns = [];
+        for (let j = 0; j < i; j++) {
+          let prevTable = from.selectedTables[j];
+          if (Object.keys(prevTable.table).length) {
+            otherTable.targetJoinColumns.push(prevTable.table);
+          }
+        }
+
+        let targetColumnName = otherTable.targetJoinColumn.split('.');
+        if (targetColumnName.length === 2) {
+          if (
+            !otherTable.targetJoinColumns
+              .map(targetJoinColumnsTable => targetJoinColumnsTable.name)
+              .includes(targetColumnName[0])
+          ) {
+            otherTable.targetJoinColumn = '';
+          }
+        }
+      }
+      console.log(from);
+      this.setState({ from: { ...from } });
+    }
+  };
+
   render() {
     return (
-      <div>
-        {this.state.from.selectedTables.map((row, i) => {
-          if (i === 0) {
-            return (
+      <DragDropContext onDragEnd={this.onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
               <div>
-                <button
-                  onClick={this.handleAddClick.bind(this, i)}
-                  type="button"
-                  style={{ marginRight: '10px' }}
-                >
-                  +
-                </button>
-                <button
-                  onClick={this.handleRemoveClick.bind(this, i)}
-                  type="button"
-                  style={{ marginRight: '10px' }}
-                >
-                  -
-                </button>
-                <div style={{ display: 'inline-block' }}>
-                  <TableSearchBar
-                    key={`tsb-${i}`}
-                    modifyTable={this.modifyTable}
-                    joinSequence={i}
-                    tablesToSelect={this.state.from.tablesToSelect}
-                    selectedTable={row.table.name}
-                    selectedTableText={row.tableText}
-                  />
-                </div>
+                {this.state.from.selectedTables.map((row, i) => {
+                  return (
+                    <Draggable key={i} draggableId={`item-${i}`} index={i}>
+                      {(provided, snapshot) => {
+                        return (
+                          <div>
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.dragHandleProps}
+                              {...provided.draggableProps}
+                            >
+                              {i === 0 ? (
+                                <div>
+                                  <button
+                                    onClick={this.handleAddClick.bind(this, i)}
+                                    type="button"
+                                    style={{ marginRight: '10px' }}
+                                  >
+                                    +
+                                  </button>
+                                  {this.state.from.selectedTables.length > 1 ? (
+                                    <button
+                                      onClick={this.handleRemoveClick.bind(
+                                        this,
+                                        i
+                                      )}
+                                      type="button"
+                                      style={{ marginRight: '10px' }}
+                                    >
+                                      -
+                                    </button>
+                                  ) : (
+                                    ''
+                                  )}
+                                  <div style={{ display: 'inline-block' }}>
+                                    <TableSearchBar
+                                      key={`tsb-${i}`}
+                                      modifyTable={this.modifyTable}
+                                      joinSequence={i}
+                                      tablesToSelect={
+                                        this.state.from.tablesToSelect
+                                      }
+                                      selectedTable={row.table.name}
+                                      selectedTableText={row.tableText}
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div key={`tsbd-${i}`}>
+                                  <button
+                                    onClick={this.handleAddClick.bind(this, i)}
+                                    type="button"
+                                    style={{ marginRight: '10px' }}
+                                  >
+                                    +
+                                  </button>
+                                  <button
+                                    onClick={this.handleRemoveClick.bind(
+                                      this,
+                                      i
+                                    )}
+                                    type="button"
+                                    style={{ marginRight: '10px' }}
+                                  >
+                                    -
+                                  </button>
+                                  <select name="join">
+                                    <option value="INNER JOIN">
+                                      INNER JOIN
+                                    </option>
+                                    <option value="LEFT OUTER JOIN">
+                                      LEFT OUTER JOIN
+                                    </option>
+                                  </select>{' '}
+                                  <div style={{ display: 'inline-block' }}>
+                                    <TableSearchBar
+                                      key={`tsb-${i}`}
+                                      modifyTable={this.modifyTable}
+                                      joinSequence={i}
+                                      tablesToSelect={
+                                        this.state.from.tablesToSelect
+                                      }
+                                      selectedTable={row.table.name}
+                                      selectedTableText={row.tableText}
+                                    />
+                                  </div>{' '}
+                                  <span>ON</span>{' '}
+                                  <div style={{ display: 'inline-block' }}>
+                                    <JoinSearchBarSource
+                                      key={`jsbs-${i}`}
+                                      joinSequence={i}
+                                      modifySourceColumn={
+                                        this.modifySourceColumn
+                                      }
+                                      selectedTable={row.table}
+                                      selectedColumn={row.sourceJoinColumn}
+                                    />
+                                  </div>{' '}
+                                  <span>=</span>{' '}
+                                  <div style={{ display: 'inline-block' }}>
+                                    {
+                                      <JoinSearchBar
+                                        key={`jsbt-${i}`}
+                                        joinSequence={i}
+                                        modifyTargetColumn={
+                                          this.modifyTargetColumn
+                                        }
+                                        columnsToSelect={row.targetJoinColumns}
+                                        selectedColumn={row.targetJoinColumn}
+                                      />
+                                    }
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            {provided.placeholder}
+                          </div>
+                        );
+                      }}
+                    </Draggable>
+                  );
+                })}
               </div>
-            );
-          } else {
-            return (
-              <div key={`tsbd-${i}`}>
-                <button
-                  onClick={this.handleAddClick.bind(this, i)}
-                  type="button"
-                  style={{ marginRight: '10px' }}
-                >
-                  +
-                </button>
-                <button
-                  onClick={this.handleRemoveClick.bind(this, i)}
-                  type="button"
-                  style={{ marginRight: '10px' }}
-                >
-                  -
-                </button>
-                <select name="join">
-                  <option value="INNER JOIN">INNER JOIN</option>
-                  <option value="LEFT OUTER JOIN">LEFT OUTER JOIN</option>
-                </select>{' '}
-                <div style={{ display: 'inline-block' }}>
-                  <TableSearchBar
-                    key={`tsb-${i}`}
-                    modifyTable={this.modifyTable}
-                    joinSequence={i}
-                    tablesToSelect={this.state.from.tablesToSelect}
-                    selectedTable={row.table.name}
-                    selectedTableText={row.tableText}
-                  />
-                </div>{' '}
-                <span>ON</span>{' '}
-                <div style={{ display: 'inline-block' }}>
-                  <JoinSearchBarSource
-                    key={`jsbs-${i}`}
-                    joinSequence={i}
-                    modifySourceColumn={this.modifySourceColumn}
-                    selectedTable={row.table}
-                    selectedColumn={row.sourceJoinColumn}
-                  />
-                </div>{' '}
-                <span>=</span>{' '}
-                <div style={{ display: 'inline-block' }}>
-                  {
-                    <JoinSearchBar
-                      key={`jsbt-${i}`}
-                      joinSequence={i}
-                      modifyTargetColumn={this.modifyTargetColumn}
-                      columnsToSelect={row.targetJoinColumns}
-                      selectedColumn={row.targetJoinColumn}
-                    />
-                  }
-                </div>
-              </div>
-            );
-          }
-        })}
-      </div>
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     );
   }
 }
