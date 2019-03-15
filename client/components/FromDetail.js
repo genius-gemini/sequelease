@@ -1,388 +1,16 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements */
 import React, { Component } from 'react';
 import TableSearchBar from './TableSearchBar';
 import JoinSearchBarSource from './JoinSearchBarSource';
 import JoinSearchBar from './JoinSearchBar';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
-const hrDb = {
-  tables: [
-    {
-      name: 'employees',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'employee_id_seq'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'firstName',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'lastName',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'gender',
-          type: "ENUM['M','F','O']",
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-
-        {
-          name: 'birthDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'startDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'endDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-        {
-          name: 'roleId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'departmentId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'managerId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-        },
-      ],
-      foreignKeys: [
-        { columnName: 'roleId', targetTable: 'roles' },
-        { columnName: 'departmentId', targetTable: 'departments' },
-        { columnName: 'managerId', targetTable: 'employees' },
-      ],
-    },
-    {
-      name: 'address',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'address_id_seq'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'employeeId',
-          type: 'INTEGER',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'sequence',
-          type: 'INTEGER',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'streetAddress1',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'streetAddress2',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-        {
-          name: 'apartmentNo',
-          type: 'VARCHAR(10)',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-        {
-          name: 'city',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'state',
-          type: 'CHAR(2)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'postalCode',
-          type: 'CHAR(5)',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-        {
-          name: 'isoCountryCode',
-          type: 'CHAR(2)',
-          default: 'US',
-          constraint: null,
-          nullable: false,
-        },
-      ],
-      foreignKeys: [{ columnName: 'employeeId', targetTable: 'employees' }],
-    },
-    {
-      name: 'departments',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'department_id_seq'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'name',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'description',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-      ],
-      foreignKeys: [],
-    },
-    {
-      name: 'timeOff',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'timeOff_id_seq'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'employeeId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'startDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'endDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-      ],
-      foreignKeys: [{ columnName: 'employeeId', targetTable: 'employees' }],
-    },
-    {
-      name: 'roles',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'role_id_seq'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'title',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'description',
-          type: 'VARCHAR(100)',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-        {
-          name: 'departmentId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-      ],
-      foreignKeys: [{ columnName: 'departmentId', targetTable: 'departments' }],
-    },
-    {
-      name: 'rolesHistory',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'history_seq_id'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'employeeId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'roleId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'departmentId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'startDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'endDate',
-          type: 'DATETIME',
-          default: null,
-          constraint: null,
-          nullable: true,
-        },
-      ],
-      foreignKeys: [
-        { columnName: 'roleId', targetTable: 'roles' },
-        { columnName: 'departmentId', targetTable: 'departments' },
-        { columnName: 'employeeId', targetTable: 'employees' },
-      ],
-    },
-    {
-      name: 'ratings',
-      fields: [
-        {
-          name: 'id',
-          type: 'INTEGER',
-          default: "'history_seq_id'",
-          constraint: 'PRIMARY KEY',
-          nullable: false,
-        },
-        {
-          name: 'employeeId',
-          type: 'INTEGER',
-          default: null,
-          constraint: 'FOREIGN KEY',
-          nullable: false,
-        },
-        {
-          name: 'year',
-          type: 'INTEGER',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-        {
-          name: 'rating',
-          type: 'DECIMAL(18,1)',
-          default: null,
-          constraint: null,
-          nullable: false,
-        },
-      ],
-      foreignKeys: [{ columnName: 'employeeId', targetTable: 'employees' }],
-    },
-  ],
-};
-
-const fromJoinDefault = {
-  joinCondition: 'INNER JOIN',
-  table: {},
-  tableText: '',
-  sourceJoinColumn: '',
-  targetJoinColumns: [],
-  targetJoinColumn: '',
-};
-
-const from = {
-  tablesToSelect: ['employees', 'departments', 'roles', 'ratings'],
-  selectedTables: [
-    {
-      joinCondition: null,
-      table: {},
-      tableText: '',
-      sourceJoinColumn: '',
-      targetJoinColumns: [],
-      targetJoinColumn: '',
-    },
-    {
-      joinCondition: 'INNER JOIN',
-      table: {},
-      tableText: '',
-      sourceJoinColumn: '',
-      targetJoinColumns: [],
-      targetJoinColumn: '',
-    },
-  ],
-};
-
 class FromDetail extends Component {
   // eslint-disable-next-line complexity
 
   constructor(props) {
     super(props);
-    this.state = { from };
 
     // To blur search boxes on drag
     document.addEventListener('mousedown', e => {
@@ -395,21 +23,27 @@ class FromDetail extends Component {
     });
   }
 
-  // eslint-disable-next-line complexity
   modifyTable = (joinSequence, tableName) => {
     // Change table text in search bar
-    from.selectedTables[joinSequence].tableText = tableName;
+    this.props.query.from.selectedTables[joinSequence].tableText = tableName;
 
     // See if table name text is actually a table
-    const table = hrDb.tables.find(newTable => newTable.name === tableName);
+    const table = this.props.hrDb.tables.find(
+      newTable => newTable.name === tableName
+    );
 
     if (table) {
+      // Set table in select clause for results
+      this.props.query.select.tables.push(table);
+
       // Set table
-      from.selectedTables[joinSequence].table = table;
+      this.props.query.from.selectedTables[joinSequence].table = table;
 
       // eslint-disable-next-line guard-for-in
       // Get table join conditions
-      for (let otherTable of from.selectedTables.slice(joinSequence + 1)) {
+      for (let otherTable of this.props.query.from.selectedTables.slice(
+        joinSequence + 1
+      )) {
         let newJoinTable = otherTable.targetJoinColumns.find(
           joinTable => joinTable.name === tableName
         );
@@ -419,15 +53,19 @@ class FromDetail extends Component {
         }
       }
     } else {
-      from.selectedTables[joinSequence].table = {};
+      this.props.query.from.selectedTables[joinSequence].table = {};
 
-      from.selectedTables[joinSequence].sourceJoinColumn = '';
+      this.props.query.from.selectedTables[joinSequence].sourceJoinColumn = '';
 
-      for (let i = joinSequence; i < from.selectedTables.length; i++) {
-        let otherTable = from.selectedTables[i];
+      for (
+        let i = joinSequence;
+        i < this.props.query.from.selectedTables.length;
+        i++
+      ) {
+        let otherTable = this.props.query.from.selectedTables[i];
         otherTable.targetJoinColumns = [];
         for (let j = 0; j < i; j++) {
-          let prevTable = from.selectedTables[j];
+          let prevTable = this.props.query.from.selectedTables[j];
           otherTable.targetJoinColumns.push(prevTable.table);
         }
 
@@ -442,44 +80,91 @@ class FromDetail extends Component {
           }
         }
       }
+
+      const existingTable = this.props.query.select.tables.find(
+        newTable => newTable.name === tableName
+      );
+
+      if (!existingTable) {
+        console.log('here');
+        this.props.query.select.tables = [];
+        for (let i = 0; i < this.props.query.from.selectedTables.length; i++) {
+          if (
+            Object.keys(this.props.query.from.selectedTables[i].table).length
+          ) {
+            this.props.query.select.tables.push(
+              this.props.query.from.selectedTables[i].table
+            );
+          }
+        }
+
+        this.props.query.select.selectedColumns = this.props.query.select.selectedColumns.filter(
+          column => {
+            return (
+              !column ||
+              (column &&
+                this.props.query.select.tables
+                  .map(searchTable => searchTable.name)
+                  .includes(column.split('.')[0]))
+            );
+          }
+        );
+        if (!this.props.query.select.selectedColumns.length)
+          this.props.query.select.selectedColumns.push('');
+      }
     }
-    this.setState({ from: { ...from } });
+    this.props.updateQueryState();
+    console.log(this.props.query);
   };
 
   modifySourceColumn = (joinSequence, column) => {
-    from.selectedTables[joinSequence].sourceJoinColumn = column;
-    this.setState({ from: { ...from } });
+    this.props.query.from.selectedTables[
+      joinSequence
+    ].sourceJoinColumn = column;
+    this.props.updateQueryState();
   };
 
   modifyTargetColumn = (joinSequence, column) => {
-    from.selectedTables[joinSequence].targetJoinColumn = column;
-    this.setState({ from: { ...from } });
+    this.props.query.from.selectedTables[
+      joinSequence
+    ].targetJoinColumn = column;
+    this.props.updateQueryState();
   };
 
   handleAddClick = joinSequence => {
-    from.selectedTables.splice(joinSequence + 1, 0, { ...fromJoinDefault });
+    this.props.query.from.selectedTables.splice(joinSequence + 1, 0, {
+      ...this.props.fromJoinDefault,
+    });
 
-    from.selectedTables[joinSequence + 1].targetJoinColumns = [];
-    for (let prevTable of from.selectedTables.slice(0, joinSequence + 1)) {
+    this.props.query.from.selectedTables[
+      joinSequence + 1
+    ].targetJoinColumns = [];
+    for (let prevTable of this.props.query.from.selectedTables.slice(
+      0,
+      joinSequence + 1
+    )) {
       if (Object.keys(prevTable.table).length) {
-        from.selectedTables[joinSequence + 1].targetJoinColumns.push(
-          prevTable.table
-        );
+        this.props.query.from.selectedTables[
+          joinSequence + 1
+        ].targetJoinColumns.push(prevTable.table);
       }
     }
 
-    this.setState({ from: { ...from } });
-    console.log(from);
+    this.props.updateQueryState();
   };
 
   handleRemoveClick = joinSequence => {
-    from.selectedTables.splice(joinSequence, 1);
+    this.props.query.from.selectedTables.splice(joinSequence, 1);
 
-    for (let i = joinSequence; i < from.selectedTables.length; i++) {
-      let otherTable = from.selectedTables[i];
+    for (
+      let i = joinSequence;
+      i < this.props.query.from.selectedTables.length;
+      i++
+    ) {
+      let otherTable = this.props.query.from.selectedTables[i];
       otherTable.targetJoinColumns = [];
       for (let j = 0; j < i; j++) {
-        let prevTable = from.selectedTables[j];
+        let prevTable = this.props.query.from.selectedTables[j];
         if (Object.keys(prevTable.table).length) {
           otherTable.targetJoinColumns.push(prevTable.table);
         }
@@ -497,15 +182,22 @@ class FromDetail extends Component {
       }
     }
 
-    this.setState({ from: { ...from } });
-    console.log(from);
+    this.props.updateQueryState();
+    console.log(this.props.query.from);
   };
 
   // eslint-disable-next-line complexity
   onDragEnd = result => {
     if (result.destination) {
-      let sourceJoin = from.selectedTables.splice(result.source.index, 1)[0];
-      from.selectedTables.splice(result.destination.index, 0, sourceJoin);
+      let sourceJoin = this.props.query.from.selectedTables.splice(
+        result.source.index,
+        1
+      )[0];
+      this.props.query.from.selectedTables.splice(
+        result.destination.index,
+        0,
+        sourceJoin
+      );
 
       let startIndex =
         result.destination.index < result.source.index
@@ -518,10 +210,10 @@ class FromDetail extends Component {
           : result.destination.index;
 
       for (let i = startIndex; i <= endIndex; i++) {
-        let otherTable = from.selectedTables[i];
+        let otherTable = this.props.query.from.selectedTables[i];
         otherTable.targetJoinColumns = [];
         for (let j = 0; j < i; j++) {
-          let prevTable = from.selectedTables[j];
+          let prevTable = this.props.query.from.selectedTables[j];
           if (Object.keys(prevTable.table).length) {
             otherTable.targetJoinColumns.push(prevTable.table);
           }
@@ -538,19 +230,20 @@ class FromDetail extends Component {
           }
         }
       }
-      console.log(from);
-      this.setState({ from: { ...from } });
+      console.log(this.props.query.from);
+      this.props.updateQueryState();
     }
   };
 
   render() {
+    const { queryState } = this.props;
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <div>
-                {this.state.from.selectedTables.map((row, i) => {
+                {queryState.from.selectedTables.map((row, i) => {
                   return (
                     <Draggable key={i} draggableId={`item-${i}`} index={i}>
                       {(provided, snapshot) => {
@@ -570,7 +263,7 @@ class FromDetail extends Component {
                                   >
                                     +
                                   </button>
-                                  {this.state.from.selectedTables.length > 1 ? (
+                                  {queryState.from.selectedTables.length > 1 ? (
                                     <button
                                       onClick={this.handleRemoveClick.bind(
                                         this,
@@ -590,7 +283,7 @@ class FromDetail extends Component {
                                       modifyTable={this.modifyTable}
                                       joinSequence={i}
                                       tablesToSelect={
-                                        this.state.from.tablesToSelect
+                                        queryState.from.tablesToSelect
                                       }
                                       selectedTable={row.table.name}
                                       selectedTableText={row.tableText}
@@ -630,7 +323,7 @@ class FromDetail extends Component {
                                       modifyTable={this.modifyTable}
                                       joinSequence={i}
                                       tablesToSelect={
-                                        this.state.from.tablesToSelect
+                                        queryState.from.tablesToSelect
                                       }
                                       selectedTable={row.table.name}
                                       selectedTableText={row.tableText}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Menu, Container, Header, Step } from 'semantic-ui-react';
-import FromDetail from './FromDetail';
 
 const StepSQL = () => (
   <Container id="cont" text style={{ marginTop: '7em' }}>
@@ -50,8 +49,6 @@ const StepSQL = () => (
         </Step.Content>
       </Step>
     </Step.Group>
-
-    <FromDetail />
   </Container>
 );
 
