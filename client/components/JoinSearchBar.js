@@ -49,7 +49,7 @@ export default class JoinSearchBar extends Component {
         };
         return memo;
       }, {}),
-      isLoading: true,
+      //isLoading: true,
     });
 
     setTimeout(() => {
@@ -86,7 +86,7 @@ export default class JoinSearchBar extends Component {
         isLoading: false,
         results: filteredResults,
       });
-    }, 300);
+    }, 100);
   };
 
   render() {

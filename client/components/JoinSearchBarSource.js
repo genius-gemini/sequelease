@@ -28,7 +28,7 @@ export default class JoinSearchBarSource extends Component {
 
   handleSearchChange = (e, { value }) => {
     this.props.modifySourceColumn(this.props.joinSequence, value);
-    this.setState({ isLoading: true /*value*/ });
+    //this.setState({ isLoading: true /*value*/ });
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
@@ -56,7 +56,7 @@ export default class JoinSearchBarSource extends Component {
           isMatch
         ),
       });
-    }, 300);
+    }, 100);
   };
 
   render() {

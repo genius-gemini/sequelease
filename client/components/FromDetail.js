@@ -383,6 +383,16 @@ class FromDetail extends Component {
   constructor(props) {
     super(props);
     this.state = { from };
+
+    // To blur search boxes on drag
+    document.addEventListener('mousedown', e => {
+      if (
+        [...e.target.classList].includes('drag') &&
+        e.target.tagName === 'DIV'
+      ) {
+        document.activeElement.blur();
+      }
+    });
   }
 
   // eslint-disable-next-line complexity
@@ -390,12 +400,15 @@ class FromDetail extends Component {
     // Change table text in search bar
     from.selectedTables[joinSequence].tableText = tableName;
 
+    // See if table name text is actually a table
     const table = hrDb.tables.find(newTable => newTable.name === tableName);
 
     if (table) {
+      // Set table
       from.selectedTables[joinSequence].table = table;
 
       // eslint-disable-next-line guard-for-in
+      // Get table join conditions
       for (let otherTable of from.selectedTables.slice(joinSequence + 1)) {
         let newJoinTable = otherTable.targetJoinColumns.find(
           joinTable => joinTable.name === tableName
@@ -549,7 +562,7 @@ class FromDetail extends Component {
                               {...provided.draggableProps}
                             >
                               {i === 0 ? (
-                                <div>
+                                <div className="drag">
                                   <button
                                     onClick={this.handleAddClick.bind(this, i)}
                                     type="button"
@@ -585,7 +598,7 @@ class FromDetail extends Component {
                                   </div>
                                 </div>
                               ) : (
-                                <div key={`tsbd-${i}`}>
+                                <div className="drag" key={`tsbd-${i}`}>
                                   <button
                                     onClick={this.handleAddClick.bind(this, i)}
                                     type="button"

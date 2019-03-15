@@ -25,7 +25,7 @@ export default class TableSearchBar extends Component {
 
   handleSearchChange = (e, { value }) => {
     this.props.modifyTable(this.props.joinSequence, value);
-    this.setState({ isLoading: true /*value */ });
+    //this.setState({ isLoading: true /*value */ });
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
@@ -42,7 +42,7 @@ export default class TableSearchBar extends Component {
           isMatch
         ),
       });
-    }, 300);
+    }, 100);
   };
 
   render() {
