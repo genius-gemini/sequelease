@@ -7,14 +7,14 @@ const tableData = [
   { name: 'John', age: 15, gender: 'Male' },
   { name: 'Amber', age: 40, gender: 'Female' },
   { name: 'Leslie', age: 25, gender: 'Female' },
-  { name: 'Ben', age: 70, gender: 'Male' }
+  { name: 'Ben', age: 70, gender: 'Male' },
 ];
 
 export default class ConsoleTable extends Component {
   state = {
     column: null,
     data: tableData,
-    direction: null
+    direction: null,
   };
 
   handleSort = clickedColumn => () => {
@@ -24,54 +24,51 @@ export default class ConsoleTable extends Component {
       this.setState({
         column: clickedColumn,
         data: _.sortBy(data, [clickedColumn]),
-        direction: 'ascending'
+        direction: 'ascending',
       });
       return;
     }
     this.setState({
       data: data.reverse(),
-      direction: direction === 'ascending' ? 'descending' : 'ascending'
+      direction: direction === 'ascending' ? 'descending' : 'ascending',
     });
   };
 
   render() {
     const { column, data, direction } = this.state;
     return (
-      <Container id='console'>
-        <ConsoleSegment />
-        <Table sortable celled fixed>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell
-                sorted={column === 'name' ? direction : null}
-                onClick={this.handleSort('name')}
-              >
-                Name
-              </Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={column === 'age' ? direction : null}
-                onClick={this.handleSort('age')}
-              >
-                Age
-              </Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={column === 'gender' ? direction : null}
-                onClick={this.handleSort('gender')}
-              >
-                Gender
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {_.map(data, ({ age, gender, name }) => (
-              <Table.Row key={name}>
-                <Table.Cell>{name}</Table.Cell>
-                <Table.Cell>{age}</Table.Cell>
-                <Table.Cell>{gender}</Table.Cell>
+      <Container id="console">
+        <ConsoleSegment queryState={this.props.queryState} />
+        {this.props.queryResults ? (
+          <Table sortable celled fixed>
+            <Table.Header>
+              <Table.Row>
+                {_.map(this.props.queryResults.fields, field => {
+                  return (
+                    <Table.HeaderCell
+                      key={field.name}
+                      sorted={column === field.name ? direction : null}
+                      onClick={this.handleSort(field.name)}
+                    >
+                      {field.name}
+                    </Table.HeaderCell>
+                  );
+                })}
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+            </Table.Header>
+            <Table.Body>
+              {_.map(this.props.queryResults.rows, (row, i) => (
+                <Table.Row key={i}>
+                  {_.map(Object.entries(row), ([k, value]) => (
+                    <Table.Cell>{value}</Table.Cell>
+                  ))}
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        ) : (
+          <div>Nothing yet</div>
+        )}
       </Container>
     );
   }

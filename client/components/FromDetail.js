@@ -6,6 +6,7 @@ import JoinSearchBarSource from './JoinSearchBarSource';
 import JoinSearchBar from './JoinSearchBar';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
+const alias = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 class FromDetail extends Component {
   // eslint-disable-next-line complexity
 
@@ -36,11 +37,14 @@ class FromDetail extends Component {
       // Set table in select clause for results
       this.props.query.select.tables.push(table);
 
-      // Set table
+      // Set table in where clause for results
+      this.props.query.where.tables.push(table);
+
+      // Set table in from clause
       this.props.query.from.selectedTables[joinSequence].table = table;
 
       // eslint-disable-next-line guard-for-in
-      // Get table join conditions
+      // Add new table to results of subsequent joined tables
       for (let otherTable of this.props.query.from.selectedTables.slice(
         joinSequence + 1
       )) {
@@ -53,10 +57,16 @@ class FromDetail extends Component {
         }
       }
     } else {
+      // Remove table from from clause
       this.props.query.from.selectedTables[joinSequence].table = {};
 
-      this.props.query.from.selectedTables[joinSequence].sourceJoinColumn = '';
+      // Clear out source join column
+      this.props.query.from.selectedTables[joinSequence].sourceJoinColumn = {
+        name: '',
+        type: null,
+      };
 
+      // Rebuild all subsequent joined tables' results
       for (
         let i = joinSequence;
         i < this.props.query.from.selectedTables.length;
@@ -69,14 +79,17 @@ class FromDetail extends Component {
           otherTable.targetJoinColumns.push(prevTable.table);
         }
 
-        let targetColumnName = otherTable.targetJoinColumn.split('.');
+        let targetColumnName =
+          (otherTable.targetJoinColumn.name &&
+            otherTable.targetJoinColumn.name.split('.')) ||
+          [];
         if (targetColumnName.length === 2) {
           if (
             !otherTable.targetJoinColumns
               .map(targetJoinColumnsTable => targetJoinColumnsTable.name)
               .includes(targetColumnName[0])
           ) {
-            otherTable.targetJoinColumn = '';
+            otherTable.targetJoinColumn = { name: '', type: null };
           }
         }
       }
@@ -85,9 +98,10 @@ class FromDetail extends Component {
         newTable => newTable.name === tableName
       );
 
+      // Rebuild results for select and where columns
       if (!existingTable) {
-        console.log('here');
         this.props.query.select.tables = [];
+        this.props.query.where.tables = [];
         for (let i = 0; i < this.props.query.from.selectedTables.length; i++) {
           if (
             Object.keys(this.props.query.from.selectedTables[i].table).length
@@ -95,39 +109,100 @@ class FromDetail extends Component {
             this.props.query.select.tables.push(
               this.props.query.from.selectedTables[i].table
             );
+            this.props.query.where.tables.push(
+              this.props.query.from.selectedTables[i].table
+            );
           }
         }
 
+        // Delete select columns with table that does not exist
         this.props.query.select.selectedColumns = this.props.query.select.selectedColumns.filter(
           column => {
             return (
-              !column ||
-              (column &&
+              !column.name ||
+              (column.name &&
                 this.props.query.select.tables
                   .map(searchTable => searchTable.name)
-                  .includes(column.split('.')[0]))
+                  .includes(column.name.split('.')[0]))
             );
           }
         );
         if (!this.props.query.select.selectedColumns.length)
-          this.props.query.select.selectedColumns.push('');
+          this.props.query.select.selectedColumns.push({
+            name: '',
+            type: null,
+          });
+
+        // Delete where columns with table that does not exist
+        this.props.query.where.selectedWhereColumns = this.props.query.where.selectedWhereColumns.filter(
+          column => {
+            return (
+              !column.name ||
+              (column.name &&
+                this.props.query.where.tables
+                  .map(searchTable => searchTable.name)
+                  .includes(column.name.split('.')[0]))
+            );
+          }
+        );
+        if (!this.props.query.where.selectedWhereColumns.length)
+          this.props.query.where.selectedWhereColumns.push({
+            name: '',
+            type: null,
+            selectedOperator: { operator: '', hint: null },
+            operatorText: '',
+            filter: '',
+          });
       }
     }
     this.props.updateQueryState();
-    console.log(this.props.query);
   };
 
   modifySourceColumn = (joinSequence, column) => {
-    this.props.query.from.selectedTables[
-      joinSequence
-    ].sourceJoinColumn = column;
-    this.props.updateQueryState();
+    if (column) {
+      const tableName = column.split('.')[0];
+      const columnName = column.split('.')[1];
+
+      const foundTable = this.props.hrDb.tables.find(table => {
+        return table.name === tableName;
+      });
+
+      let foundColumn = null;
+      if (foundTable) {
+        foundColumn = foundTable.fields.find(field => {
+          return field.name === columnName;
+        });
+      }
+
+      this.props.query.from.selectedTables[joinSequence].sourceJoinColumn = {
+        name: column,
+        type: foundColumn ? foundColumn.type : null,
+      } || { name: column, type: null };
+
+      this.props.updateQueryState();
+    }
   };
 
   modifyTargetColumn = (joinSequence, column) => {
-    this.props.query.from.selectedTables[
-      joinSequence
-    ].targetJoinColumn = column;
+    const tableName = column.split('.')[0];
+    const columnName = column.split('.')[1];
+
+    const foundTable = this.props.hrDb.tables.find(table => {
+      return table.name === tableName;
+    });
+
+    let foundColumn = null;
+    if (foundTable) {
+      foundColumn = foundTable.fields.find(field => {
+        return field.name === columnName;
+      });
+    }
+
+    this.props.query.from.selectedTables[joinSequence].targetJoinColumn = {
+      name: column,
+      type: foundColumn ? foundColumn.type : null,
+    } || { name: column, type: null };
+
     this.props.updateQueryState();
   };
 
@@ -135,6 +210,9 @@ class FromDetail extends Component {
     this.props.query.from.selectedTables.splice(joinSequence + 1, 0, {
       ...this.props.fromJoinDefault,
     });
+
+    this.props.query.from.selectedTables[joinSequence + 1].alias =
+      alias[joinSequence + 1];
 
     this.props.query.from.selectedTables[
       joinSequence + 1
@@ -162,6 +240,7 @@ class FromDetail extends Component {
       i++
     ) {
       let otherTable = this.props.query.from.selectedTables[i];
+      this.props.query.from.selectedTables[i].alias = alias[i];
       otherTable.targetJoinColumns = [];
       for (let j = 0; j < i; j++) {
         let prevTable = this.props.query.from.selectedTables[j];
@@ -170,20 +249,19 @@ class FromDetail extends Component {
         }
       }
 
-      let targetColumnName = otherTable.targetJoinColumn.split('.');
+      let targetColumnName = otherTable.targetJoinColumn.name.split('.');
       if (targetColumnName.length === 2) {
         if (
           !otherTable.targetJoinColumns
-            .map(targetJoinColumnsTable => targetJoinColumnsTable.name)
+            .map(targetJoinColumnsTable => targetJoinColumnsTable.table.name)
             .includes(targetColumnName[0])
         ) {
-          otherTable.targetJoinColumn = '';
+          otherTable.targetJoinColumn = { name: '', type: null };
         }
       }
     }
 
     this.props.updateQueryState();
-    console.log(this.props.query.from);
   };
 
   // eslint-disable-next-line complexity
@@ -219,18 +297,18 @@ class FromDetail extends Component {
           }
         }
 
-        let targetColumnName = otherTable.targetJoinColumn.split('.');
+        let targetColumnName = otherTable.targetJoinColumn.name.split('.');
         if (targetColumnName.length === 2) {
           if (
             !otherTable.targetJoinColumns
               .map(targetJoinColumnsTable => targetJoinColumnsTable.name)
               .includes(targetColumnName[0])
           ) {
-            otherTable.targetJoinColumn = '';
+            otherTable.targetJoinColumn = { name: '', type: null };
           }
         }
       }
-      console.log(this.props.query.from);
+
       this.props.updateQueryState();
     }
   };
@@ -338,7 +416,8 @@ class FromDetail extends Component {
                                         this.modifySourceColumn
                                       }
                                       selectedTable={row.table}
-                                      selectedColumn={row.sourceJoinColumn}
+                                      alias={row.alias}
+                                      selectedColumn={row.sourceJoinColumn.name}
                                     />
                                   </div>{' '}
                                   <span>=</span>{' '}
@@ -351,7 +430,9 @@ class FromDetail extends Component {
                                           this.modifyTargetColumn
                                         }
                                         columnsToSelect={row.targetJoinColumns}
-                                        selectedColumn={row.targetJoinColumn}
+                                        selectedColumn={
+                                          row.targetJoinColumn.name
+                                        }
                                       />
                                     }
                                   </div>
