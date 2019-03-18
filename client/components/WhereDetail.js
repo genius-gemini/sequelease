@@ -1,8 +1,11 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements */
 import React, { Component } from 'react';
+import OperatorSearchBar from './OperatorSearchBar';
 import JoinSearchBar from './JoinSearchBar';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
-export default class SelectDetail extends Component {
+export default class WhereDetail extends Component {
   constructor(props) {
     super(props);
 
@@ -18,13 +21,16 @@ export default class SelectDetail extends Component {
   }
 
   modifyTargetColumn = (fieldSequence, column) => {
+    // split on . to determine if table and field in table exists in db
     const tableName = column.split('.')[0];
     const columnName = column.split('.')[1];
 
+    // Search for table in db
     const foundTable = this.props.hrDb.tables.find(table => {
       return table.name === tableName;
     });
 
+    // If table is found, search for column in the table
     let foundColumn = null;
     if (foundTable) {
       foundColumn = foundTable.fields.find(field => {
@@ -32,55 +38,94 @@ export default class SelectDetail extends Component {
       });
     }
 
-    this.props.query.select.selectedColumns[fieldSequence] = {
-      name: column,
-      type: foundColumn && foundColumn.type,
-    } || { name: column, type: null };
+    // If column is found in table, add to where clause with column type, otherwise just add searchbox column text
+    this.props.query.where.selectedWhereColumns[fieldSequence] = foundColumn
+      ? {
+          ...this.props.query.where.selectedWhereColumns[fieldSequence],
+          name: column,
+          type: foundColumn.type,
+        }
+      : {
+          ...this.props.query.where.selectedWhereColumns[fieldSequence],
+          name: column,
+        };
+    this.props.updateQueryState();
+  };
+
+  modifyOperator = (fieldSequence, operator) => {
+    // Find if operator exists
+    const foundOp = this.props.query.where.operators.find(op => {
+      return op.operator === operator;
+    });
+
+    // If operator exists, get the hint associated with the operator, else
+    // return an empty selected operator
+    this.props.query.where.selectedWhereColumns[fieldSequence] = foundOp
+      ? {
+          ...this.props.query.where.selectedWhereColumns[fieldSequence],
+          selectedOperator: { ...foundOp },
+          operatorText: operator,
+        }
+      : {
+          ...this.props.query.where.selectedWhereColumns[fieldSequence],
+          operatorText: operator,
+          selectedOperator: { name: '', hint: null },
+        };
     this.props.updateQueryState();
   };
 
   handleAddClick = fieldSequence => {
-    this.props.query.select.selectedColumns.splice(fieldSequence + 1, 0, {
+    // Add default information for row in where clause
+    this.props.query.where.selectedWhereColumns.splice(fieldSequence + 1, 0, {
       name: '',
       type: null,
+      selectedOperator: { operator: '', hint: null },
+      operatorText: '',
+      filter: '',
     });
     this.props.updateQueryState();
   };
 
   handleRemoveClick = fieldSequence => {
-    this.props.query.select.selectedColumns.splice(fieldSequence, 1);
+    this.props.query.where.selectedWhereColumns.splice(fieldSequence, 1);
+    this.props.updateQueryState();
+  };
+
+  handleFilterChange = (value, fieldSequence) => {
+    this.props.query.where.selectedWhereColumns[fieldSequence].filter = value;
     this.props.updateQueryState();
   };
 
   // eslint-disable-next-line complexity
   onDragEnd = result => {
     if (result.destination) {
-      let sourceJoin = this.props.query.select.selectedColumns.splice(
+      let sourceJoin = this.props.query.where.selectedWhereColumns.splice(
         result.source.index,
         1
       )[0];
-      this.props.query.select.selectedColumns.splice(
+      this.props.query.where.selectedWhereColumns.splice(
         result.destination.index,
         0,
         sourceJoin
       );
+
+      this.props.updateQueryState();
     }
-    this.props.updateQueryState();
   };
 
   render() {
     const { queryState } = this.props;
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppableSelect">
+        <Droppable droppableId="droppableWhere">
           {(provided, snapshot) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <div>
-                {queryState.select.selectedColumns.map((field, i) => {
+                {queryState.where.selectedWhereColumns.map((field, i) => {
                   return (
                     <Draggable
-                      key={`itemS-${i}`}
-                      draggableId={`itemS-${i}`}
+                      key={`itemW-${i}`}
+                      draggableId={`itemW-${i}`}
                       index={i}
                     >
                       {(provided, snapshot) => {
@@ -100,8 +145,8 @@ export default class SelectDetail extends Component {
                                   >
                                     +
                                   </button>
-                                  {queryState.select.selectedColumns.length >
-                                  1 ? (
+                                  {queryState.where.selectedWhereColumns
+                                    .length > 1 ? (
                                     <button
                                       onClick={this.handleRemoveClick.bind(
                                         this,
@@ -117,15 +162,34 @@ export default class SelectDetail extends Component {
                                   )}
                                   <div style={{ display: 'inline-block' }}>
                                     <JoinSearchBar
-                                      key={`jsbt2-${i}`}
+                                      key={`jsbt3-${i}`}
                                       joinSequence={i}
                                       modifyTargetColumn={
                                         this.modifyTargetColumn
                                       }
-                                      columnsToSelect={queryState.select.tables}
+                                      columnsToSelect={queryState.where.tables}
                                       selectedColumn={field.name}
                                     />
-                                  </div>
+                                  </div>{' '}
+                                  <div style={{ display: 'inline-block' }}>
+                                    <OperatorSearchBar
+                                      key={`osb-${i}`}
+                                      modifyOperator={this.modifyOperator}
+                                      operatorSequence={i}
+                                      operatorsToSelect={
+                                        queryState.where.operators
+                                      }
+                                      selectedOperator={field.selectedOperator}
+                                      operatorText={field.operatorText}
+                                    />
+                                  </div>{' '}
+                                  <input
+                                    type="text"
+                                    value={field.filter}
+                                    onChange={e =>
+                                      this.handleFilterChange(e.target.value, i)
+                                    }
+                                  />
                                 </div>
                               ) : (
                                 <div className="drag">
@@ -136,7 +200,6 @@ export default class SelectDetail extends Component {
                                   >
                                     +
                                   </button>
-
                                   <button
                                     onClick={this.handleRemoveClick.bind(
                                       this,
@@ -147,9 +210,10 @@ export default class SelectDetail extends Component {
                                   >
                                     -
                                   </button>
+                                  <span>AND</span>{' '}
                                   <div style={{ display: 'inline-block' }}>
                                     <JoinSearchBar
-                                      key={`jsbt2-${i}`}
+                                      key={`jsbt3-${i}`}
                                       joinSequence={i}
                                       modifyTargetColumn={
                                         this.modifyTargetColumn
@@ -157,7 +221,26 @@ export default class SelectDetail extends Component {
                                       columnsToSelect={queryState.select.tables}
                                       selectedColumn={field.name}
                                     />
-                                  </div>
+                                  </div>{' '}
+                                  <div style={{ display: 'inline-block' }}>
+                                    <OperatorSearchBar
+                                      key={`osb-${i}`}
+                                      modifyOperator={this.modifyOperator}
+                                      operatorSequence={i}
+                                      operatorsToSelect={
+                                        queryState.where.operators
+                                      }
+                                      selectedOperator={field.selectedOperator}
+                                      operatorText={field.operatorText}
+                                    />
+                                  </div>{' '}
+                                  <input
+                                    type="text"
+                                    value={field.filter}
+                                    onChange={e =>
+                                      this.handleFilterChange(e.target.value, i)
+                                    }
+                                  />
                                 </div>
                               )}
                             </div>

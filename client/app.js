@@ -5,7 +5,10 @@ import StepSQL from './components/stepSQL';
 import Routes from './routes';
 import FromDetail from './components/FromDetail';
 import SelectDetail from './components/SelectDetail';
+import WhereDetail from './components/WhereDetail';
+import axios from 'axios';
 
+/*
 const hrDb = {
   tables: [
     {
@@ -347,78 +350,134 @@ const hrDb = {
     },
   ],
 };
-
-const selectFieldDefault = {
-  text: '',
-  tables: [],
-};
+*/
 
 const fromJoinDefault = {
   joinCondition: 'INNER JOIN',
   table: {},
   tableText: '',
-  sourceJoinColumn: '',
+  sourceJoinColumn: { name: '', type: null },
   targetJoinColumns: [],
-  targetJoinColumn: '',
+  targetJoinColumn: { name: '', type: null },
 };
 
 const query = {
   select: {
     tables: [],
-    selectedColumns: [''],
+    selectedColumns: [{ name: '', type: null }],
   },
-  where: {},
+  where: {
+    tables: [],
+    selectedWhereColumns: [
+      {
+        name: '',
+        type: null,
+        selectedOperator: { operator: '', hint: null },
+        operatorText: '',
+        filter: '',
+      },
+    ],
+    operators: [
+      { operator: 'LIKE', hint: null },
+      { operator: 'IN', hint: 'Separate items by commas' },
+      { operator: '=', hint: null },
+      { operator: '<=', hint: null },
+      { operator: '<', hint: null },
+      { operator: '>=', hint: null },
+      { operator: '>', hint: null },
+      { operator: '<>', hint: null },
+    ],
+  },
   from: {
-    tablesToSelect: hrDb.tables.map(table => table.name),
+    tablesToSelect: null,
     selectedTables: [
       {
         joinCondition: null,
         table: {},
+        alias: 'a',
         tableText: '',
-        sourceJoinColumn: '',
+        sourceJoinColumn: { name: '', type: null },
         targetJoinColumns: [],
-        targetJoinColumn: '',
+        targetJoinColumn: { name: '', type: null },
       },
     ],
   },
 };
 
+let hrDb = null;
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { query };
+    this.state = { hrDb, query, queryResults: null };
   }
+
+  componentDidMount = async () => {
+    const res = await axios.get('/api/getDbMetaData');
+    const db = res.data;
+    query.from.tablesToSelect = db.tables.map(table => table.name);
+    hrDb = db;
+
+    this.setState({ hrDb, query });
+  };
 
   updateQueryState = () => {
     this.setState({ query });
+    console.log(query);
+  };
+
+  runQuery = async () => {
+    const res = await axios.post('/api/query', { query: this.state.query });
+    const queryResults = res.data;
+
+    console.log(queryResults);
+
+    this.setState({ queryResults });
   };
 
   render() {
-    return (
-      <div>
+    if (this.state.hrDb) {
+      return (
         <div>
-          <Navbar />
-          <Routes />
-          <StepSQL />
-          <FromDetail
-            hrDb={hrDb}
-            query={query}
-            queryState={this.state.query}
-            fromJoinDefault={fromJoinDefault}
-            updateQueryState={this.updateQueryState}
-          />
-          <SelectDetail
-            query={query}
-            updateQueryState={this.updateQueryState}
-            queryState={this.state.query}
-            selectFieldDefault={selectFieldDefault}
-          />
+          <div>
+            <Navbar />
+            <Routes />
+            <StepSQL />
+            <FromDetail
+              hrDb={hrDb}
+              query={query}
+              queryState={this.state.query}
+              fromJoinDefault={fromJoinDefault}
+              updateQueryState={this.updateQueryState}
+            />
+            <SelectDetail
+              query={query}
+              hrDb={hrDb}
+              updateQueryState={this.updateQueryState}
+              queryState={this.state.query}
+            />
+            <WhereDetail
+              query={query}
+              hrDb={hrDb}
+              updateQueryState={this.updateQueryState}
+              queryState={this.state.query}
+            />
+          </div>
+          <div>
+            <button onClick={this.runQuery} type="button">
+              Run Query
+            </button>
+          </div>
+          <div id="consoleBox">
+            <ConsoleTable
+              queryState={this.state.query}
+              queryResults={this.state.queryResults}
+            />
+          </div>
         </div>
-        <div id="consoleBox">
-          <ConsoleTable />
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return <div>Loading...</div>;
+    }
   }
 }
 

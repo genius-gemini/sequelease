@@ -50,6 +50,7 @@ export default class JoinSearchBarSource extends Component {
                 return {
                   tableName: this.props.selectedTable.name,
                   title: column.name,
+                  alias: this.props.alias,
                 };
               })
             : [],
