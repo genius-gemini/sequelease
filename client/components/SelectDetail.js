@@ -18,11 +18,11 @@ export default class SelectDetail extends Component {
   }
 
   modifyTargetColumn = (fieldSequence, column) => {
-    const tableName = column.split('.')[0];
+    const tablename = column.split('.')[0];
     const columnName = column.split('.')[1];
 
     const foundTable = this.props.hrDb.tables.find(table => {
-      return table.name === tableName;
+      return table.name === tablename;
     });
 
     let foundColumn = null;

@@ -22,12 +22,12 @@ export default class WhereDetail extends Component {
 
   modifyTargetColumn = (fieldSequence, column) => {
     // split on . to determine if table and field in table exists in db
-    const tableName = column.split('.')[0];
+    const tablename = column.split('.')[0];
     const columnName = column.split('.')[1];
 
     // Search for table in db
     const foundTable = this.props.hrDb.tables.find(table => {
-      return table.name === tableName;
+      return table.name === tablename;
     });
 
     // If table is found, search for column in the table

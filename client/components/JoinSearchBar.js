@@ -13,7 +13,7 @@ export default class JoinSearchBar extends Component {
           name: table.name,
           results: table.fields
             ? table.fields.map(column => ({
-                tableName: table.name,
+                tablename: table.name,
                 title: column.name,
               }))
             : [],
@@ -30,7 +30,7 @@ export default class JoinSearchBar extends Component {
   handleResultSelect = (e, { result }) =>
     this.props.modifyTargetColumn(
       this.props.joinSequence,
-      `${result.tableName}.${result.title}`
+      `${result.tablename}.${result.title}`
     );
 
   handleSearchChange = (e, { value }) => {
@@ -42,7 +42,7 @@ export default class JoinSearchBar extends Component {
           name: table.name,
           results: table.fields
             ? table.fields.map(column => ({
-                tableName: table.name,
+                tablename: table.name,
                 title: column.name,
               }))
             : [],
@@ -65,7 +65,7 @@ export default class JoinSearchBar extends Component {
 
       const isMatch = result => {
         if (this.props.selectedColumn) {
-          return re.test(result.title) || re.test(result.tableName);
+          return re.test(result.title) || re.test(result.tablename);
         } else {
           return true;
         }

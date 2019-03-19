@@ -422,7 +422,6 @@ class App extends Component {
 
   updateQueryState = () => {
     this.setState({ query });
-    console.log(query);
   };
 
   runQuery = async () => {

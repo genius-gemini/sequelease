@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import TableSearchBar from './TableSearchBar';
 import JoinSearchBarSource from './JoinSearchBarSource';
 import JoinSearchBar from './JoinSearchBar';
+import JoinDropdown from './JoinDropdown'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 const alias = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
@@ -24,13 +25,13 @@ class FromDetail extends Component {
     });
   }
 
-  modifyTable = (joinSequence, tableName) => {
+  modifyTable = (joinSequence, tablename) => {
     // Change table text in search bar
-    this.props.query.from.selectedTables[joinSequence].tableText = tableName;
+    this.props.query.from.selectedTables[joinSequence].tableText = tablename;
 
     // See if table name text is actually a table
     const table = this.props.hrDb.tables.find(
-      newTable => newTable.name === tableName
+      newTable => newTable.name === tablename
     );
 
     if (table) {
@@ -49,7 +50,7 @@ class FromDetail extends Component {
         joinSequence + 1
       )) {
         let newJoinTable = otherTable.targetJoinColumns.find(
-          joinTable => joinTable.name === tableName
+          joinTable => joinTable.name === tablename
         );
 
         if (!newJoinTable) {
@@ -95,7 +96,7 @@ class FromDetail extends Component {
       }
 
       const existingTable = this.props.query.select.tables.find(
-        newTable => newTable.name === tableName
+        newTable => newTable.name === tablename
       );
 
       // Rebuild results for select and where columns
@@ -160,11 +161,11 @@ class FromDetail extends Component {
 
   modifySourceColumn = (joinSequence, column) => {
     if (column) {
-      const tableName = column.split('.')[0];
+      const tablename = column.split('.')[0];
       const columnName = column.split('.')[1];
 
       const foundTable = this.props.hrDb.tables.find(table => {
-        return table.name === tableName;
+        return table.name === tablename;
       });
 
       let foundColumn = null;
@@ -184,11 +185,11 @@ class FromDetail extends Component {
   };
 
   modifyTargetColumn = (joinSequence, column) => {
-    const tableName = column.split('.')[0];
+    const tablename = column.split('.')[0];
     const columnName = column.split('.')[1];
 
     const foundTable = this.props.hrDb.tables.find(table => {
-      return table.name === tableName;
+      return table.name === tablename;
     });
 
     let foundColumn = null;
@@ -387,14 +388,7 @@ class FromDetail extends Component {
                                   >
                                     -
                                   </button>
-                                  <select name="join">
-                                    <option value="INNER JOIN">
-                                      INNER JOIN
-                                    </option>
-                                    <option value="LEFT OUTER JOIN">
-                                      LEFT OUTER JOIN
-                                    </option>
-                                  </select>{' '}
+                                  <span id="join-dropdown"><JoinDropdown /></span>{' '}
                                   <div style={{ display: 'inline-block' }}>
                                     <TableSearchBar
                                       key={`tsb-${i}`}

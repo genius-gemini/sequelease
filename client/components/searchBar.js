@@ -63,18 +63,19 @@ export default class SearchBar extends Component {
 
   render() {
     const { isLoading, value, results } = this.state;
+    //is logging twice
     console.dir(results);
     return (
       <Search
         category
         // results={[
-        //   { tableName: "Employees1" },
-        //   { tableName: "Employee2" },
-        //   { tableName: "Employee3" },
-        //   { tableName: "Employee4" },
-        //   { tableName: "Employees5" },
+        //   { tablename: "Employees1" },
+        //   { tablename: "Employee2" },
+        //   { tablename: "Employee3" },
+        //   { tablename: "Employee4" },
+        //   { tablename: "Employees5" },
         // ]}
-        searchFields={['tableName']}
+        searchFields={['tablename']}
         minCharacters={0}
         loading={isLoading}
         onResultSelect={this.handleResultSelect}

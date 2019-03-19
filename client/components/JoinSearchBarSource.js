@@ -21,9 +21,9 @@ export default class JoinSearchBarSource extends Component {
   handleResultSelect = (e, { result }) => {
     this.props.modifySourceColumn(
       this.props.joinSequence,
-      `${result.tableName}.${result.title}`
+      `${result.tablename}.${result.title}`
     );
-    //this.setState({ value: `${result.tableName}.${result.title}` });
+    //this.setState({ value: `${result.tablename}.${result.title}` });
   };
 
   handleSearchChange = (e, { value }) => {
@@ -48,7 +48,7 @@ export default class JoinSearchBarSource extends Component {
           this.props.selectedTable.fields
             ? this.props.selectedTable.fields.map(column => {
                 return {
-                  tableName: this.props.selectedTable.name,
+                  tablename: this.props.selectedTable.name,
                   title: column.name,
                   alias: this.props.alias,
                 };
