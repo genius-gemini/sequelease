@@ -2,6 +2,7 @@ const Sequelize = require('sequelize')
 
 const databaseName = 'tutorial-sql'
 
+//Might have to change something here for heroku
 const db2 = new Sequelize(
   process.env.DATABASE_URL || `postgres://localhost:5432/${databaseName}`,
   {

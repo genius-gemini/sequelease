@@ -13,9 +13,6 @@ const Ratings = db2.define('rating', {
 module.exports = Ratings;
 
 
-// foreignKeys: [{ columnName: 'employeeId', targetTable: 'employees' }],
-
-
 // const ratings = {
 //     name: 'ratings',
 //     fields: [

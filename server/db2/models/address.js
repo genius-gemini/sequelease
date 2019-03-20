@@ -2,13 +2,7 @@ const Sequelize = require('sequelize');
 const db2 = require('../db2');
 
 const Address = db2.define('address', {
-    sequence: {
-        type: Sequelize.INTEGER
-    },
-    streetAddress1: {
-        type: Sequelize.STRING
-    },
-    streetAddress2: {
+    streetAddress: {
         type: Sequelize.STRING
     },
     apartmentNo: {
@@ -23,16 +17,13 @@ const Address = db2.define('address', {
     postalCode: {
         type: Sequelize.STRING
     },
-    isoCountryCode: {
+    countryCode: {
         type: Sequelize.STRING,
         default: 'US'
     }
 })
 
 module.exports = Address;
-
-
-// foreignKeys: [{ columnName: 'employeeId', targetTable: 'employees' }]
 
 
 // const address = {

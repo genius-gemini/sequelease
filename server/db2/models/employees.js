@@ -22,19 +22,10 @@ const Employee = db2.define('employee', {
     endDate: {
         type: Sequelize.DATE,
         default: null
-    },
-    managerId: {
-        type: Sequelize.INTEGER
     }
 })
 
 module.exports = Employee;
-
-// foreignKeys: [
-//     { columnName: 'roleId', targetTable: 'roles' },
-//     { columnName: 'departmentId', targetTable: 'departments' },
-//     { columnName: 'managerId', targetTable: 'employees' },
-//   ]
 
 // const employees = {
 //     name: 'employees',

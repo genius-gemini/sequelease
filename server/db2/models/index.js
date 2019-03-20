@@ -7,7 +7,6 @@ const Roles = require('./roles');
 const TimeOff = require('./timeoff');
 
 
-
 // Sync
 Address.sync();
 Departments.sync();
@@ -19,34 +18,40 @@ TimeOff.sync();
 
 // Associations
 
-// employees -> addresses: 1 -> M
-Employees.belongsTo(Address)
-Address.hasMany(Employees)
+// addresses -> employees: 1 -> M
+Address.belongsTo(Employees)
+Employees.hasMany(Address)
 
-// employees -> rolesHistory: 1 -> M
-Employees.belongsTo(RoleHistory)
-RoleHistory.hasMany(Employees)
+// employees -> roles: 1 -> M
+Employees.belongsTo(Roles)
+Roles.hasMany(Employees)
 
 // employees -> departments: 1 -> M
 Employees.belongsTo(Departments)
 Departments.hasMany(Employees)
 
-// employees -> timeOff: 1 -> M
-Employees.belongsTo(TimeOff)
-TimeOff.hasMany(Employees)
+// ratings -> employees: 1 -> M
+Ratings.belongsTo(Employees)
+Employees.hasMany(Ratings)
 
-// employees -> ratings: 1 -> M
-Employees.belongsTo(Ratings)
-Ratings.hasMany(Employees)
+// rolehistory -> roles: 1 -> M
+RoleHistory.belongsTo(Roles)
+Roles.hasMany(RoleHistory)
 
-// employees (managerId) -> employees: 1 -> M ???
+// rolehistory -> departments: 1 -> M
+RoleHistory.belongsTo(Departments)
+Departments.hasMany(RoleHistory)
 
-// roles -> employees: 1 -> M
-Roles.belongsTo(Employees)
-Employees.hasMany(Roles)
+// rolehistory -> employees: 1 -> M
+RoleHistory.belongsTo(Employees)
+Employees.hasMany(RoleHistory)
 
 // departments -> roles: 1 -> M
-Departments.belongsTo(Roles)
-Roles.hasMany(Departments)
+Roles.belongsTo(Departments)
+Departments.hasMany(Roles)
+
+// timeOff -> employees: 1 -> M
+TimeOff.belongsTo(Employees)
+Employees.hasMany(TimeOff)
 
 module.exports = { Address, Departments, Employees, Ratings, RoleHistory, Roles, TimeOff };

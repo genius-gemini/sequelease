@@ -15,8 +15,6 @@ const TimeOff = db2.define('timeoff', {
 module.exports = TimeOff;
 
 
-// foreignKeys: [{ columnName: 'employeeId', targetTable: 'employees' }],
-
 // const timeOff = {
 //     name: 'timeOff',
 //     fields: [

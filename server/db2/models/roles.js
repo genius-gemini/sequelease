@@ -12,9 +12,6 @@ const Roles = db2.define('roles', {
 
 module.exports = Roles;
 
-
-// foreignKeys: [{ columnName: 'departmentId', targetTable: 'departments' }],
-
 // const roles = {
 //     name: 'roles',
 //     fields: [

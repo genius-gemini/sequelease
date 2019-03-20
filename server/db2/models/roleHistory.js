@@ -1,17 +1,8 @@
 const Sequelize = require('sequelize');
 const db2 = require('../db2');
- 
-// NEED TO ADD ASSOCIATIONS
+
+
 const RoleHistory = db2.define('roleHistory', {
-    employeeId: {
-        type: Sequelize.INTEGER
-    },
-    roleId: {
-        type: Sequelize.INTEGER
-    },
-    departmentId: {
-        type: Sequelize.INTEGER
-    },
     startDate: {
         type: Sequelize.DATE,
         default: null
@@ -24,11 +15,6 @@ const RoleHistory = db2.define('roleHistory', {
 
 module.exports = RoleHistory;
 
-// foreignKeys: [
-//     { columnName: 'roleId', targetTable: 'roles' },
-//     { columnName: 'departmentId', targetTable: 'departments' },
-//     { columnName: 'employeeId', targetTable: 'employees' },
-//   ],
 
 // const rolesHistory = {
 //     name: 'rolesHistory',
