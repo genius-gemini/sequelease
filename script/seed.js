@@ -37,13 +37,34 @@ async function seed2() {
   await db2.sync({ force: true });
   console.log('db2 synced!');
 
-  const addressData = await Promise.all(AddressSeedData.map(address => Address.create(address)))
   const departmentsData = await Promise.all(DepartmentsSeedData.map(department => Departments.create(department)))
-  const employeesData = await Promise.all(EmployeesSeedData.map(employee => Employees.create(employee)))
-  const ratingsData = await Promise.all(RatingsSeedData.map(rating => Ratings.create(rating)))
-  const rolehistoryData = await Promise.all(RoleHistorySeedData.map(rolehistory => RoleHistory.create(rolehistory)))
-  const roleData = await Promise.all(RolesSeedData.map(role => Roles.create(role)))
-  const timeoffData = await Promise.all(TimeOffSeedData.map(timeoff => TimeOff.create(timeoff)))
+  const roleData = await Promise.all(RolesSeedData.map((role, idx) => {
+    role.departmentId = (idx + 1) % 7
+    Roles.create(role)
+  }))
+  const employeesData = await Promise.all(EmployeesSeedData.map((employee, idx) => {
+    employee.roleId = (idx + 1) % 11
+    employee.departmentId = (idx + 1) % 7
+    Employees.create(employee)
+  }))
+  const addressData = await Promise.all(AddressSeedData.map((address, idx) => {
+    address.employeeId = idx + 1
+    Address.create(address)
+  }))
+  const ratingsData = await Promise.all(RatingsSeedData.map((rating, idx) => {
+    rating.employeeId = (idx + 1) % 5
+    Ratings.create(rating)
+  }))
+  const rolehistoryData = await Promise.all(RoleHistorySeedData.map((rolehistory, idx) => {
+    rolehistory.roleId = (idx + 1) % 11
+    rolehistory.departmentId = (idx + 1) % 7
+    rolehistory.employeeId = (idx + 1) % 6
+    RoleHistory.create(rolehistory)
+  }))
+  const timeoffData = await Promise.all(TimeOffSeedData.map((timeoff, idx) => {
+    timeoff.employeeId = (idx + 1) % 18
+    TimeOff.create(timeoff)
+  }))
 
 
   console.log(`seeded ${addressData.length} addresses`)
@@ -52,7 +73,7 @@ async function seed2() {
   console.log(`seeded ${ratingsData.length} ratings`)
   console.log(`seeded ${rolehistoryData.length} rolehistories`)
   console.log(`seeded ${roleData.length} roles`)
-  console.log(`seeded ${timeoffData.length} roles`)
+  console.log(`seeded ${timeoffData.length} timeoffs`)
 
   console.log(`seeded successfully`);
 }

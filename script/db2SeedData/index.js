@@ -131,6 +131,22 @@ const AddressSeedData = [{
     state: 'Tennessee',
     postalCode: '38131',
     countryCode: 'US'
+  }, 
+  {
+    streetAddress: '50 Armistice Plaza',
+    apartmentNo: '446',
+    city: 'Nashville',
+    state: 'Tennessee',
+    postalCode: '38131',
+    countryCode: 'US'
+  }, 
+  {
+    streetAddress: '47 Armistice Plaza',
+    apartmentNo: '6',
+    city: 'Memphis',
+    state: 'Tennessee',
+    postalCode: '38131',
+    countryCode: 'US'
   }, {
     streetAddress: '898 Laurel Plaza',
     apartmentNo: null,
