@@ -4,7 +4,7 @@ const databaseName = 'tutorial-sql'
 
 //Might have to change something here for heroku
 const db2 = new Sequelize(
-  process.env.DATABASE_URL || `postgres://localhost:5432/${databaseName}`,
+  process.env.HEROKU_POSTGRESQL_PUCE_URL || `postgres://localhost:5432/${databaseName}`,
   {
     logging: false
   }
