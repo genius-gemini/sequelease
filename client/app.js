@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Routes from './routes';
+import Routes from "./routes";
 
-import ConsoleTable from './components/ConsoleTable';
-import Navbar from './components/navBar';
-import StepSQL from './components/stepSQL';
-import FromDetail from './components/FromDetail';
-import SelectDetail from './components/SelectDetail';
-import WhereDetail from './components/WhereDetail';
-import Db from './classes/db';
-import Query from './classes/query';
+import ConsoleTable from "./components/ConsoleTable";
+import Navbar from "./components/navBar";
+import OuterGrid from "./components/outerGrid";
+import FromDetail from "./components/FromDetail";
+import SelectDetail from "./components/SelectDetail";
+import WhereDetail from "./components/WhereDetail";
+import Db from "./classes/db";
+import Query from "./classes/query";
 
 class App extends Component {
   constructor(props) {
@@ -46,8 +46,12 @@ class App extends Component {
         <div>
           <div>
             <Navbar />
+            <OuterGrid
+              db={this.state.db}
+              query={this.state.query}
+              updateQueryState={this.updateQueryState}
+            />
             <Routes />
-            <StepSQL />
             <FromDetail
               db={this.state.db}
               query={this.state.query}
