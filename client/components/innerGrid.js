@@ -12,9 +12,17 @@ import {
 import { Draggable } from "react-beautiful-dnd";
 import Buttons from "./buttons";
 import JoinPopup from "./joinPopup";
+import TableSearchBar from "./TableSearchBar";
 
 const InnerGrid = props => {
-  const { rowIndex, query, handleAddJoinRowClick, updateQueryState } = props;
+  const {
+    rowIndex,
+    query,
+    handleAddJoinRowClick,
+    updateQueryState,
+    db,
+    row,
+  } = props;
 
   return (
     <Draggable key={`itemS`} draggableId={`itemS`} index={1}>
@@ -28,7 +36,7 @@ const InnerGrid = props => {
             >
               <Grid columns={2} celled>
                 <Grid.Row style={{ padding: "7px" }}>
-                  <Grid.Column style={{ width: "510px", height: "38px" }}>
+                  <Grid.Column style={{ width: "600px", height: "38px" }}>
                     <Form>
                       <Form.Group inline>
                         <Form.Field>
@@ -45,7 +53,16 @@ const InnerGrid = props => {
                             query={query}
                           />
                         </Form.Field>
-                        <Form.Field />
+                        <Form.Field error={true}>
+                          <TableSearchBar
+                            rowIndex={rowIndex}
+                            resultTables={db.getTableNames}
+                            table={row.tableMetadata.name}
+                            tableText={row.tableText}
+                            updateQueryState={updateQueryState}
+                            query={query}
+                          />
+                        </Form.Field>
                       </Form.Group>
                     </Form>
                   </Grid.Column>

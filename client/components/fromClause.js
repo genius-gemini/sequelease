@@ -5,7 +5,7 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import InnerGrid from "./innerGrid";
 
 const FromClause = props => {
-  const { query, updateQueryState } = props;
+  const { query, updateQueryState, db } = props;
 
   return (
     <DragDropContext onDragEnd={() => console.log("On drag end")}>
@@ -21,6 +21,7 @@ const FromClause = props => {
                     updateQueryState={updateQueryState}
                     rowIndex={i}
                     row={row}
+                    db={db}
                     className="drag"
                   />
                 );

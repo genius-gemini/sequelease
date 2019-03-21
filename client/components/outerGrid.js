@@ -10,7 +10,7 @@ const OuterGrid = props => {
         <Grid.Column width={1}>
           <Header>FROM</Header>
         </Grid.Column>
-        <FromClause query={query} updateQueryState={updateQueryState} />
+        <FromClause db={db} query={query} updateQueryState={updateQueryState} />
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={1}>

@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import _ from "lodash";
+import React, { Component } from "react";
+import { Search, Label } from "semantic-ui-react";
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -18,19 +18,24 @@ export default class TableSearchBar extends Component {
       //value: '',
     });
 
+  modifyFromRowTable = tableName => {
+    this.props.query.from.modifyFromRowTable(this.props.rowIndex, tableName);
+    this.props.updateQueryState();
+  };
+
   handleResultSelect = (e, { result }) => {
-    this.props.modifyFromRowTable(this.props.rowIndex, result.title);
+    this.modifyFromRowTable(result.title);
     //this.setState({ value: result.title });
   };
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyFromRowTable(this.props.rowIndex, value);
+    this.modifyFromRowTable(value);
     //this.setState({ isLoading: true /*value */ });
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
-      const re = new RegExp(_.escapeRegExp(this.props.tableText), 'i');
+      const re = new RegExp(_.escapeRegExp(this.props.tableText), "i");
       const isMatch = result => re.test(result.title);
 
       this.setState({
@@ -39,7 +44,7 @@ export default class TableSearchBar extends Component {
           this.props.resultTables().map(tableName => {
             return { title: tableName };
           }),
-          isMatch
+          isMatch,
         ),
       });
     }, 100);
@@ -50,6 +55,8 @@ export default class TableSearchBar extends Component {
 
     return (
       <Search
+        icon="table"
+        placeholder={`Table ${this.props.rowIndex + 1}`}
         loading={isLoading}
         onResultSelect={this.handleResultSelect}
         onSearchChange={_.debounce(this.handleSearchChange, 500, {
