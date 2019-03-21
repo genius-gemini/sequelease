@@ -38,8 +38,9 @@ export default class ConsoleTable extends Component {
     const { column, data, direction } = this.state;
     return (
       <Container id="console">
-        <ConsoleSegment queryState={this.props.queryState} />
-        {this.props.queryResults ? (
+        <ConsoleSegment querySQL={this.props.query.toSql()} />
+
+        {/*this.props.queryResults ? (
           <Table sortable celled fixed>
             <Table.Header>
               <Table.Row>
@@ -68,7 +69,7 @@ export default class ConsoleTable extends Component {
           </Table>
         ) : (
           <div>Nothing yet</div>
-        )}
+        )*/}
       </Container>
     );
   }

@@ -7,20 +7,34 @@ export default class JoinSearchBar extends Component {
     this.resetComponent();
 
     this.setState({
-      columnsToSelect: this.props.columnsToSelect.reduce((memo, table) => {
-        // eslint-disable-next-line no-param-reassign
-        memo[table.name] = {
-          name: table.name,
-          results: table.fields
-            ? table.fields.map(column => ({
-                tableName: table.name,
-                title: column.name,
-              }))
-            : [],
-        };
+      // eslint-disable-next-line react/no-unused-state
+      previousTablesJoinColumns: this.props.previousTablesJoinColumns.reduce(
+        (memo, previousTable) => {
+          // eslint-disable-next-line no-param-reassign
 
-        return memo;
-      }, {}),
+          memo[
+            previousTable.tableMetadata.name +
+              ' (' +
+              previousTable.tableAlias +
+              ')'
+          ] = {
+            name:
+              previousTable.tableMetadata.name +
+              ' (' +
+              previousTable.tableAlias +
+              ')',
+            results: previousTable.tableMetadata.fields
+              ? previousTable.tableMetadata.fields.map(column => ({
+                  alias: previousTable.tableAlias,
+                  tableName: previousTable.tableMetadata.name,
+                  title: column.name,
+                }))
+              : [],
+          };
+          return memo;
+        },
+        {}
+      ),
     });
   }
 
@@ -28,27 +42,52 @@ export default class JoinSearchBar extends Component {
     this.setState({ isLoading: false, results: [] /*value: ''*/ });
 
   handleResultSelect = (e, { result }) =>
-    this.props.modifyTargetColumn(
-      this.props.joinSequence,
-      `${result.tableName}.${result.title}`
+    this.props.modifyPreviousTableJoinColumn(
+      this.props.rowIndex,
+      this.props.joinColumnIndex,
+      result.alias,
+      result.tableName,
+      result.alias + '.' + result.title
     );
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyTargetColumn(this.props.joinSequence, value);
+    this.props.modifyPreviousTableJoinColumn(
+      this.props.rowIndex,
+      this.props.joinColumnIndex,
+      null,
+      null,
+      value
+    );
     this.setState({
-      columnsToSelect: this.props.columnsToSelect.reduce((memo, table) => {
-        // eslint-disable-next-line no-param-reassign
-        memo[table.name] = {
-          name: table.name,
-          results: table.fields
-            ? table.fields.map(column => ({
-                tableName: table.name,
-                title: column.name,
-              }))
-            : [],
-        };
-        return memo;
-      }, {}),
+      // eslint-disable-next-line react/no-unused-state
+      previousTablesJoinColumns: this.props.previousTablesJoinColumns.reduce(
+        (memo, previousTable) => {
+          // eslint-disable-next-line no-param-reassign
+
+          memo[
+            previousTable.tableMetadata.name +
+              ' (' +
+              previousTable.tableAlias +
+              ')'
+          ] = {
+            name:
+              previousTable.tableMetadata.name +
+              ' (' +
+              previousTable.tableAlias +
+              ')',
+            results: previousTable.tableMetadata.fields
+              ? previousTable.tableMetadata.fields.map(column => ({
+                  alias: previousTable.tableAlias,
+                  tableName: previousTable.tableMetadata.name,
+                  title: column.name,
+                }))
+              : [],
+          };
+
+          return memo;
+        },
+        {}
+      ),
       //isLoading: true,
     });
 
@@ -57,22 +96,27 @@ export default class JoinSearchBar extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.selectedColumn.split('.')[1] ||
-            this.props.selectedColumn.value
+          this.props.previousTableJoinColumn.split('.')[1] ||
+            this.props.previousTableJoinColumn.split('.')[0] ||
+            this.props.previousTableJoinColumn
         ),
         'i'
       );
 
       const isMatch = result => {
-        if (this.props.selectedColumn) {
-          return re.test(result.title) || re.test(result.tableName);
+        if (this.props.previousTableJoinColumn) {
+          return (
+            re.test(result.title) ||
+            re.test(result.tableName) ||
+            re.test(result.tableAlias)
+          );
         } else {
           return true;
         }
       };
 
       const filteredResults = _.reduce(
-        this.state.columnsToSelect,
+        this.state.previousTablesJoinColumns,
         (memo, data, name) => {
           const results = _.filter(data.results, isMatch);
           if (results.length) memo[name] = { name, results }; // eslint-disable-line no-param-reassign
@@ -105,7 +149,7 @@ export default class JoinSearchBar extends Component {
         onFocus={this.handleSearchChange}
         onMouseDown={this.handleSearchChange}
         results={results}
-        value={this.props.selectedColumn}
+        value={this.props.previousTableJoinColumn}
       />
     );
   }

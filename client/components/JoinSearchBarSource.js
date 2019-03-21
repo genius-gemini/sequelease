@@ -19,15 +19,24 @@ export default class JoinSearchBarSource extends Component {
     });
 
   handleResultSelect = (e, { result }) => {
-    this.props.modifySourceColumn(
-      this.props.joinSequence,
-      `${result.tableName}.${result.title}`
+    this.props.modifyRowTableJoinColumn(
+      this.props.rowIndex,
+      this.props.joinColumnIndex,
+      result.alias,
+      result.tableName,
+      result.alias + '.' + result.title
     );
     //this.setState({ value: `${result.tableName}.${result.title}` });
   };
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifySourceColumn(this.props.joinSequence, value);
+    this.props.modifyRowTableJoinColumn(
+      this.props.rowIndex,
+      this.props.joinColumnIndex,
+      null,
+      null,
+      value
+    );
     //this.setState({ isLoading: true /*value*/ });
 
     setTimeout(() => {
@@ -35,22 +44,22 @@ export default class JoinSearchBarSource extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.selectedColumn.split('.')[1] || this.props.selectedColumn
+          this.props.columnText.split('.')[1] || this.props.columnText
         ),
         'i'
       );
       const isMatch = result =>
-        this.props.selectedColumn ? re.test(result.title) : true;
+        this.props.columnText ? re.test(result.title) : true;
 
       this.setState({
         isLoading: false,
         results: _.filter(
-          this.props.selectedTable.fields
-            ? this.props.selectedTable.fields.map(column => {
+          this.props.table.fields
+            ? this.props.table.fields.map(column => {
                 return {
-                  tableName: this.props.selectedTable.name,
+                  tableName: this.props.table.name,
                   title: column.name,
-                  alias: this.props.alias,
+                  alias: this.props.tableAlias,
                 };
               })
             : [],
@@ -75,7 +84,7 @@ export default class JoinSearchBarSource extends Component {
         onFocus={this.handleSearchChange}
         onMouseDown={this.handleSearchChange}
         results={results}
-        value={this.props.selectedColumn}
+        value={this.props.columnText}
       />
     );
   }
