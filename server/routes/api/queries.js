@@ -7,10 +7,12 @@ module.exports = router;
 
 const connectPool = () => {
   return new Pool({
-    host: 'ec2-54-221-201-212.compute-1.amazonaws.com',
-    database: 'dbpnauv6i7jjki',
-    user: 'rwbqgxjqwqrxuh',
-    password: process.env.TUTORIAL_DB_PASS,
+    // host: 'ec2-54-221-201-212.compute-1.amazonaws.com',
+    // database: 'dbpnauv6i7jjki',
+    // user: 'rwbqgxjqwqrxuh',
+    // password: process.env.TUTORIAL_DB_PASS,
+    host: 'localhost',
+    database: 'tutorial-sql',
     port: 5432,
   });
 };
