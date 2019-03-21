@@ -1,459 +1,316 @@
-/* eslint-disable complexity */
-/* eslint-disable max-statements */
 import React, { Component } from 'react';
 import TableSearchBar from './TableSearchBar';
 import JoinSearchBarSource from './JoinSearchBarSource';
 import JoinSearchBar from './JoinSearchBar';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import withQueryDetail from '../hocs/QueryDetail';
+import { Draggable } from 'react-beautiful-dnd';
 
-const alias = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 class FromDetail extends Component {
-  // eslint-disable-next-line complexity
-
-  constructor(props) {
-    super(props);
-
-    // To blur search boxes on drag
-    document.addEventListener('mousedown', e => {
-      if (
-        [...e.target.classList].includes('drag') &&
-        e.target.tagName === 'DIV'
-      ) {
-        document.activeElement.blur();
-      }
-    });
+  componentDidMount() {
+    this.props.setClause(this.props.query.from);
   }
 
-  modifyTable = (joinSequence, tableName) => {
-    // Change table text in search bar
-    this.props.query.from.selectedTables[joinSequence].tableText = tableName;
+  modifyFromRowTable = (rowIndex, tableName) => {
+    this.props.query.from.modifyFromRowTable(rowIndex, tableName);
+    this.props.updateQueryState();
+  };
 
-    // See if table name text is actually a table
-    const table = this.props.hrDb.tables.find(
-      newTable => newTable.name === tableName
+  modifyRowTableJoinColumn = (
+    rowIndex,
+    joinColumnIndex,
+    alias,
+    tableName,
+    column
+  ) => {
+    this.props.query.from.modifyRowTableJoinColumn(
+      rowIndex,
+      joinColumnIndex,
+      alias,
+      tableName,
+      column
     );
+    this.props.updateQueryState();
+  };
 
-    if (table) {
-      // Set table in select clause for results
-      this.props.query.select.tables.push(table);
+  modifyPreviousTableJoinColumn = (
+    rowIndex,
+    joinColumnIndex,
+    alias,
+    tableName,
+    column
+  ) => {
+    this.props.query.from.modifyPreviousTableJoinColumn(
+      rowIndex,
+      joinColumnIndex,
+      alias,
+      tableName,
+      column
+    );
+    this.props.updateQueryState();
+  };
 
-      // Set table in where clause for results
-      this.props.query.where.tables.push(table);
+  handleAddJoinRowClick = rowIndex => {
+    this.props.query.from.handleAddJoinRowClick(rowIndex);
 
-      // Set table in from clause
-      this.props.query.from.selectedTables[joinSequence].table = table;
+    this.props.updateQueryState();
+  };
 
-      // eslint-disable-next-line guard-for-in
-      // Add new table to results of subsequent joined tables
-      for (let otherTable of this.props.query.from.selectedTables.slice(
-        joinSequence + 1
-      )) {
-        let newJoinTable = otherTable.targetJoinColumns.find(
-          joinTable => joinTable.name === tableName
-        );
+  handleRemoveJoinRowClick = rowIndex => {
+    this.props.query.from.handleRemoveJoinRowClick(rowIndex);
 
-        if (!newJoinTable) {
-          otherTable.targetJoinColumns.push(table);
-        }
-      }
-    } else {
-      // Remove table from from clause
-      this.props.query.from.selectedTables[joinSequence].table = {};
+    //this.validate();
+    this.props.updateQueryState();
+  };
 
-      // Clear out source join column
-      this.props.query.from.selectedTables[joinSequence].sourceJoinColumn = {
-        name: '',
-        type: null,
-      };
+  handleAddConditionClick(rowIndex) {
+    this.props.query.from.handleAddJoinConditionClick(rowIndex);
 
-      // Rebuild all subsequent joined tables' results
-      for (
-        let i = joinSequence;
-        i < this.props.query.from.selectedTables.length;
-        i++
+    this.props.updateQueryState();
+  }
+
+  handleRemoveConditionClick(rowIndex) {
+    this.props.query.from.handleRemoveJoinConditionClick(rowIndex);
+
+    this.props.updateQueryState();
+  }
+  /*
+  validate() {
+    for (let i = 0; i < this.props.query.from.rows.length; i++) {
+      // Table validation
+      if (
+        !this.props.query.from.resultTables.includes(
+          this.props.query.from.rows[i].tableText.trim()
+        ) &&
+        this.props.query.from.rows[i].tableText.trim()
       ) {
-        let otherTable = this.props.query.from.selectedTables[i];
-        otherTable.targetJoinColumns = [];
-        for (let j = 0; j < i; j++) {
-          let prevTable = this.props.query.from.selectedTables[j];
-          otherTable.targetJoinColumns.push(prevTable.table);
-        }
-
-        let targetColumnName =
-          (otherTable.targetJoinColumn.name &&
-            otherTable.targetJoinColumn.name.split('.')) ||
-          [];
-        if (targetColumnName.length === 2) {
-          if (
-            !otherTable.targetJoinColumns
-              .map(targetJoinColumnsTable => targetJoinColumnsTable.name)
-              .includes(targetColumnName[0])
-          ) {
-            otherTable.targetJoinColumn = { name: '', type: null };
-          }
-        }
+        this.props.query.from.rows[i].tableError = 'Invalid table';
+      } else {
+        this.props.query.from.rows[i].tableError = '';
       }
 
-      const existingTable = this.props.query.select.tables.find(
-        newTable => newTable.name === tableName
-      );
-
-      // Rebuild results for select and where columns
-      if (!existingTable) {
-        this.props.query.select.tables = [];
-        this.props.query.where.tables = [];
-        for (let i = 0; i < this.props.query.from.selectedTables.length; i++) {
-          if (
-            Object.keys(this.props.query.from.selectedTables[i].table).length
-          ) {
-            this.props.query.select.tables.push(
-              this.props.query.from.selectedTables[i].table
-            );
-            this.props.query.where.tables.push(
-              this.props.query.from.selectedTables[i].table
-            );
-          }
-        }
-
-        // Delete select columns with table that does not exist
-        this.props.query.select.selectedColumns = this.props.query.select.selectedColumns.filter(
-          column => {
-            return (
-              !column.name ||
-              (column.name &&
-                this.props.query.select.tables
-                  .map(searchTable => searchTable.name)
-                  .includes(column.name.split('.')[0]))
-            );
-          }
-        );
-        if (!this.props.query.select.selectedColumns.length)
-          this.props.query.select.selectedColumns.push({
-            name: '',
-            type: null,
-          });
-
-        // Delete where columns with table that does not exist
-        this.props.query.where.selectedWhereColumns = this.props.query.where.selectedWhereColumns.filter(
-          column => {
-            return (
-              !column.name ||
-              (column.name &&
-                this.props.query.where.tables
-                  .map(searchTable => searchTable.name)
-                  .includes(column.name.split('.')[0]))
-            );
-          }
-        );
-        if (!this.props.query.where.selectedWhereColumns.length)
-          this.props.query.where.selectedWhereColumns.push({
-            name: '',
-            type: null,
-            selectedOperator: { operator: '', hint: null },
-            operatorText: '',
-            filter: '',
-          });
-      }
-    }
-    this.props.updateQueryState();
-  };
-
-  modifySourceColumn = (joinSequence, column) => {
-    if (column) {
-      const tableName = column.split('.')[0];
-      const columnName = column.split('.')[1];
-
-      const foundTable = this.props.hrDb.tables.find(table => {
-        return table.name === tableName;
-      });
-
-      let foundColumn = null;
-      if (foundTable) {
-        foundColumn = foundTable.fields.find(field => {
-          return field.name === columnName;
-        });
-      }
-
-      this.props.query.from.selectedTables[joinSequence].sourceJoinColumn = {
-        name: column,
-        type: foundColumn ? foundColumn.type : null,
-      } || { name: column, type: null };
-
-      this.props.updateQueryState();
-    }
-  };
-
-  modifyTargetColumn = (joinSequence, column) => {
-    const tableName = column.split('.')[0];
-    const columnName = column.split('.')[1];
-
-    const foundTable = this.props.hrDb.tables.find(table => {
-      return table.name === tableName;
-    });
-
-    let foundColumn = null;
-    if (foundTable) {
-      foundColumn = foundTable.fields.find(field => {
-        return field.name === columnName;
-      });
-    }
-
-    this.props.query.from.selectedTables[joinSequence].targetJoinColumn = {
-      name: column,
-      type: foundColumn ? foundColumn.type : null,
-    } || { name: column, type: null };
-
-    this.props.updateQueryState();
-  };
-
-  handleAddClick = joinSequence => {
-    this.props.query.from.selectedTables.splice(joinSequence + 1, 0, {
-      ...this.props.fromJoinDefault,
-    });
-
-    this.props.query.from.selectedTables[joinSequence + 1].alias =
-      alias[joinSequence + 1];
-
-    this.props.query.from.selectedTables[
-      joinSequence + 1
-    ].targetJoinColumns = [];
-    for (let prevTable of this.props.query.from.selectedTables.slice(
-      0,
-      joinSequence + 1
-    )) {
-      if (Object.keys(prevTable.table).length) {
-        this.props.query.from.selectedTables[
-          joinSequence + 1
-        ].targetJoinColumns.push(prevTable.table);
-      }
-    }
-
-    this.props.updateQueryState();
-  };
-
-  handleRemoveClick = joinSequence => {
-    this.props.query.from.selectedTables.splice(joinSequence, 1);
-
-    for (
-      let i = joinSequence;
-      i < this.props.query.from.selectedTables.length;
-      i++
-    ) {
-      let otherTable = this.props.query.from.selectedTables[i];
-      this.props.query.from.selectedTables[i].alias = alias[i];
-      otherTable.targetJoinColumns = [];
-      for (let j = 0; j < i; j++) {
-        let prevTable = this.props.query.from.selectedTables[j];
-        if (Object.keys(prevTable.table).length) {
-          otherTable.targetJoinColumns.push(prevTable.table);
-        }
-      }
-
-      let targetColumnName = otherTable.targetJoinColumn.name.split('.');
-      if (targetColumnName.length === 2) {
+      // Row Table Join Column
+      for (
+        let j = 0;
+        j < this.props.query.from.rows[i].joinColumns.length;
+        j++
+      ) {
+        let tableAliasAndColumn = this.props.query.from.rows[i].joinColumns[
+          j
+        ].rowTableJoinColumn.name.split('.');
+        let tableAlias = tableAliasAndColumn[0];
         if (
-          !otherTable.targetJoinColumns
-            .map(targetJoinColumnsTable => targetJoinColumnsTable.table.name)
-            .includes(targetColumnName[0])
+          this.props.query.from.rows[i].joinColumns[
+            j
+          ].rowTableJoinColumn.name.trim()
         ) {
-          otherTable.targetJoinColumn = { name: '', type: null };
-        }
-      }
-    }
-
-    this.props.updateQueryState();
-  };
-
-  // eslint-disable-next-line complexity
-  onDragEnd = result => {
-    if (result.destination) {
-      let sourceJoin = this.props.query.from.selectedTables.splice(
-        result.source.index,
-        1
-      )[0];
-      this.props.query.from.selectedTables.splice(
-        result.destination.index,
-        0,
-        sourceJoin
-      );
-
-      let startIndex =
-        result.destination.index < result.source.index
-          ? result.destination.index
-          : result.source.index;
-
-      let endIndex =
-        result.destination.index < result.source.index
-          ? result.source.index
-          : result.destination.index;
-
-      for (let i = startIndex; i <= endIndex; i++) {
-        let otherTable = this.props.query.from.selectedTables[i];
-        otherTable.targetJoinColumns = [];
-        for (let j = 0; j < i; j++) {
-          let prevTable = this.props.query.from.selectedTables[j];
-          if (Object.keys(prevTable.table).length) {
-            otherTable.targetJoinColumns.push(prevTable.table);
+          if (tableAliasAndColumn.length <= 1) {
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].rowTableJoinColumn.error = `Need table alias (${tableAlias})`;
+          } else if (tableAlias !== this.props.query.from.rows[i].tableAlias) {
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].rowTableJoinColumn.error = `Table alias does not match ${
+              this.props.query.from.rows[i].tableAlias
+            }`;
+          } else {
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].rowTableJoinColumn.error = '';
           }
         }
 
-        let targetColumnName = otherTable.targetJoinColumn.name.split('.');
-        if (targetColumnName.length === 2) {
+        tableAliasAndColumn = this.props.query.from.rows[i].joinColumns[
+          j
+        ].previousTableJoinColumn.name.split('.');
+        tableAlias = tableAliasAndColumn[0];
+        if (
+          this.props.query.from.rows[i].joinColumns[
+            j
+          ].previousTableJoinColumn.name.trim()
+        ) {
           if (
-            !otherTable.targetJoinColumns
-              .map(targetJoinColumnsTable => targetJoinColumnsTable.name)
-              .includes(targetColumnName[0])
+            !this.props.query.from.rows[i].previousTablesJoinColumns.map(
+              previousTable => previousTable.tableAlias
+            ).length
           ) {
-            otherTable.targetJoinColumn = { name: '', type: null };
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].previousTableJoinColumn.error = 'No valid table to join to';
+          } else if (tableAliasAndColumn.length <= 1) {
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].previousTableJoinColumn.error = `Need table alias from prior table (${this.props.query.from.rows[
+              i
+            ].previousTablesJoinColumns
+              .map(previousTable => previousTable.tableAlias)
+              .join(', ')})`;
+          } else if (
+            !this.props.query.from.rows[i].previousTablesJoinColumns
+              .map(previousTable => previousTable.tableAlias)
+              .includes(tableAlias)
+          ) {
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].previousTableJoinColumn.error = `Table alias does not match any prior table's alias (${this.props.query.from.rows[
+              i
+            ].previousTablesJoinColumns
+              .map(previousTable => previousTable.tableAlias)
+              .join(', ')})`;
+          } else {
+            this.props.query.from.rows[i].joinColumns[
+              j
+            ].previousTableJoinColumn.error = '';
           }
         }
       }
-
-      this.props.updateQueryState();
     }
-  };
+  }
+  */
 
   render() {
-    const { queryState } = this.props;
+    const { query, db } = this.props;
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              <div>
-                {queryState.from.selectedTables.map((row, i) => {
-                  return (
-                    <Draggable key={i} draggableId={`item-${i}`} index={i}>
-                      {(provided, snapshot) => {
-                        return (
-                          <div>
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.dragHandleProps}
-                              {...provided.draggableProps}
-                            >
-                              {i === 0 ? (
-                                <div className="drag">
-                                  <button
-                                    onClick={this.handleAddClick.bind(this, i)}
-                                    type="button"
-                                    style={{ marginRight: '10px' }}
-                                  >
-                                    +
-                                  </button>
-                                  {queryState.from.selectedTables.length > 1 ? (
-                                    <button
-                                      onClick={this.handleRemoveClick.bind(
-                                        this,
-                                        i
-                                      )}
-                                      type="button"
-                                      style={{ marginRight: '10px' }}
-                                    >
-                                      -
-                                    </button>
-                                  ) : (
-                                    ''
-                                  )}
-                                  <div style={{ display: 'inline-block' }}>
-                                    <TableSearchBar
-                                      key={`tsb-${i}`}
-                                      modifyTable={this.modifyTable}
-                                      joinSequence={i}
-                                      tablesToSelect={
-                                        queryState.from.tablesToSelect
-                                      }
-                                      selectedTable={row.table.name}
-                                      selectedTableText={row.tableText}
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="drag" key={`tsbd-${i}`}>
-                                  <button
-                                    onClick={this.handleAddClick.bind(this, i)}
-                                    type="button"
-                                    style={{ marginRight: '10px' }}
-                                  >
-                                    +
-                                  </button>
-                                  <button
-                                    onClick={this.handleRemoveClick.bind(
-                                      this,
-                                      i
-                                    )}
-                                    type="button"
-                                    style={{ marginRight: '10px' }}
-                                  >
-                                    -
-                                  </button>
-                                  <select name="join">
-                                    <option value="INNER JOIN">
-                                      INNER JOIN
-                                    </option>
-                                    <option value="LEFT OUTER JOIN">
-                                      LEFT OUTER JOIN
-                                    </option>
-                                  </select>{' '}
-                                  <div style={{ display: 'inline-block' }}>
-                                    <TableSearchBar
-                                      key={`tsb-${i}`}
-                                      modifyTable={this.modifyTable}
-                                      joinSequence={i}
-                                      tablesToSelect={
-                                        queryState.from.tablesToSelect
-                                      }
-                                      selectedTable={row.table.name}
-                                      selectedTableText={row.tableText}
-                                    />
-                                  </div>{' '}
-                                  <span>ON</span>{' '}
+      <div>
+        {query.from.fromJoinRows.map((row, i) => {
+          return (
+            <Draggable key={`itemS-${i}`} draggableId={`itemS-${i}`} index={i}>
+              {(provided, snapshot) => {
+                return (
+                  <div>
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.dragHandleProps}
+                      {...provided.draggableProps}
+                    >
+                      <div className="drag">
+                        <button
+                          onClick={this.handleAddJoinRowClick.bind(this, i)}
+                          type="button"
+                          style={{ marginRight: '10px' }}
+                        >
+                          +
+                        </button>
+                        {query.from.fromJoinRows.length > 1 ? (
+                          <button
+                            onClick={this.handleRemoveJoinRowClick.bind(
+                              this,
+                              i
+                            )}
+                            type="button"
+                            style={{ marginRight: '10px' }}
+                          >
+                            -
+                          </button>
+                        ) : (
+                          ''
+                        )}
+                        {i > 0 ? (
+                          <select name="join">
+                            <option value="INNER JOIN">INNER JOIN</option>
+                            <option value="LEFT OUTER JOIN">
+                              LEFT OUTER JOIN
+                            </option>
+                          </select>
+                        ) : (
+                          ''
+                        )}
+                        <div style={{ display: 'inline-block' }}>
+                          <TableSearchBar
+                            key={`tsb-${i}`}
+                            modifyFromRowTable={this.modifyFromRowTable}
+                            rowIndex={i}
+                            resultTables={db.getTableNames}
+                            table={row.tableMetadata.name}
+                            tableText={row.tableText}
+                          />
+                        </div>{' '}
+                        <span>AS {row.tableAlias}</span>{' '}
+                        {i > 0 ? (
+                          <div style={{ display: 'inline-block' }}>
+                            <span>ON</span>
+                            <div style={{ display: 'inline-block' }}>
+                              {row.joinColumns.map((joinColumn, j) => (
+                                <div
+                                  style={{ display: 'inline-block' }}
+                                  key={`jc-${i}-${j}`}
+                                >
+                                  {j > 0 ? <span>&nbsp;AND </span> : ''}
                                   <div style={{ display: 'inline-block' }}>
                                     <JoinSearchBarSource
                                       key={`jsbs-${i}`}
-                                      joinSequence={i}
-                                      modifySourceColumn={
-                                        this.modifySourceColumn
+                                      rowIndex={i}
+                                      joinColumnIndex={j}
+                                      modifyRowTableJoinColumn={
+                                        this.modifyRowTableJoinColumn
                                       }
-                                      selectedTable={row.table}
-                                      alias={row.alias}
-                                      selectedColumn={row.sourceJoinColumn.name}
+                                      table={row.tableMetadata}
+                                      tableAlias={row.tableAlias}
+                                      columnText={
+                                        joinColumn.rowTableJoinColumn.name
+                                      }
                                     />
-                                  </div>{' '}
-                                  <span>=</span>{' '}
+                                  </div>
+                                  <span> = </span>
                                   <div style={{ display: 'inline-block' }}>
-                                    {
-                                      <JoinSearchBar
-                                        key={`jsbt-${i}`}
-                                        joinSequence={i}
-                                        modifyTargetColumn={
-                                          this.modifyTargetColumn
-                                        }
-                                        columnsToSelect={row.targetJoinColumns}
-                                        selectedColumn={
-                                          row.targetJoinColumn.name
-                                        }
-                                      />
-                                    }
+                                    <JoinSearchBar
+                                      key={`jsbt-${i}`}
+                                      rowIndex={i}
+                                      joinColumnIndex={j}
+                                      modifyPreviousTableJoinColumn={
+                                        this.modifyPreviousTableJoinColumn
+                                      }
+                                      previousTablesJoinColumns={
+                                        row.previousTablesJoinColumns
+                                      }
+                                      previousTableJoinColumn={
+                                        joinColumn.previousTableJoinColumn.name
+                                      }
+                                    />
                                   </div>
                                 </div>
+                              ))}{' '}
+                              <button
+                                onClick={this.handleAddConditionClick.bind(
+                                  this,
+                                  i
+                                )}
+                                type="button"
+                                style={{ marginRight: '10px' }}
+                              >
+                                +
+                              </button>
+                              {row.joinColumns.length > 1 ? (
+                                <button
+                                  onClick={this.handleRemoveConditionClick.bind(
+                                    this,
+                                    i
+                                  )}
+                                  type="button"
+                                  style={{ marginRight: '10px' }}
+                                >
+                                  -
+                                </button>
+                              ) : (
+                                ''
                               )}
                             </div>
-                            {provided.placeholder}
                           </div>
-                        );
-                      }}
-                    </Draggable>
-                  );
-                })}
-              </div>
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+                        ) : (
+                          ''
+                        )}
+                      </div>
+                    </div>
+                    {provided.placeholder}
+                  </div>
+                );
+              }}
+            </Draggable>
+          );
+        })}
+      </div>
     );
   }
 }
 
-export default FromDetail;
+export default withQueryDetail(FromDetail);

@@ -19,25 +19,25 @@ export default class TableSearchBar extends Component {
     });
 
   handleResultSelect = (e, { result }) => {
-    this.props.modifyTable(this.props.joinSequence, result.title);
+    this.props.modifyFromRowTable(this.props.rowIndex, result.title);
     //this.setState({ value: result.title });
   };
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyTable(this.props.joinSequence, value);
+    this.props.modifyFromRowTable(this.props.rowIndex, value);
     //this.setState({ isLoading: true /*value */ });
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
-      const re = new RegExp(_.escapeRegExp(this.props.selectedTableText), 'i');
+      const re = new RegExp(_.escapeRegExp(this.props.tableText), 'i');
       const isMatch = result => re.test(result.title);
 
       this.setState({
         isLoading: false,
         results: _.filter(
-          this.props.tablesToSelect.map(name => {
-            return { title: name };
+          this.props.resultTables().map(tableName => {
+            return { title: tableName };
           }),
           isMatch
         ),
@@ -58,7 +58,7 @@ export default class TableSearchBar extends Component {
         onFocus={this.handleSearchChange}
         onMouseDown={this.handleSearchChange}
         results={results}
-        value={this.props.selectedTableText}
+        value={this.props.tableText}
         minCharacters={0}
       />
     );

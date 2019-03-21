@@ -37,7 +37,7 @@ export default class OperatorSearchBar extends Component {
         isLoading: false,
         results: _.filter(
           this.props.operatorsToSelect.map(op => {
-            return { title: op.operator };
+            return { title: op.name };
           }),
           isMatch
         ),
