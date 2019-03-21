@@ -1,10 +1,10 @@
 /* eslint-disable complexity */
 /* eslint-disable max-statements */
-import React, { Component } from 'react';
-import OperatorSearchBar from './OperatorSearchBar';
-import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
-import { Draggable } from 'react-beautiful-dnd';
-import withQueryDetail from '../hocs/QueryDetail';
+import React, { Component } from "react";
+import OperatorSearchBar from "./OperatorSearchBar";
+import SelectAndWhereColumnSearchBar from "./SelectAndWhereColumnSearchBar";
+import { Draggable } from "react-beautiful-dnd";
+import withQueryDetail from "../hocs/QueryDetail";
 class WhereDetail extends Component {
   componentDidMount() {
     this.props.setClause(this.props.query.where);
@@ -56,7 +56,7 @@ class WhereDetail extends Component {
                         <button
                           onClick={this.handleAddClick.bind(this, i)}
                           type="button"
-                          style={{ marginRight: '10px' }}
+                          style={{ marginRight: "10px" }}
                         >
                           +
                         </button>
@@ -64,15 +64,15 @@ class WhereDetail extends Component {
                           <button
                             onClick={this.handleRemoveClick.bind(this, i)}
                             type="button"
-                            style={{ marginRight: '10px' }}
+                            style={{ marginRight: "10px" }}
                           >
                             -
                           </button>
                         ) : (
-                          ''
+                          ""
                         )}
-                        {i > 0 ? <span>AND </span> : ''}
-                        <div style={{ display: 'inline-block' }}>
+                        {i > 0 ? <span>AND </span> : ""}
+                        <div style={{ display: "inline-block" }}>
                           <SelectAndWhereColumnSearchBar
                             key={`jsbt3-${i}`}
                             rowIndex={i}
@@ -80,8 +80,8 @@ class WhereDetail extends Component {
                             fullResults={query.fullResults.results}
                             value={row.name}
                           />
-                        </div>{' '}
-                        <div style={{ display: 'inline-block' }}>
+                        </div>{" "}
+                        <div style={{ display: "inline-block" }}>
                           <OperatorSearchBar
                             key={`osb-${i}`}
                             modifyOperator={this.modifyOperator}
@@ -90,7 +90,7 @@ class WhereDetail extends Component {
                             selectedOperator={row.selectedOperator}
                             operatorText={row.operatorText}
                           />
-                        </div>{' '}
+                        </div>{" "}
                         <input
                           type="text"
                           value={row.filter}

@@ -1,6 +1,6 @@
 // eslint-disable-next-line complexity
 const modifySelectOrWhereColumn = (row, fullResults, alias, value) => {
-  const tableAliasAndColumn = value.split('.');
+  const tableAliasAndColumn = value.split(".");
   const tableAlias = alias || tableAliasAndColumn[0];
   const columnName = tableAliasAndColumn[1] || value;
 
@@ -14,7 +14,7 @@ const modifySelectOrWhereColumn = (row, fullResults, alias, value) => {
 
     foundColumn = foundTable.getField(columnName);
     if (foundColumn) {
-      row.name = tableAlias + '.' + columnName;
+      row.name = tableAlias + "." + columnName;
       row.type = foundColumn && foundColumn.type;
     }
   }
@@ -27,7 +27,7 @@ const modifySelectOrWhereColumn = (row, fullResults, alias, value) => {
 const handleSelectOrWhereDraggableDrop = (
   rows,
   sourceIndex,
-  destinationIndex
+  destinationIndex,
 ) => {
   let sourceRow = rows.splice(sourceIndex, 1)[0];
   rows.splice(destinationIndex, 0, sourceRow);
@@ -62,62 +62,62 @@ class FromJoinRow {
       .filter(
         joinColumn =>
           joinColumn.rowTableJoinColumn.name.trim() &&
-          joinColumn.previousTableJoinColumn.name.trim()
+          joinColumn.previousTableJoinColumn.name.trim(),
       )
       .map(joinColumn => {
         const [
           rowTableJoinAlias,
           rowTableJoinValue,
-        ] = joinColumn.rowTableJoinColumn.name.trim().split('.');
+        ] = joinColumn.rowTableJoinColumn.name.trim().split(".");
 
         const [
           previousTableJoinAlias,
           previousTableJoinValue,
-        ] = joinColumn.previousTableJoinColumn.name.trim().split('.');
+        ] = joinColumn.previousTableJoinColumn.name.trim().split(".");
 
         return `"${rowTableJoinAlias}"."${rowTableJoinValue}" = "${previousTableJoinAlias}"."${previousTableJoinValue}"`;
       })
-      .join(' AND ');
-    let fromRowString = index > 0 ? `${this.joinType} ` : '';
+      .join(" AND ");
+    let fromRowString = index > 0 ? `${this.joinType} ` : "";
     fromRowString += `"${this.tableMetadata.name}" AS "${this.tableAlias}" `;
-    fromRowString += (index > 0 ? 'ON ' : '') + joinColumnString;
+    fromRowString += (index > 0 ? "ON " : "") + joinColumnString;
 
     return fromRowString.trim();
   };
 }
 
 FromJoinRow.TableAliases = [
-  'a',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j',
-  'k',
-  'l',
-  'm',
-  'n',
-  'o',
-  'p',
-  'q',
-  'r',
-  's',
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "o",
+  "p",
+  "q",
+  "r",
+  "s",
 ];
 
 FromJoinRow.templateJoinFromRow = {
-  joinType: 'INNER JOIN',
+  joinType: null,
   tableMetadata: {},
-  tableAlias: 'a',
-  tableText: '',
+  tableAlias: "a",
+  tableText: "",
   previousTablesJoinColumns: [],
   joinColumns: [
     {
-      previousTableJoinColumn: { name: '', type: null },
-      rowTableJoinColumn: { name: '', type: null },
+      previousTableJoinColumn: { name: "", type: null },
+      rowTableJoinColumn: { name: "", type: null },
     },
   ],
 };
@@ -194,7 +194,7 @@ class From {
 
       this.rebuildSubsequentTablesPreviousTablesJoinColumns(
         rowIndex,
-        this.fromJoinRows.length - 1
+        this.fromJoinRows.length - 1,
       );
 
       this.fullResults.rebuildResults(this.fromJoinRows);
@@ -206,9 +206,9 @@ class From {
     joinColumnIndex,
     alias,
     tableName,
-    value
+    value,
   ) => {
-    const tableAliasAndColumn = value.split('.');
+    const tableAliasAndColumn = value.split(".");
     const tableAlias = alias || tableAliasAndColumn[0];
     const columnName = tableAliasAndColumn[1] || value;
 
@@ -226,7 +226,7 @@ class From {
       tableAlias,
       columnName,
       value,
-      'rowTableJoinColumn'
+      "rowTableJoinColumn",
     );
   };
 
@@ -235,9 +235,9 @@ class From {
     joinColumnIndex,
     alias,
     tableName,
-    value
+    value,
   ) => {
-    const tableAliasAndColumn = value.split('.');
+    const tableAliasAndColumn = value.split(".");
     const tableAlias = alias || tableAliasAndColumn[0];
     const columnName = tableAliasAndColumn[1] || value;
 
@@ -253,7 +253,7 @@ class From {
       tableAlias,
       columnName,
       value,
-      'previousTableJoinColumn'
+      "previousTableJoinColumn",
     );
   };
 
@@ -265,7 +265,7 @@ class From {
     alias,
     column,
     value,
-    joinColumnType
+    joinColumnType,
   ) => {
     let foundColumn = null;
     if (validTable) {
@@ -328,18 +328,22 @@ class From {
     this.fromJoinRows[rowIndex].joinColumns.pop();
   };
 
+  handleJoinTypeClick = (rowIndex, joinType) => {
+    this.fromJoinRows[rowIndex].joinType = joinType;
+  };
+
   isEmpty = () => {
     return this.fromJoinRows.every(
-      row => !row.tableMetadata.name || !row.tableMetadata.name.trim()
+      row => !row.tableMetadata.name || !row.tableMetadata.name.trim(),
     );
   };
 
   toSql = () => {
-    let fromString = this.isEmpty() ? '' : '\nFROM\n';
+    let fromString = this.isEmpty() ? "" : "\nFROM\n";
     fromString += this.fromJoinRows
       .filter(row => row.tableMetadata.name && row.tableMetadata.name.trim())
-      .map((row, index) => '  ' + row.toSql(index))
-      .join('\n');
+      .map((row, index) => "  " + row.toSql(index))
+      .join("\n");
 
     return fromString;
   };
@@ -352,13 +356,13 @@ class SelectRow {
   }
 
   toSql() {
-    const [tableAlias, fieldName] = this.name.split('.');
+    const [tableAlias, fieldName] = this.name.split(".");
     return `"${tableAlias}"."${fieldName}"`;
   }
 }
 
 SelectRow.templateSelectRow = {
-  name: '',
+  name: "",
   type: null,
 };
 
@@ -378,8 +382,8 @@ class Select {
       0,
       new SelectRow(
         SelectRow.templateSelectRow.name,
-        SelectRow.templateSelectRow.type
-      )
+        SelectRow.templateSelectRow.type,
+      ),
     );
   };
 
@@ -393,7 +397,7 @@ class Select {
       this.selectRows[rowIndex],
       this.fullResults,
       alias,
-      value
+      value,
     );
   };
 
@@ -401,7 +405,7 @@ class Select {
     handleSelectOrWhereDraggableDrop(
       this.selectRows,
       sourceIndex,
-      destinationIndex
+      destinationIndex,
     );
   }
 
@@ -410,15 +414,15 @@ class Select {
   };
 
   toSql = () => {
-    let queryString = 'SELECT\n';
+    let queryString = "SELECT\n";
 
     queryString += this.isEmpty()
-      ? '  1'
-      : '  ' +
+      ? "  1"
+      : "  " +
         this.selectRows
           .filter(row => row.name.trim())
           .map(row => row.toSql())
-          .join(', ');
+          .join(", ");
 
     return queryString;
   };
@@ -434,19 +438,19 @@ class WhereRow {
   }
 
   toSql = () => {
-    const [tableAlias, value] = this.name.trim().split('.');
+    const [tableAlias, value] = this.name.trim().split(".");
     return `"${tableAlias}"."${value}" ${
-      this.selectedOperator.name ? this.selectedOperator.name.trim() : ''
+      this.selectedOperator.name ? this.selectedOperator.name.trim() : ""
     } ${this.filter}`;
   };
 }
 
 WhereRow.templeteWhereRow = {
-  name: '',
+  name: "",
   type: null,
-  selectedOperator: { operator: '', hint: null },
-  operatorText: '',
-  filter: '',
+  selectedOperator: { operator: "", hint: null },
+  operatorText: "",
+  filter: "",
 };
 
 class Where {
@@ -454,14 +458,14 @@ class Where {
     this.whereRows = [new WhereRow()];
     this.fullResults = fullResults;
     this.operators = [
-      { name: 'LIKE', hint: null },
-      { name: 'IN', hint: 'Separate items by commas' },
-      { name: '=', hint: null },
-      { name: '<=', hint: null },
-      { name: '<', hint: null },
-      { name: '>=', hint: null },
-      { name: '>', hint: null },
-      { name: '<>', hint: null },
+      { name: "LIKE", hint: null },
+      { name: "IN", hint: "Separate items by commas" },
+      { name: "=", hint: null },
+      { name: "<=", hint: null },
+      { name: "<", hint: null },
+      { name: ">=", hint: null },
+      { name: ">", hint: null },
+      { name: "<>", hint: null },
     ];
   }
 
@@ -471,7 +475,7 @@ class Where {
       this.whereRows[rowIndex],
       this.fullResults,
       alias,
-      value
+      value,
     );
   };
   modifyOperator = (rowIndex, operator) => {
@@ -482,7 +486,7 @@ class Where {
 
     this.whereRows[rowIndex].selectedOperator = foundOp
       ? { ...foundOp }
-      : { name: '', hint: null };
+      : { name: "", hint: null };
     this.whereRows[rowIndex].operatorText = operator;
   };
 
@@ -495,8 +499,8 @@ class Where {
         WhereRow.templeteWhereRow.type,
         { ...WhereRow.templeteWhereRow.selectedOperator },
         WhereRow.templeteWhereRow.operatorText,
-        WhereRow.templeteWhereRow.filter
-      )
+        WhereRow.templeteWhereRow.filter,
+      ),
     );
   };
 
@@ -512,19 +516,19 @@ class Where {
     handleSelectOrWhereDraggableDrop(
       this.whereRows,
       sourceIndex,
-      destinationIndex
+      destinationIndex,
     );
   }
 
   isEmpty = () => {
     return this.whereRows.every(
       row =>
-        !(row.name.trim() && row.selectedOperator.name && row.filter.trim())
+        !(row.name.trim() && row.selectedOperator.name && row.filter.trim()),
     );
   };
 
   toSql = () => {
-    let whereString = this.isEmpty() ? '' : '\nWHERE\n';
+    let whereString = this.isEmpty() ? "" : "\nWHERE\n";
 
     whereString += this.whereRows
       .filter(
@@ -532,12 +536,12 @@ class Where {
           row.name.trim() &&
           row.selectedOperator.name &&
           row.selectedOperator.name.trim() &&
-          row.filter.trim()
+          row.filter.trim(),
       )
       .map(row => {
         return row.toSql();
       })
-      .join('\nAND ');
+      .join("\nAND ");
 
     return whereString;
   };
@@ -569,7 +573,7 @@ class FullResults {
   addResult = fromJoinRow => {
     if (fromJoinRow.hasTableMetadata()) {
       this.results.push(
-        new FullResultsRow(fromJoinRow.tableMetadata, fromJoinRow.tableAlias)
+        new FullResultsRow(fromJoinRow.tableMetadata, fromJoinRow.tableAlias),
       );
     }
   };
