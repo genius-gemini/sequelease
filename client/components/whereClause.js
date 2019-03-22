@@ -2,9 +2,9 @@ import React from 'react';
 import { Grid } from 'semantic-ui-react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
-import FromJoinRow from './fromJoinRow';
+import WhereRow from './whereRow';
 
-const FromClause = props => {
+const WhereClause = props => {
   const { query, updateQueryState, db } = props;
 
   const handleDraggableDrop = result => {
@@ -19,7 +19,7 @@ const FromClause = props => {
           ? result.source.index
           : result.destination.index;
 
-      query.from.handleDraggableDrop(
+      query.where.handleDraggableDrop(
         result.source.index,
         result.destination.index,
         startIndex,
@@ -32,14 +32,14 @@ const FromClause = props => {
 
   return (
     <DragDropContext onDragEnd={handleDraggableDrop}>
-      <Droppable droppableId="droppableFrom">
+      <Droppable droppableId="droppableWhere">
         {(provided, snapshot) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             <Grid.Column width={12}>
-              {query.from.fromJoinRows.map((row, i) => {
+              {query.where.whereRows.map((row, i) => {
                 return (
-                  <FromJoinRow
-                    key={`fromJoinRow-${i}`}
+                  <WhereRow
+                    key={`whereRow-${i}`}
                     query={query}
                     updateQueryState={updateQueryState}
                     rowIndex={i}
@@ -57,4 +57,4 @@ const FromClause = props => {
   );
 };
 
-export default FromClause;
+export default WhereClause;

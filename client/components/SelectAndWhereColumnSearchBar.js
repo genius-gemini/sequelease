@@ -18,26 +18,48 @@ export default class SelectAndWhereColumnSearchBar extends Component {
     this.setFullResultsState();
   }
 
+  modifyColumn = (alias, tableName, value) => {
+    if (this.props.type === 'select') {
+      this.props.query.select.modifySelectColumn(
+        this.props.rowIndex,
+        alias,
+        tableName,
+        value
+      );
+    } else if (this.props.type === 'where') {
+      this.props.query.where.modifyWhereColumn(
+        this.props.rowIndex,
+        alias,
+        tableName,
+        value
+      );
+    }
+    this.props.updateQueryState();
+  };
+
   setFullResultsState = () => {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
-      fullResults: this.props.fullResults.reduce((resultDrop, result) => {
-        // eslint-disable-next-line no-param-reassign
+      fullResults: this.props.query.fullResults.results.reduce(
+        (resultDrop, result) => {
+          // eslint-disable-next-line no-param-reassign
 
-        resultDrop[
-          result.tableMetadata.name + ' (' + result.tableAlias + ')'
-        ] = {
-          name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
-          results: result.tableMetadata.fields
-            ? result.tableMetadata.fields.map(column => ({
-                alias: result.tableAlias,
-                tablename: result.tableMetadata.name,
-                title: column.name,
-              }))
-            : [],
-        };
-        return resultDrop;
-      }, {}),
+          resultDrop[
+            result.tableMetadata.name + ' (' + result.tableAlias + ')'
+          ] = {
+            name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
+            results: result.tableMetadata.fields
+              ? result.tableMetadata.fields.map(column => ({
+                  alias: result.tableAlias,
+                  tablename: result.tableMetadata.name,
+                  title: column.name,
+                }))
+              : [],
+          };
+          return resultDrop;
+        },
+        {}
+      ),
     });
   };
 
@@ -45,15 +67,10 @@ export default class SelectAndWhereColumnSearchBar extends Component {
     this.setState({ isLoading: false, results: [] /*value: ''*/ });
 
   handleResultSelect = (e, { result }) =>
-    this.props.modifyColumn(
-      this.props.rowIndex,
-      result.alias,
-      result.tablename,
-      result.title
-    );
+    this.modifyColumn(result.alias, result.tablename, result.title);
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyColumn(this.props.rowIndex, null, null, value);
+    this.modifyColumn(null, null, value);
 
     this.setFullResultsState();
 

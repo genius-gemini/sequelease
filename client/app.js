@@ -1,15 +1,15 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import Routes from "./routes";
+import Routes from './routes';
 
-import ConsoleTable from "./components/ConsoleTable";
-import Navbar from "./components/navBar";
-import OuterGrid from "./components/outerGrid";
-import FromDetail from "./components/FromDetail";
-import SelectDetail from "./components/SelectDetail";
-import WhereDetail from "./components/WhereDetail";
-import Db from "./classes/db";
-import Query from "./classes/query";
+import ConsoleTable from './components/ConsoleTable';
+import Navbar from './components/navBar';
+import OuterGrid from './components/outerGrid';
+import FromDetail from './components/FromDetail';
+import SelectDetail from './components/SelectDetail';
+import WhereDetail from './components/WhereDetail';
+import Db from './classes/db';
+import Query from './classes/query';
 
 class App extends Component {
   constructor(props) {
@@ -43,7 +43,7 @@ class App extends Component {
   render() {
     if (this.state.db) {
       return (
-        <div>
+        <div style={{ marginBottom: '1000px' }}>
           <div>
             <Navbar />
             <OuterGrid
@@ -52,6 +52,7 @@ class App extends Component {
               updateQueryState={this.updateQueryState}
             />
             <Routes />
+            {/*
             <FromDetail
               db={this.state.db}
               query={this.state.query}
@@ -66,7 +67,7 @@ class App extends Component {
             <WhereDetail
               query={this.state.query}
               updateQueryState={this.updateQueryState}
-            />
+            />*/}
           </div>
           <div>
             <button /*onClick={this.runQuery}*/ type="button">Run Query</button>

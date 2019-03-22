@@ -29,6 +29,30 @@ const Buttons = props => {
     updateQueryState();
   };
 
+  const handleAddSelectRowClick = () => {
+    query.select.handleAddClick(rowIndex);
+
+    updateQueryState();
+  };
+
+  const handleRemoveSelectRowClick = () => {
+    query.select.handleRemoveClick(rowIndex);
+
+    updateQueryState();
+  };
+
+  const handleAddWhereRowClick = () => {
+    query.where.handleAddClick(rowIndex);
+
+    updateQueryState();
+  };
+
+  const handleRemoveWhereRowClick = () => {
+    query.where.handleRemoveClick(rowIndex);
+
+    updateQueryState();
+  };
+
   let addFunc = null;
   let removeFunc = null;
   let len = null;
@@ -40,6 +64,14 @@ const Buttons = props => {
     addFunc = handleAddJoinConditionClick;
     removeFunc = handleRemoveJoinConditionClick;
     len = query.from.fromJoinRows[rowIndex].joinColumns.length;
+  } else if (type === 'selectRow') {
+    addFunc = handleAddSelectRowClick;
+    removeFunc = handleRemoveSelectRowClick;
+    len = query.select.selectRows.length;
+  } else if (type === 'whereRow') {
+    addFunc = handleAddWhereRowClick;
+    removeFunc = handleRemoveWhereRowClick;
+    len = query.where.whereRows.length;
   }
 
   return (
