@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TableSearchBar from './TableSearchBar';
 import JoinSearchBarSource from './JoinSearchBarSource';
 import JoinSearchBar from './JoinSearchBar';
-import withQueryDetail from '../hocs/QueryDetail';
+import withQueryDetail from '../hocs/withQueryDetail';
 import { Draggable } from 'react-beautiful-dnd';
 
 class FromDetail extends Component {

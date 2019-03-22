@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
-import withQueryDetail from '../hocs/QueryDetail';
+import withQueryDetail from '../hocs/withQueryDetail';
 import { Draggable } from 'react-beautiful-dnd';
 
 class SelectDetail extends Component {
