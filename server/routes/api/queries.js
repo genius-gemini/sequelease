@@ -5,6 +5,14 @@ const queries = require('../../db/queries');
 
 module.exports = router;
 
+const connectPool = () => {
+  return new Pool({
+    host: 'localhost',
+    database: 'tutorial-sql',
+    port: 5432,
+  });
+};
+
 const formatTransformedDbObjectFields = (tAndCResultRow, fkMetadataFromDb) => {
   return {
     name: tAndCResultRow.Field,
