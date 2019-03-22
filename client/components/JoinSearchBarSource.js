@@ -6,7 +6,15 @@ const resultRenderer = ({ title }) => {
   return <Label content={title} />;
 };
 export default class JoinSearchBarSource extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      results: [],
+    };
+  }
+
+  componentDidMount() {
     this.resetComponent();
     //this.setState({ value: this.props.selectedColumn });
   }
@@ -18,25 +26,28 @@ export default class JoinSearchBarSource extends Component {
       //value: '',
     });
 
-  handleResultSelect = (e, { result }) => {
-    this.props.modifyRowTableJoinColumn(
+  modifyRowTableJoinColumn = (alias, tableName, column) => {
+    this.props.query.from.modifyRowTableJoinColumn(
       this.props.rowIndex,
       this.props.joinColumnIndex,
+      alias,
+      tableName,
+      column
+    );
+    this.props.updateQueryState();
+  };
+
+  handleResultSelect = (e, { result }) => {
+    this.modifyRowTableJoinColumn(
       result.alias,
-      result.tableName,
+      result.tablename,
       result.alias + '.' + result.title
     );
-    //this.setState({ value: `${result.tableName}.${result.title}` });
+    //this.setState({ value: `${result.tablename}.${result.title}` });
   };
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyRowTableJoinColumn(
-      this.props.rowIndex,
-      this.props.joinColumnIndex,
-      null,
-      null,
-      value
-    );
+    this.modifyRowTableJoinColumn(null, null, value);
     //this.setState({ isLoading: true /*value*/ });
 
     setTimeout(() => {
@@ -57,7 +68,7 @@ export default class JoinSearchBarSource extends Component {
           this.props.table.fields
             ? this.props.table.fields.map(column => {
                 return {
-                  tableName: this.props.table.name,
+                  tablename: this.props.table.name,
                   title: column.name,
                   alias: this.props.tableAlias,
                 };
@@ -70,7 +81,7 @@ export default class JoinSearchBarSource extends Component {
   };
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, results } = this.state;
 
     return (
       <Search

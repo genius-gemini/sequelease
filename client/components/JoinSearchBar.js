@@ -3,16 +3,41 @@ import React, { Component } from 'react';
 import { Search, Label } from 'semantic-ui-react';
 
 export default class JoinSearchBar extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      results: [],
+      previousTablesJoinColumns: [],
+    };
+  }
+
+  componentDidMount() {
     this.resetComponent();
 
+    this.setJoinColumnsState();
+  }
+
+  modifyPreviousTableJoinColumn = (alias, tableName, column) => {
+    this.props.query.from.modifyPreviousTableJoinColumn(
+      this.props.rowIndex,
+      this.props.joinColumnIndex,
+      alias,
+      tableName,
+      column
+    );
+    this.props.updateQueryState();
+  };
+
+  setJoinColumnsState = () => {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
-      previousTablesJoinColumns: this.props.previousTablesJoinColumns.reduce(
-        (memo, previousTable) => {
+      previousTablesJoinColumns: _.reduce(
+        this.props.previousTablesJoinColumns,
+        (resultDrop, previousTable) => {
           // eslint-disable-next-line no-param-reassign
 
-          memo[
+          resultDrop[
             previousTable.tableMetadata.name +
               ' (' +
               previousTable.tableAlias +
@@ -24,72 +49,33 @@ export default class JoinSearchBar extends Component {
               previousTable.tableAlias +
               ')',
             results: previousTable.tableMetadata.fields
-              ? previousTable.tableMetadata.fields.map(column => ({
+              ? _.map(previousTable.tableMetadata.fields, column => ({
                   alias: previousTable.tableAlias,
-                  tableName: previousTable.tableMetadata.name,
+                  tablename: previousTable.tableMetadata.name,
                   title: column.name,
                 }))
               : [],
           };
-          return memo;
+          return resultDrop;
         },
         {}
       ),
     });
-  }
+  };
 
-  resetComponent = () =>
-    this.setState({ isLoading: false, results: [] /*value: ''*/ });
+  resetComponent = () => this.setState({ isLoading: false, results: [] });
 
   handleResultSelect = (e, { result }) =>
-    this.props.modifyPreviousTableJoinColumn(
-      this.props.rowIndex,
-      this.props.joinColumnIndex,
+    this.modifyPreviousTableJoinColumn(
       result.alias,
-      result.tableName,
+      result.tablename,
       result.alias + '.' + result.title
     );
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyPreviousTableJoinColumn(
-      this.props.rowIndex,
-      this.props.joinColumnIndex,
-      null,
-      null,
-      value
-    );
-    this.setState({
-      // eslint-disable-next-line react/no-unused-state
-      previousTablesJoinColumns: this.props.previousTablesJoinColumns.reduce(
-        (memo, previousTable) => {
-          // eslint-disable-next-line no-param-reassign
+    this.modifyPreviousTableJoinColumn(null, null, value);
 
-          memo[
-            previousTable.tableMetadata.name +
-              ' (' +
-              previousTable.tableAlias +
-              ')'
-          ] = {
-            name:
-              previousTable.tableMetadata.name +
-              ' (' +
-              previousTable.tableAlias +
-              ')',
-            results: previousTable.tableMetadata.fields
-              ? previousTable.tableMetadata.fields.map(column => ({
-                  alias: previousTable.tableAlias,
-                  tableName: previousTable.tableMetadata.name,
-                  title: column.name,
-                }))
-              : [],
-          };
-
-          return memo;
-        },
-        {}
-      ),
-      //isLoading: true,
-    });
+    this.setJoinColumnsState();
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
@@ -107,7 +93,7 @@ export default class JoinSearchBar extends Component {
         if (this.props.previousTableJoinColumn) {
           return (
             re.test(result.title) ||
-            re.test(result.tableName) ||
+            re.test(result.tablename) ||
             re.test(result.tableAlias)
           );
         } else {
@@ -134,7 +120,7 @@ export default class JoinSearchBar extends Component {
   };
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, results } = this.state;
 
     return (
       <Search

@@ -11,6 +11,12 @@ export default class OperatorSearchBar extends Component {
     //this.setState({ value: this.props.selectedTable });
   }
 
+  modifyOperator = operator => {
+    this.props.query.where.modifyOperator(this.props.rowIndex, operator);
+
+    this.props.updateQueryState();
+  };
+
   resetComponent = () =>
     this.setState({
       isLoading: false,
@@ -19,12 +25,12 @@ export default class OperatorSearchBar extends Component {
     });
 
   handleResultSelect = (e, { result }) => {
-    this.props.modifyOperator(this.props.operatorSequence, result.title);
+    this.modifyOperator(result.title);
     //this.setState({ value: result.title });
   };
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyOperator(this.props.operatorSequence, value);
+    this.modifyOperator(value);
     //this.setState({ isLoading: true /*value */ });
 
     setTimeout(() => {
@@ -36,7 +42,7 @@ export default class OperatorSearchBar extends Component {
       this.setState({
         isLoading: false,
         results: _.filter(
-          this.props.operatorsToSelect.map(op => {
+          this.props.query.where.operators.map(op => {
             return { title: op.name };
           }),
           isMatch
@@ -46,7 +52,7 @@ export default class OperatorSearchBar extends Component {
   };
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, results } = this.state;
 
     return (
       <Search

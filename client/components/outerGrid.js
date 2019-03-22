@@ -1,6 +1,8 @@
-import React from "react";
-import { Grid, Header } from "semantic-ui-react";
-import FromClause from "./fromClause";
+import React from 'react';
+import { Grid, Header } from 'semantic-ui-react';
+import FromClause from './fromClause';
+import SelectClause from './selectClause';
+import WhereClause from './whereClause';
 
 const OuterGrid = props => {
   const { db, query, updateQueryState } = props;
@@ -16,15 +18,22 @@ const OuterGrid = props => {
         <Grid.Column width={1}>
           <Header>SELECT</Header>
         </Grid.Column>
-
+        <SelectClause
+          db={db}
+          query={query}
+          updateQueryState={updateQueryState}
+        />
         <Grid.Column width={12} />
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={1}>
           <Header>WHERE</Header>
         </Grid.Column>
-
-        <Grid.Column width={12} />
+        <WhereClause
+          db={db}
+          query={query}
+          updateQueryState={updateQueryState}
+        />
       </Grid.Row>
     </Grid>
   );

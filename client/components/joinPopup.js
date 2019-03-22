@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Popup,
   Grid,
@@ -7,7 +7,7 @@ import {
   Button,
   Image,
   Segment,
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 
 const JoinPopup = props => {
   const { query, rowIndex, updateQueryState } = props;
@@ -21,7 +21,8 @@ const JoinPopup = props => {
     <Popup
       trigger={
         <Button>
-          {query.from.fromJoinRows[rowIndex].joinType || "Choose a Join Type"}
+          {query.from.fromJoinRows[rowIndex].joinType ||
+            `Choose Join Type ${rowIndex}`}
         </Button>
       }
       flowing
@@ -34,7 +35,7 @@ const JoinPopup = props => {
           <Segment basic vertical compact>
             <Image src="static1.squarespace.png" size="medium" />
             <Button
-              onClick={handleJoinTypeClick.bind(this, "INNER JOIN")}
+              onClick={handleJoinTypeClick.bind(this, 'INNER JOIN')}
               positive
               size="tiny"
             >
@@ -44,7 +45,7 @@ const JoinPopup = props => {
           <Segment basic vertical compact>
             <Image src="static1.squarespace-1.png" size="medium" />
             <Button
-              onClick={handleJoinTypeClick.bind(this, "LEFT JOIN")}
+              onClick={handleJoinTypeClick.bind(this, 'LEFT JOIN')}
               positive
               size="tiny"
             >
@@ -57,7 +58,7 @@ const JoinPopup = props => {
           <Segment basic vertical compact>
             <Image src="static1.squarespace-2.png" size="medium" />
             <Button
-              onClick={handleJoinTypeClick.bind(this, "RIGHT JOIN")}
+              onClick={handleJoinTypeClick.bind(this, 'RIGHT JOIN')}
               positive
               size="tiny"
             >
@@ -67,7 +68,7 @@ const JoinPopup = props => {
           <Segment basic vertical compact>
             <Image src="static1.squarespace-3.png" size="medium" />
             <Button
-              onClick={handleJoinTypeClick.bind(this, "FULL JOIN")}
+              onClick={handleJoinTypeClick.bind(this, 'FULL JOIN')}
               positive
               size="tiny"
             >
