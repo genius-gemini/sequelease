@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { Button, Menu, Segment, Sidebar, Ref} from 'semantic-ui-react'
+import { Container, Menu, Segment, Sidebar, Ref} from 'semantic-ui-react'
 
 import Routes from './routes';
 
@@ -20,7 +20,6 @@ class App extends Component {
   }
   
   segmentRef = createRef()
-  // handleHideClick = () => this.setState({ visible: false })
   handleShowClick = () => {
     this.state.visible ? this.setState({ visible: false }) : this.setState({ visible: true })
   }
@@ -57,11 +56,6 @@ class App extends Component {
         <div>
           <div>
             <div>
-              {/* <Button.Group>
-                <Button onClick={this.handleShowClick}>
-                  {visible ? 'Hide DB Strucutre' : 'Show DB Strucutre'}
-                </Button>
-              </Button.Group> */}
 
               <Sidebar.Pushable as={Segment}>
                 <Sidebar
@@ -80,7 +74,7 @@ class App extends Component {
                 </Sidebar>
 
                 <Sidebar.Pusher>
-                  <Segment basic>
+                  <Container id="flex-container">
                     <Navbar visible={visible} handleShowClick={this.handleShowClick} />
                     <Routes />
                     <StepSQL />
@@ -101,15 +95,15 @@ class App extends Component {
                     <div>
                       <button /*onClick={this.runQuery}*/ type="button">Run Query</button>
                     </div>
-                  </Segment>
+                  </Container>
+                  <Ref innerRef={this.segmentRef}>
+                    <div id="consoleBox">
+                      <ConsoleTable query={this.state.query} />
+                    </div>
+                  </Ref>
                 </Sidebar.Pusher>
               </Sidebar.Pushable>
             </div>
-            <Ref innerRef={this.segmentRef}>
-              <div id="consoleBox">
-                <ConsoleTable query={this.state.query} />
-              </div>
-            </Ref>
           </div>
         </div>
       );

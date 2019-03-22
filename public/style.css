@@ -101,10 +101,8 @@ form div {
   text-align: left;
 }
 
-.results.transition.visible {
-  position: relative;
-}
-
-.results.transition {
-  position: relative;
+#flex-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
