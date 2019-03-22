@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Menu, Segment, Sidebar } from 'semantic-ui-react'
+import React, { Component, createRef } from 'react';
+import { Button, Menu, Segment, Sidebar, Ref} from 'semantic-ui-react'
 
 import Routes from './routes';
 
@@ -19,8 +19,11 @@ class App extends Component {
     this.state = { db: null, query: null, queryResults: null, visible: false };
   }
   
-  handleHideClick = () => this.setState({ visible: false })
-  handleShowClick = () => this.setState({ visible: true })
+  segmentRef = createRef()
+  // handleHideClick = () => this.setState({ visible: false })
+  handleShowClick = () => {
+    this.state.visible ? this.setState({ visible: false }) : this.setState({ visible: true })
+  }
   handleSidebarHide = () => this.setState({ visible: false })
 
   componentDidMount = async () => {
@@ -54,32 +57,31 @@ class App extends Component {
         <div>
           <div>
             <div>
-              <Button.Group>
-                <Button disabled={visible} onClick={this.handleShowClick}>
-                  Show Database Strucutre
+              {/* <Button.Group>
+                <Button onClick={this.handleShowClick}>
+                  {visible ? 'Hide DB Strucutre' : 'Show DB Strucutre'}
                 </Button>
-                <Button disabled={!visible} onClick={this.handleHideClick}>
-                  Hide Database Structure
-                </Button>
-              </Button.Group>
+              </Button.Group> */}
 
               <Sidebar.Pushable as={Segment}>
                 <Sidebar
                   as={Menu}
-                  animation='overlay'
+                  animation='push'
                   icon='labeled'
                   inverted
+                  direction= 'left'
                   onHide={this.handleSidebarHide}
                   vertical
                   visible={visible}
                   width='wide'
+                  target={this.segmentRef}
                 >
                   <AccordionNested />
                 </Sidebar>
 
-                <Sidebar.Pusher dimmed={visible}>
+                <Sidebar.Pusher>
                   <Segment basic>
-                    <Navbar />
+                    <Navbar visible={visible} handleShowClick={this.handleShowClick} />
                     <Routes />
                     <StepSQL />
                     <FromDetail
@@ -96,18 +98,18 @@ class App extends Component {
                       query={this.state.query}
                       updateQueryState={this.updateQueryState}
                     />
+                    <div>
+                      <button /*onClick={this.runQuery}*/ type="button">Run Query</button>
+                    </div>
                   </Segment>
                 </Sidebar.Pusher>
               </Sidebar.Pushable>
             </div>
-            
-            <div>
-              <button /*onClick={this.runQuery}*/ type="button">Run Query</button>
-            </div>
-
-            <div id="consoleBox">
-              <ConsoleTable query={this.state.query} />
-            </div>
+            <Ref innerRef={this.segmentRef}>
+              <div id="consoleBox">
+                <ConsoleTable query={this.state.query} />
+              </div>
+            </Ref>
           </div>
         </div>
       );

@@ -96,3 +96,15 @@ form div {
 .error input {
   border: 1px solid red !important;
 }
+
+.accordion {
+  text-align: left;
+}
+
+.results.transition.visible {
+  position: relative;
+}
+
+.results.transition {
+  position: relative;
+}
