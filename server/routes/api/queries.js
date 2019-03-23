@@ -5,11 +5,13 @@ const queries = require('../../db/queries');
 
 module.exports = router;
 
-const connectPool = () => {
+const connectPool = (host, user, password, port, database) => {
   return new Pool({
-    host: 'localhost',
-    database: 'tutorial-sql',
-    port: 5432,
+    host: host || 'localhost',
+    database: database || 'tutorial-sql',
+    user: user || null,
+    password: password || null,
+    port: port || 5432,
   });
 };
 
@@ -61,8 +63,10 @@ const formatDbMetadataQueryResults = (
   return transformedResults;
 };
 
-router.get('/getDbMetadata', async (req, res, next) => {
-  const pool = connectPool();
+router.post('/getDbMetadata', async (req, res, next) => {
+  const { host, user, password, port, database } = req.body;
+
+  const pool = connectPool(host, user, password, port, database);
 
   const tableAndColumnsDbQueryResults = await pool.query(
     queries.postgresDbTablesAndColumnsMetadata
@@ -184,16 +188,4 @@ router.post('/run', async (req, res, next) => {
   await pool.end();
 
   res.send(queryResults);
-});
-
-router.post('/connectDb', (req, res, next) => {
-  const connectPool = () => {
-    return new Pool({
-      host: 'localhost',
-      database: 'tutorial-sql',
-      port: 5432,
-    });
-  };
-
-  res.send();
 });

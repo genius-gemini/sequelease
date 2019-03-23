@@ -3,11 +3,19 @@ import { Button } from 'semantic-ui-react';
 
 const Buttons = props => {
   //   <Button.Group basic size="small">
+
+  const deleteTabIndex = () => {
+    [
+      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
+    ].map(elem => elem.removeAttribute('tabindex'));
+  };
+
   const { query, rowIndex, updateQueryState, type, joinColumnIndex } = props;
 
   const handleAddJoinRowClick = () => {
     query.from.handleAddJoinRowClick(rowIndex);
 
+    deleteTabIndex();
     updateQueryState();
   };
 
@@ -32,6 +40,7 @@ const Buttons = props => {
   const handleAddSelectRowClick = () => {
     query.select.handleAddClick(rowIndex);
 
+    deleteTabIndex();
     updateQueryState();
   };
 
@@ -44,6 +53,7 @@ const Buttons = props => {
   const handleAddWhereRowClick = () => {
     query.where.handleAddClick(rowIndex);
 
+    deleteTabIndex();
     updateQueryState();
   };
 
