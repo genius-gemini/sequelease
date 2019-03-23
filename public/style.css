@@ -72,7 +72,7 @@ form div {
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
@@ -95,4 +95,18 @@ form div {
 
 .error input {
   border: 1px solid red !important;
+}
+div.eight.wide.column,
+div.seven.wide.column,
+div.innerrow,
+div.drag {
+  height: 70px;
+}
+
+div.ui.celled.two.column.grid {
+  margin: 0px;
+}
+
+div.inline.fields {
+  margin-bottom: 0px;
 }

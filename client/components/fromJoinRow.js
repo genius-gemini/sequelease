@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Form,
   Input,
@@ -7,15 +7,15 @@ import {
   Header,
   Image,
   Segment,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import { Draggable } from 'react-beautiful-dnd';
-import Buttons from './buttons';
-import JoinPopup from './joinPopup';
-import TableSearchBar from './TableSearchBar';
+import { Draggable } from "react-beautiful-dnd";
+import Buttons from "./buttons";
+import JoinPopup from "./joinPopup";
+import TableSearchBar from "./TableSearchBar";
 
-import JoinSearchBarSource from './JoinSearchBarSource';
-import JoinSearchBar from './JoinSearchBar';
+import JoinSearchBarSource from "./JoinSearchBarSource";
+import JoinSearchBar from "./JoinSearchBar";
 const FromJoinRow = props => {
   const { rowIndex, query, updateQueryState, db, row } = props;
 
@@ -33,10 +33,10 @@ const FromJoinRow = props => {
               {...provided.dragHandleProps}
               {...provided.draggableProps}
             >
-              <div className="drag" style={{ width: '1400px' }}>
+              <div className="drag" style={{ width: "1400px" }}>
                 <Grid columns={2} celled>
-                  <Grid.Row>
-                    <Grid.Column width={8}>
+                  <Grid.Row className="innerrow">
+                    <Grid.Column width={7}>
                       <Form>
                         <Form.Group inline>
                           <Form.Field>
@@ -70,61 +70,70 @@ const FromJoinRow = props => {
                         </Form.Group>
                       </Form>
                     </Grid.Column>
-                    {rowIndex > 0 ? (
-                      <Grid.Column column={12}>
-                        <Form>
-                          <Form.Group inline>
-                            <Form.Field>
-                              <label>ON</label>
-                            </Form.Field>
-                            {row.joinColumns.map((col, colIndex) => (
-                              <div
-                                style={{ margin: 0 }}
-                                key={`jc-${rowIndex}-${colIndex}`}
-                              >
-                                {colIndex > 0 ? <label> AND </label> : null}
+                    <Grid.Column width={8}>
+                      {rowIndex > 0 ? (
+                        <Grid celled>
+                          <Grid.Row className="innerrow">
+                            <Form>
+                              <Form.Group inline>
                                 <Form.Field>
-                                  <JoinSearchBarSource
-                                    rowIndex={rowIndex}
-                                    joinColumnIndex={colIndex}
-                                    table={row.tableMetadata}
-                                    tableAlias={row.tableAlias}
-                                    columnText={col.rowTableJoinColumn.name}
-                                    query={query}
-                                    updateQueryState={updateQueryState}
-                                  />
+                                  <label>ON</label>
                                 </Form.Field>
-                                <Form.Field>
-                                  <label>=</label>
-                                </Form.Field>
-                                <Form.Field>
-                                  <JoinSearchBar
-                                    rowIndex={rowIndex}
-                                    joinColumnIndex={colIndex}
-                                    previousTablesJoinColumns={
-                                      row.previousTablesJoinColumns
-                                    }
-                                    previousTableJoinColumn={
-                                      col.previousTableJoinColumn.name
-                                    }
-                                    query={query}
-                                    updateQueryState={updateQueryState}
-                                  />
-                                </Form.Field>
-                                <Form.Field>
-                                  <Buttons
-                                    type="joinCondition"
-                                    updateQueryState={updateQueryState}
-                                    rowIndex={rowIndex}
-                                    query={query}
-                                  />
-                                </Form.Field>
-                              </div>
-                            ))}
-                          </Form.Group>
-                        </Form>
-                      </Grid.Column>
-                    ) : null}
+                                {row.joinColumns.map((col, colIndex) => (
+                                  <div
+                                    style={{ margin: 0 }}
+                                    key={`jc-${rowIndex}-${colIndex}`}
+                                  >
+                                    {colIndex > 0 ? (
+                                      <Form.Field>
+                                        {" "}
+                                        <label> AND </label>{" "}
+                                      </Form.Field>
+                                    ) : null}
+                                    <Form.Field>
+                                      <JoinSearchBarSource
+                                        rowIndex={rowIndex}
+                                        joinColumnIndex={colIndex}
+                                        table={row.tableMetadata}
+                                        tableAlias={row.tableAlias}
+                                        columnText={col.rowTableJoinColumn.name}
+                                        query={query}
+                                        updateQueryState={updateQueryState}
+                                      />
+                                    </Form.Field>
+                                    <Form.Field>
+                                      <label>=</label>
+                                    </Form.Field>
+                                    <Form.Field>
+                                      <JoinSearchBar
+                                        rowIndex={rowIndex}
+                                        joinColumnIndex={colIndex}
+                                        previousTablesJoinColumns={
+                                          row.previousTablesJoinColumns
+                                        }
+                                        previousTableJoinColumn={
+                                          col.previousTableJoinColumn.name
+                                        }
+                                        query={query}
+                                        updateQueryState={updateQueryState}
+                                      />
+                                    </Form.Field>
+                                    <Form.Field>
+                                      <Buttons
+                                        type="joinCondition"
+                                        updateQueryState={updateQueryState}
+                                        rowIndex={rowIndex}
+                                        query={query}
+                                      />
+                                    </Form.Field>
+                                  </div>
+                                ))}
+                              </Form.Group>
+                            </Form>
+                          </Grid.Row>
+                        </Grid>
+                      ) : null}
+                    </Grid.Column>
                   </Grid.Row>
                 </Grid>
               </div>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Grid, Header } from 'semantic-ui-react';
-import FromClause from './fromClause';
-import SelectClause from './selectClause';
-import WhereClause from './whereClause';
+import React from "react";
+import { Grid, Header } from "semantic-ui-react";
+import FromClause from "./fromClause";
+import SelectClause from "./selectClause";
+import WhereClause from "./whereClause";
 
 const OuterGrid = props => {
   const { db, query, updateQueryState } = props;
@@ -12,28 +12,37 @@ const OuterGrid = props => {
         <Grid.Column width={1}>
           <Header>FROM</Header>
         </Grid.Column>
-        <FromClause db={db} query={query} updateQueryState={updateQueryState} />
+        <Grid.Column width={12}>
+          <FromClause
+            db={db}
+            query={query}
+            updateQueryState={updateQueryState}
+          />
+        </Grid.Column>
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={1}>
           <Header>SELECT</Header>
         </Grid.Column>
-        <SelectClause
-          db={db}
-          query={query}
-          updateQueryState={updateQueryState}
-        />
-        <Grid.Column width={12} />
+        <Grid.Column width={12}>
+          <SelectClause
+            db={db}
+            query={query}
+            updateQueryState={updateQueryState}
+          />
+        </Grid.Column>
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={1}>
           <Header>WHERE</Header>
         </Grid.Column>
-        <WhereClause
-          db={db}
-          query={query}
-          updateQueryState={updateQueryState}
-        />
+        <Grid.Column width={12}>
+          <WhereClause
+            db={db}
+            query={query}
+            updateQueryState={updateQueryState}
+          />
+        </Grid.Column>
       </Grid.Row>
     </Grid>
   );
