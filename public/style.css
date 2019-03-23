@@ -98,6 +98,14 @@ form div {
 }
 
 .JoinTypeTable{
-  overflow:scroll; 
-  height:315px;
+  overflow: scroll; 
+  height: 315px;
+}
+
+.result{
+  margin: 0;
+}
+
+.message.empty {
+  margin: 0;
 }
