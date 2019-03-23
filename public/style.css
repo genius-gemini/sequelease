@@ -72,7 +72,7 @@ form div {
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
@@ -97,6 +97,16 @@ form div {
   border: 1px solid red !important;
 }
 
+.accordion {
+  text-align: left;
+}
+
+#flex-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .JoinTypeTable{
   overflow: scroll; 
   height: 315px;
@@ -108,4 +118,18 @@ form div {
 
 .message.empty {
   margin: 0;
+}
+div.eight.wide.column,
+div.seven.wide.column,
+div.innerrow,
+div.drag {
+  height: 70px;
+}
+
+div.ui.celled.two.column.grid {
+  margin: 0px;
+}
+
+div.inline.fields {
+  margin-bottom: 0px;
 }
