@@ -96,3 +96,16 @@ form div {
 .error input {
   border: 1px solid red !important;
 }
+
+.JoinTypeTable{
+  overflow: scroll; 
+  height: 315px;
+}
+
+.result{
+  margin: 0;
+}
+
+.message.empty {
+  margin: 0;
+}
