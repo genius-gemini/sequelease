@@ -60,14 +60,14 @@ class App extends Component {
               <Sidebar.Pushable as={Segment}>
                 <Sidebar
                   as={Menu}
-                  animation='push'
-                  icon='labeled'
+                  animation="push"
+                  icon="labeled"
                   inverted
-                  direction= 'left'
+                  direction= "left"
                   onHide={this.handleSidebarHide}
                   vertical
                   visible={visible}
-                  width='wide'
+                  width="wide"
                   target={this.segmentRef}
                 >
                   <AccordionNested />

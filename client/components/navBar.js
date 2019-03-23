@@ -1,5 +1,5 @@
-import React from "react";
-import { Menu, Container } from "semantic-ui-react";
+import React from 'react';
+import { Menu, Container } from 'semantic-ui-react';
 
 const Navbar = (props) => (
   <Menu fixed="top" inverted>
