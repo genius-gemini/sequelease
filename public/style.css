@@ -96,3 +96,8 @@ form div {
 .error input {
   border: 1px solid red !important;
 }
+
+.JoinTypeTable{
+  overflow:scroll; 
+  height:315px;
+}
