@@ -5,9 +5,7 @@ import Routes from './routes';
 import ConsoleTable from './components/ConsoleTable';
 import Navbar from './components/navBar';
 import OuterGrid from './components/outerGrid';
-import FromDetail from './components/FromDetail';
-import SelectDetail from './components/SelectDetail';
-import WhereDetail from './components/WhereDetail';
+import Connect from './components/Connect';
 import Db from './classes/db';
 import Query from './classes/query';
 
@@ -15,17 +13,18 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { db: null, query: null, queryResults: null };
+
+    this.connectToDb();
   }
 
-  componentDidMount = async () => {
-    const db = await Db.build();
+  connectToDb = async (host, user, password, port, database) => {
+    const db = await Db.build(host, user, password, port, database);
     const query = Query.build(db);
-
     this.setState({ db, query });
   };
 
   updateQueryState = () => {
-    this.setState({ query: { ...this.state.query } });
+    this.setState(prevState => ({ query: { ...prevState.query } }));
     console.log(this.state.query);
   };
   /*
@@ -46,12 +45,14 @@ class App extends Component {
         <div style={{ marginBottom: '1000px' }}>
           <div>
             <Navbar />
+            <Connect connectToDb={this.connectToDb} />
             <OuterGrid
               db={this.state.db}
               query={this.state.query}
               updateQueryState={this.updateQueryState}
             />
             <Routes />
+
             {/*
             <FromDetail
               db={this.state.db}
