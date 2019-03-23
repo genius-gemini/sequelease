@@ -106,3 +106,16 @@ form div {
   flex-direction: column;
   min-height: 100vh;
 }
+
+.JoinTypeTable{
+  overflow: scroll; 
+  height: 315px;
+}
+
+.result{
+  margin: 0;
+}
+
+.message.empty {
+  margin: 0;
+}

@@ -3,62 +3,76 @@ import React, { Component } from 'react';
 import { Search, Label } from 'semantic-ui-react';
 
 export default class SelectAndWhereColumnSearchBar extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      results: [],
+      fullResults: [],
+    };
+  }
+
+  componentDidMount() {
     this.resetComponent();
 
+    this.setFullResultsState();
+  }
+
+  modifyColumn = (alias, tableName, value) => {
+    if (this.props.type === 'select') {
+      this.props.query.select.modifySelectColumn(
+        this.props.rowIndex,
+        alias,
+        tableName,
+        value
+      );
+    } else if (this.props.type === 'where') {
+      this.props.query.where.modifyWhereColumn(
+        this.props.rowIndex,
+        alias,
+        tableName,
+        value
+      );
+    }
+    this.props.updateQueryState();
+  };
+
+  setFullResultsState = () => {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
-      fullResults: this.props.fullResults.reduce((memo, result) => {
-        // eslint-disable-next-line no-param-reassign
+      fullResults: this.props.query.fullResults.results.reduce(
+        (resultDrop, result) => {
+          // eslint-disable-next-line no-param-reassign
 
-        memo[result.tableMetadata.name + ' (' + result.tableAlias + ')'] = {
-          name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
-          results: result.tableMetadata.fields
-            ? result.tableMetadata.fields.map(column => ({
-                alias: result.tableAlias,
-                tableName: result.tableMetadata.name,
-                title: column.name,
-              }))
-            : [],
-        };
-        return memo;
-      }, {}),
+          resultDrop[
+            result.tableMetadata.name + ' (' + result.tableAlias + ')'
+          ] = {
+            name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
+            results: result.tableMetadata.fields
+              ? result.tableMetadata.fields.map(column => ({
+                  alias: result.tableAlias,
+                  tablename: result.tableMetadata.name,
+                  title: column.name,
+                }))
+              : [],
+          };
+          return resultDrop;
+        },
+        {}
+      ),
     });
-  }
+  };
 
   resetComponent = () =>
     this.setState({ isLoading: false, results: [] /*value: ''*/ });
 
   handleResultSelect = (e, { result }) =>
-    this.props.modifyColumn(
-      this.props.rowIndex,
-      result.alias,
-      result.tableName,
-      result.title
-    );
+    this.modifyColumn(result.alias, result.tablename, result.title);
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyColumn(this.props.rowIndex, null, null, value);
-    this.setState({
-      // eslint-disable-next-line react/no-unused-state
-      fullResults: this.props.fullResults.reduce((memo, result) => {
-        // eslint-disable-next-line no-param-reassign
+    this.modifyColumn(null, null, value);
 
-        memo[result.tableMetadata.name + ' (' + result.tableAlias + ')'] = {
-          name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
-          results: result.tableMetadata.fields
-            ? result.tableMetadata.fields.map(column => ({
-                alias: result.tableAlias,
-                tableName: result.tableMetadata.name,
-                title: column.name,
-              }))
-            : [],
-        };
-
-        return memo;
-      }, {}),
-      //isLoading: true,
-    });
+    this.setFullResultsState();
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
@@ -76,7 +90,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
         if (this.props.value) {
           return (
             re.test(result.title) ||
-            re.test(result.tableName) ||
+            re.test(result.tablename) ||
             re.test(result.tableAlias)
           );
         } else {
@@ -86,11 +100,11 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
       const filteredResults = _.reduce(
         this.state.fullResults,
-        (memo, data, name) => {
+        (resultDrop, data, name) => {
           const results = _.filter(data.results, isMatch);
-          if (results.length) memo[name] = { name, results }; // eslint-disable-line no-param-reassign
+          if (results.length) resultDrop[name] = { name, results }; // eslint-disable-line no-param-reassign
 
-          return memo;
+          return resultDrop;
         },
         {}
       );
@@ -103,7 +117,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
   };
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, results } = this.state;
 
     return (
       <Search

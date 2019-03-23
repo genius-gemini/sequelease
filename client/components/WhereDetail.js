@@ -4,7 +4,8 @@ import React, { Component } from 'react';
 import OperatorSearchBar from './OperatorSearchBar';
 import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
 import { Draggable } from 'react-beautiful-dnd';
-import withQueryDetail from '../hocs/QueryDetail';
+import withQueryDetail from '../hocs/withQueryDetail';
+
 class WhereDetail extends Component {
   componentDidMount() {
     this.props.setClause(this.props.query.where);

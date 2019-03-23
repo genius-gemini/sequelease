@@ -5,10 +5,8 @@ import Routes from './routes';
 
 import ConsoleTable from './components/ConsoleTable';
 import Navbar from './components/navBar';
-import StepSQL from './components/stepSQL';
-import FromDetail from './components/FromDetail';
-import SelectDetail from './components/SelectDetail';
-import WhereDetail from './components/WhereDetail';
+import OuterGrid from './components/outerGrid';
+import Connect from './components/Connect';
 import Db from './classes/db';
 import Query from './classes/query';
 import AccordionNested from './components/accordionNested'
@@ -17,6 +15,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { db: null, query: null, queryResults: null, visible: false };
+
+    this.connectToDb();
   }
   
   segmentRef = createRef()
@@ -25,15 +25,14 @@ class App extends Component {
   }
   handleSidebarHide = () => this.setState({ visible: false })
 
-  componentDidMount = async () => {
-    const db = await Db.build();
+  connectToDb = async (host, user, password, port, database) => {
+    const db = await Db.build(host, user, password, port, database);
     const query = Query.build(db);
-
     this.setState({ db, query });
   };
 
   updateQueryState = () => {
-    this.setState({ query: { ...this.state.query } });
+    this.setState(prevState => ({ query: { ...prevState.query } }));
     console.log(this.state.query);
   };
   /*
@@ -53,10 +52,9 @@ class App extends Component {
 
     if (this.state.db) {
       return (
-        <div>
+        <div style={{ marginBottom: '1000px' }}>
           <div>
             <div>
-
               <Sidebar.Pushable as={Segment}>
                 <Sidebar
                   as={Menu}
@@ -76,14 +74,19 @@ class App extends Component {
                 <Sidebar.Pusher>
                   <Container id="flex-container">
                     <Navbar visible={visible} handleShowClick={this.handleShowClick} />
+                    <Connect connectToDb={this.connectToDb} />
+                    <OuterGrid
+                      db={this.state.db}
+                      query={this.state.query}
+                      updateQueryState={this.updateQueryState}
+                    />
                     <Routes />
-                    <StepSQL />
+                    {/* <StepSQL />
                     <FromDetail
                       db={this.state.db}
                       query={this.state.query}
                       updateQueryState={this.updateQueryState}
                     />
-
                     <SelectDetail
                       query={this.state.query}
                       updateQueryState={this.updateQueryState}
@@ -91,7 +94,7 @@ class App extends Component {
                     <WhereDetail
                       query={this.state.query}
                       updateQueryState={this.updateQueryState}
-                    />
+                    /> */}
                     <div>
                       <button /*onClick={this.runQuery}*/ type="button">Run Query</button>
                     </div>

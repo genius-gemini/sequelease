@@ -6,7 +6,15 @@ const resultRenderer = ({ title }) => {
   return <Label content={title} />;
 };
 export default class TableSearchBar extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      results: [],
+    };
+  }
+
+  componentDidMount() {
     this.resetComponent();
     //this.setState({ value: this.props.selectedTable });
   }
@@ -18,13 +26,18 @@ export default class TableSearchBar extends Component {
       //value: '',
     });
 
+  modifyFromRowTable = tableName => {
+    this.props.query.from.modifyFromRowTable(this.props.rowIndex, tableName);
+    this.props.updateQueryState();
+  };
+
   handleResultSelect = (e, { result }) => {
-    this.props.modifyFromRowTable(this.props.rowIndex, result.title);
+    this.modifyFromRowTable(result.title);
     //this.setState({ value: result.title });
   };
 
   handleSearchChange = (e, { value }) => {
-    this.props.modifyFromRowTable(this.props.rowIndex, value);
+    this.modifyFromRowTable(value);
     //this.setState({ isLoading: true /*value */ });
 
     setTimeout(() => {
@@ -36,8 +49,8 @@ export default class TableSearchBar extends Component {
       this.setState({
         isLoading: false,
         results: _.filter(
-          this.props.resultTables().map(tableName => {
-            return { title: tableName };
+          this.props.resultTables().map(tablename => {
+            return { title: tablename };
           }),
           isMatch
         ),
@@ -46,10 +59,12 @@ export default class TableSearchBar extends Component {
   };
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, results } = this.state;
 
     return (
       <Search
+        icon="table"
+        placeholder={`Choose Table ${this.props.rowIndex + 1}`}
         loading={isLoading}
         onResultSelect={this.handleResultSelect}
         onSearchChange={_.debounce(this.handleSearchChange, 500, {

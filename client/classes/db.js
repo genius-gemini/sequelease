@@ -38,8 +38,14 @@ export default class Db {
     return this.tables.find(table => table.toString() === tableName);
   };
 
-  static async build() {
-    const res = await axios.get('/api/queries/getDbMetadata');
+  static async build(host, user, password, port, database) {
+    const res = await axios.post('/api/queries/getDbMetadata', {
+      host,
+      user,
+      password,
+      port,
+      database,
+    });
     const db = res.data;
 
     const tables = db.tables.map(table => {
