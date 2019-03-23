@@ -52,7 +52,7 @@ class App extends Component {
 
     if (this.state.db) {
       return (
-        <div style={{ marginBottom: '1000px' }}>
+        
           <div>
             <div>
               <Sidebar.Pushable as={Segment}>
@@ -72,6 +72,7 @@ class App extends Component {
                 </Sidebar>
 
                 <Sidebar.Pusher>
+                  <div style={{ marginBottom: '1000px' }}>
                   <Container id="flex-container">
                     <Navbar visible={visible} handleShowClick={this.handleShowClick} />
                     <Connect connectToDb={this.connectToDb} />
@@ -104,11 +105,11 @@ class App extends Component {
                       <ConsoleTable query={this.state.query} />
                     </div>
                   </Ref>
+                  </div>
                 </Sidebar.Pusher>
               </Sidebar.Pushable>
             </div>
           </div>
-        </div>
       );
     } else {
       return <div>Loading...</div>;
