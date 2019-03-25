@@ -5,7 +5,7 @@ const Navbar = (props) => (
   <Menu fixed="top" inverted>
     <Container>
       <Menu.Item as="a" header onClick={props.handleShowClick}>
-        {props.visible ? 'Hide DB Strucutre' : 'Show DB Strucutre'}
+        {props.visible ? 'Hide DB Structure' : 'Show DB Structure'}
       </Menu.Item>
       <Menu.Item as="a" header>
         SQLEase
