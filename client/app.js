@@ -1,15 +1,15 @@
-import React, { Component, createRef } from 'react';
-import { Container, Menu, Segment, Sidebar, Ref} from 'semantic-ui-react'
+import React, { Component, createRef } from "react";
+import { Container, Menu, Segment, Sidebar, Ref } from "semantic-ui-react";
 
-import Routes from './routes';
+import Routes from "./routes";
 
-import ConsoleTable from './components/ConsoleTable';
-import Navbar from './components/navBar';
-import OuterGrid from './components/outerGrid';
-import Connect from './components/Connect';
-import Db from './classes/db';
-import Query from './classes/query';
-import AccordionNested from './components/accordionNested'
+import ConsoleTable from "./components/ConsoleTable";
+import Navbar from "./components/navBar";
+import OuterGrid from "./components/outerGrid";
+import Connect from "./components/Connect";
+import Db from "./classes/db";
+import Query from "./classes/query";
+import AccordionNested from "./components/accordionNested";
 
 class App extends Component {
   constructor(props) {
@@ -18,12 +18,14 @@ class App extends Component {
 
     this.connectToDb();
   }
-  
-  segmentRef = createRef()
+
+  segmentRef = createRef();
   handleShowClick = () => {
-    this.state.visible ? this.setState({ visible: false }) : this.setState({ visible: true })
-  }
-  handleSidebarHide = () => this.setState({ visible: false })
+    this.state.visible
+      ? this.setState({ visible: false })
+      : this.setState({ visible: true });
+  };
+  handleSidebarHide = () => this.setState({ visible: false });
 
   connectToDb = async (host, user, password, port, database) => {
     const db = await Db.build(host, user, password, port, database);
@@ -48,41 +50,42 @@ class App extends Component {
   };
   */
   render() {
-    const { visible } = this.state
+    const { visible } = this.state;
 
     if (this.state.db) {
       return (
-        
+        <div>
           <div>
-            <div>
-              <Sidebar.Pushable as={Segment}>
-                <Sidebar
-                  as={Menu}
-                  animation="push"
-                  icon="labeled"
-                  inverted
-                  direction= "left"
-                  onHide={this.handleSidebarHide}
-                  vertical
-                  visible={visible}
-                  width="wide"
-                  target={this.segmentRef}
-                >
-                  <AccordionNested />
-                </Sidebar>
+            <Sidebar.Pushable as={Segment}>
+              <Sidebar
+                as={Menu}
+                animation="push"
+                icon="labeled"
+                inverted
+                direction="left"
+                onHide={this.handleSidebarHide}
+                vertical
+                visible={visible}
+                width="wide"
+                target={this.segmentRef}
+              >
+                <AccordionNested />
+              </Sidebar>
 
-                <Sidebar.Pusher>
-                  <div style={{ marginBottom: '1000px' }}>
-                  <Container id="flex-container">
-                    <Navbar visible={visible} handleShowClick={this.handleShowClick} />
-                    <Connect connectToDb={this.connectToDb} />
-                    <OuterGrid
-                      db={this.state.db}
-                      query={this.state.query}
-                      updateQueryState={this.updateQueryState}
-                    />
-                    <Routes />
-                    {/* <StepSQL />
+              <Sidebar.Pusher>
+                <div style={{ marginBottom: "1000px" }}>
+                  <Navbar
+                    visible={visible}
+                    handleShowClick={this.handleShowClick}
+                  />
+                  <Connect connectToDb={this.connectToDb} />
+                  <OuterGrid
+                    db={this.state.db}
+                    query={this.state.query}
+                    updateQueryState={this.updateQueryState}
+                  />
+                  <Routes />
+                  {/* <StepSQL />
                     <FromDetail
                       db={this.state.db}
                       query={this.state.query}
@@ -96,20 +99,21 @@ class App extends Component {
                       query={this.state.query}
                       updateQueryState={this.updateQueryState}
                     /> */}
-                    <div>
-                      <button /*onClick={this.runQuery}*/ type="button">Run Query</button>
-                    </div>
-                  </Container>
+                  <div>
+                    <button /*onClick={this.runQuery}*/ type="button">
+                      Run Query
+                    </button>
+                  </div>
                   <Ref innerRef={this.segmentRef}>
                     <div id="consoleBox">
                       <ConsoleTable query={this.state.query} />
                     </div>
                   </Ref>
-                  </div>
-                </Sidebar.Pusher>
-              </Sidebar.Pushable>
-            </div>
+                </div>
+              </Sidebar.Pusher>
+            </Sidebar.Pushable>
           </div>
+        </div>
       );
     } else {
       return <div>Loading...</div>;
@@ -118,4 +122,3 @@ class App extends Component {
 }
 
 export default App;
-

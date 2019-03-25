@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import _ from "lodash";
+import React, { Component } from "react";
+import { Search, Label } from "semantic-ui-react";
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -43,7 +43,7 @@ export default class TableSearchBar extends Component {
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
-      const re = new RegExp(_.escapeRegExp(this.props.tableText), 'i');
+      const re = new RegExp(_.escapeRegExp(this.props.tableText), "i");
       const isMatch = result => re.test(result.title);
 
       this.setState({
@@ -52,7 +52,7 @@ export default class TableSearchBar extends Component {
           this.props.resultTables().map(tablename => {
             return { title: tablename };
           }),
-          isMatch
+          isMatch,
         ),
       });
     }, 100);
@@ -63,6 +63,7 @@ export default class TableSearchBar extends Component {
 
     return (
       <Search
+        size="mini"
         icon="table"
         placeholder={`Choose Table ${this.props.rowIndex + 1}`}
         loading={isLoading}
@@ -75,6 +76,7 @@ export default class TableSearchBar extends Component {
         results={results}
         value={this.props.tableText}
         minCharacters={0}
+        aligned="left"
       />
     );
   }
