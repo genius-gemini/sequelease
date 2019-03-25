@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import _ from "lodash";
+import React, { Component } from "react";
+import { Search, Label } from "semantic-ui-react";
 
 export default class SelectAndWhereColumnSearchBar extends Component {
   constructor(props) {
@@ -19,19 +19,19 @@ export default class SelectAndWhereColumnSearchBar extends Component {
   }
 
   modifyColumn = (alias, tableName, value) => {
-    if (this.props.type === 'select') {
+    if (this.props.type === "select") {
       this.props.query.select.modifySelectColumn(
         this.props.rowIndex,
         alias,
         tableName,
-        value
+        value,
       );
-    } else if (this.props.type === 'where') {
+    } else if (this.props.type === "where") {
       this.props.query.where.modifyWhereColumn(
         this.props.rowIndex,
         alias,
         tableName,
-        value
+        value,
       );
     }
     this.props.updateQueryState();
@@ -45,9 +45,9 @@ export default class SelectAndWhereColumnSearchBar extends Component {
           // eslint-disable-next-line no-param-reassign
 
           resultDrop[
-            result.tableMetadata.name + ' (' + result.tableAlias + ')'
+            result.tableMetadata.name + " (" + result.tableAlias + ")"
           ] = {
-            name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
+            name: result.tableMetadata.name + " (" + result.tableAlias + ")",
             results: result.tableMetadata.fields
               ? result.tableMetadata.fields.map(column => ({
                   alias: result.tableAlias,
@@ -58,7 +58,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
           };
           return resultDrop;
         },
-        {}
+        {},
       ),
     });
   };
@@ -79,11 +79,11 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.value.split('.')[1] ||
-            this.props.value.split('.')[0] ||
-            this.props.value
+          this.props.value.split(".")[1] ||
+            this.props.value.split(".")[0] ||
+            this.props.value,
         ),
-        'i'
+        "i",
       );
 
       const isMatch = result => {
@@ -106,7 +106,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
           return resultDrop;
         },
-        {}
+        {},
       );
 
       this.setState({
@@ -121,6 +121,9 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
     return (
       <Search
+        size="mini"
+        placeholder="placholder"
+        icon="table"
         category
         className="column-search-bar"
         loading={isLoading}
