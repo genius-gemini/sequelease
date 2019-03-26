@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Search, Label, Popup } from 'semantic-ui-react';
+import _ from "lodash";
+import React, { Component } from "react";
+import { Search, Label, Popup } from "semantic-ui-react";
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -32,7 +32,7 @@ export default class JoinSearchBarSource extends Component {
       this.props.joinColumnIndex,
       alias,
       tableName,
-      column
+      column,
     );
     this.props.updateQueryState();
   };
@@ -41,7 +41,7 @@ export default class JoinSearchBarSource extends Component {
     this.modifyRowTableJoinColumn(
       result.alias,
       result.tablename,
-      result.alias + '.' + result.title
+      result.alias + "." + result.title,
     );
     //this.setState({ value: `${result.tablename}.${result.title}` });
   };
@@ -55,9 +55,9 @@ export default class JoinSearchBarSource extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.columnText.split('.')[1] || this.props.columnText
+          this.props.columnText.split(".")[1] || this.props.columnText,
         ),
-        'i'
+        "i",
       );
       const isMatch = result =>
         this.props.columnText ? re.test(result.title) : true;
@@ -74,7 +74,7 @@ export default class JoinSearchBarSource extends Component {
                 };
               })
             : [],
-          isMatch
+          isMatch,
         ),
       });
     }, 100);
@@ -87,6 +87,9 @@ export default class JoinSearchBarSource extends Component {
       <Popup
         trigger={
           <Search
+            size="mini"
+            icon="columns"
+            placeholder="Smpl Plchldr"
             input={{
               error: !this.props.initial && this.props.error,
             }}
