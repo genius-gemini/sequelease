@@ -4,6 +4,7 @@ import {
   Input,
   Button,
   Grid,
+  Popup,
   Header,
   Image,
   Segment,
@@ -69,6 +70,8 @@ class WhereRow extends Component {
                                 updateQueryState={updateQueryState}
                                 query={query}
                                 value={row.name}
+                                text={row.columnText}
+                                error={row.columnError}
                               />
                             </Form.Field>
                             <Form.Field>
@@ -77,15 +80,30 @@ class WhereRow extends Component {
                                 updateQueryState={updateQueryState}
                                 query={query}
                                 operatorText={row.operatorText}
+                                text={row.operatorTextText}
                               />
                             </Form.Field>
                             <Form.Field>
-                              <input
-                                type="text"
-                                onChange={e =>
-                                  handleFilterChange(e.target.value)
+                              <Popup
+                                trigger={
+                                  <input
+                                    type="text"
+                                    onChange={e =>
+                                      this.handleFilterChange(e.target.value)
+                                    }
+                                    value={
+                                      query.where.whereRows[rowIndex].filter
+                                    }
+                                  />
                                 }
-                                value={query.where.whereRows[rowIndex].filter}
+                                content={
+                                  query.where.whereRows[rowIndex].filterText
+                                }
+                                disabled={
+                                  !query.where.whereRows[rowIndex].filterText
+                                }
+                                size="tiny"
+                                position="top center"
                               />
                             </Form.Field>
                           </Form.Group>

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -55,17 +55,25 @@ export default class OperatorSearchBar extends Component {
     const { isLoading, results } = this.state;
 
     return (
-      <Search
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        onFocus={this.handleSearchChange}
-        onMouseDown={this.handleSearchChange}
-        results={results}
-        value={this.props.operatorText}
-        minCharacters={0}
+      <Popup
+        trigger={
+          <Search
+            loading={isLoading}
+            onResultSelect={this.handleResultSelect}
+            onSearchChange={_.debounce(this.handleSearchChange, 500, {
+              leading: true,
+            })}
+            onFocus={this.handleSearchChange}
+            onMouseDown={this.handleSearchChange}
+            results={results}
+            value={this.props.operatorText}
+            minCharacters={0}
+          />
+        }
+        content={this.props.text}
+        horizontalOffset={!this.props.text ? -10000 : 0}
+        size="tiny"
+        position="top center"
       />
     );
   }

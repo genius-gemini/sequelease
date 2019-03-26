@@ -16,19 +16,24 @@ const connectPool = (host, user, password, port, database) => {
 };
 
 const formatTransformedDbObjectFields = (tAndCResultRow, fkMetadataFromDb) => {
+  const foreignKeyTargetTables = fkMetadataFromDb.rows.filter(
+    fkRow =>
+      fkRow.table === tAndCResultRow.Table &&
+      fkRow.column === tAndCResultRow.Field
+  );
+
+  const foreignKeyTargetTablesNames = foreignKeyTargetTables.map(
+    row => row.target_table
+  );
+
   return {
     name: tAndCResultRow.Field,
     type: tAndCResultRow.Type,
     default: tAndCResultRow.Default,
     constraint:
       tAndCResultRow.Constraint ||
-      (fkMetadataFromDb.rows.find(
-        fkRow =>
-          fkRow.table === tAndCResultRow.Table &&
-          fkRow.column === tAndCResultRow.Field
-      )
-        ? 'FOREIGN KEY'
-        : null),
+      (foreignKeyTargetTables.length ? 'FOREIGN KEY' : null),
+    fkTargetTables: foreignKeyTargetTablesNames,
     nullable: tAndCResultRow.Null === 'YES',
   };
 };

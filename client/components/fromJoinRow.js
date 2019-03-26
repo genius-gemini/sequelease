@@ -4,6 +4,7 @@ import {
   Input,
   Button,
   Grid,
+  Popup,
   Header,
   Image,
   Segment,
@@ -70,6 +71,9 @@ class FromJoinRow extends Component {
                                 resultTables={db.getTableNames}
                                 table={row.tableMetadata.name}
                                 tableText={row.tableText}
+                                tableTextText={row.tableTextText}
+                                tableTextInitial={row.tableTextInitial}
+                                tableTextError={row.tableTextError}
                                 updateQueryState={updateQueryState}
                                 query={query}
                               />
@@ -98,6 +102,9 @@ class FromJoinRow extends Component {
                                       table={row.tableMetadata}
                                       tableAlias={row.tableAlias}
                                       columnText={col.rowTableJoinColumn.name}
+                                      error={col.rowTableJoinColumn.error}
+                                      initial={col.rowTableJoinColumn.initial}
+                                      text={col.rowTableJoinColumn.text}
                                       query={query}
                                       updateQueryState={updateQueryState}
                                     />
@@ -109,11 +116,16 @@ class FromJoinRow extends Component {
                                     <JoinSearchBar
                                       rowIndex={rowIndex}
                                       joinColumnIndex={colIndex}
+                                      text={col.previousTableJoinColumn.text}
                                       previousTablesJoinColumns={
                                         row.previousTablesJoinColumns
                                       }
                                       previousTableJoinColumn={
                                         col.previousTableJoinColumn.name
+                                      }
+                                      error={col.previousTableJoinColumn.error}
+                                      initial={
+                                        col.previousTableJoinColumn.initial
                                       }
                                       query={query}
                                       updateQueryState={updateQueryState}

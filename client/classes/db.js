@@ -1,11 +1,12 @@
 const axios = require('axios');
 
 class Field {
-  constructor(name, type, defaultValue, constraint, nullable) {
+  constructor(name, type, defaultValue, constraint, fkTargetTables, nullable) {
     this.name = name;
     this.type = type;
     this.default = defaultValue;
     this.constraint = constraint;
+    this.fkTargetTables = fkTargetTables;
     this.nullable = nullable;
   }
 }
@@ -56,6 +57,7 @@ export default class Db {
             field.type,
             field.default,
             field.constraint,
+            field.fkTargetTables,
             field.nullable
           )
       );

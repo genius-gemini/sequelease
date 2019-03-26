@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 export default class SelectAndWhereColumnSearchBar extends Component {
   constructor(props) {
@@ -9,6 +9,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
       isLoading: true,
       results: [],
       fullResults: [],
+      first: true,
     };
   }
 
@@ -16,6 +17,12 @@ export default class SelectAndWhereColumnSearchBar extends Component {
     this.resetComponent();
 
     this.setFullResultsState();
+
+    const searchBar = document.getElementById(
+      `search-bar-${this.props.type}-${this.props.rowIndex}`
+    );
+    searchBar.focus();
+    searchBar.blur();
   }
 
   modifyColumn = (alias, tableName, value) => {
@@ -64,7 +71,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
   };
 
   resetComponent = () =>
-    this.setState({ isLoading: false, results: [] /*value: ''*/ });
+    this.setState({ isLoading: false, results: [], first: true /*value: ''*/ });
 
   handleResultSelect = (e, { result }) =>
     this.modifyColumn(result.alias, result.tablename, result.title);
@@ -120,19 +127,44 @@ export default class SelectAndWhereColumnSearchBar extends Component {
     const { isLoading, results } = this.state;
 
     return (
-      <Search
-        category
-        className="column-search-bar"
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        minCharacters={0}
-        onFocus={this.handleSearchChange}
-        onMouseDown={this.handleSearchChange}
-        results={results}
-        value={this.props.value}
+      <Popup
+        trigger={
+          <Search
+            input={{
+              error: !this.props.initial && this.props.error,
+            }}
+            id={`search-bar-${this.props.type}-${this.props.rowIndex}`}
+            category
+            className="column-search-bar"
+            loading={isLoading}
+            onResultSelect={this.handleResultSelect}
+            onSearchChange={_.debounce(this.handleSearchChange, 500, {
+              leading: true,
+            })}
+            minCharacters={0}
+            onFocus={this.handleSearchChange}
+            onMouseDown={this.handleSearchChange}
+            onBlur={(e, data) => {
+              if (!this.state.first) {
+                this.props.query[this.props.type][this.props.type + 'Rows'][
+                  this.props.rowIndex
+                ].initial = false;
+                this.handleSearchChange(e, data);
+              } else {
+                this.props.query[this.props.type][this.props.type + 'Rows'][
+                  this.props.rowIndex
+                ].initial = true;
+                this.setState({ first: false });
+              }
+            }}
+            results={results}
+            value={this.props.value}
+          />
+        }
+        content={this.props.text}
+        horizontalOffset={!this.props.text ? -10000 : 0}
+        size="tiny"
+        position="top center"
       />
     );
   }

@@ -19,6 +19,8 @@ class App extends Component {
 
   connectToDb = async (host, user, password, port, database) => {
     const db = await Db.build(host, user, password, port, database);
+
+    console.log(db);
     const query = Query.build(db);
     this.setState({ db, query });
   };

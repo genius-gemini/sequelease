@@ -59,6 +59,8 @@ class SelectRow extends Component {
                                 updateQueryState={updateQueryState}
                                 query={query}
                                 value={row.name}
+                                text={row.text}
+                                error={row.error}
                               />
                             </Form.Field>
                           </Form.Group>
