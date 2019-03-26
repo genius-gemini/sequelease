@@ -38,34 +38,32 @@ class SelectRow extends Component {
                 {...provided.draggableProps}
               >
                 <div className="drag" style={{ width: '1400px' }}>
-                  <Grid celled>
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Form>
-                          <Form.Group inline>
-                            <Form.Field>
-                              <Buttons
-                                type="selectRow"
-                                updateQueryState={updateQueryState}
-                                rowIndex={rowIndex}
-                                query={query}
-                              />
-                            </Form.Field>
-                            <Form.Field>
-                              {rowIndex > 0 ? ', ' : null}
-                              <SelectAndWhereColumnSearchBar
-                                type="select"
-                                rowIndex={rowIndex}
-                                updateQueryState={updateQueryState}
-                                query={query}
-                                value={row.name}
-                              />
-                            </Form.Field>
-                          </Form.Group>
-                        </Form>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
+                  <div>
+                    <div style={{ display: 'inline-block' }}>
+                      <Buttons
+                        type="selectRow"
+                        updateQueryState={updateQueryState}
+                        rowIndex={rowIndex}
+                        query={query}
+                      />
+                    </div>
+                    <div style={{ display: 'inline-block' }}>
+                      {rowIndex > 0 ? (
+                        <div style={{ display: 'inline-block' }}>, </div>
+                      ) : null}
+                      <div style={{ display: 'inline-block' }}>
+                        <SelectAndWhereColumnSearchBar
+                          type="select"
+                          rowIndex={rowIndex}
+                          updateQueryState={updateQueryState}
+                          query={query}
+                          value={row.name}
+                          text={row.text}
+                          error={row.error}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               {provided.placeholder}

@@ -107,19 +107,59 @@ form div {
   min-height: 100vh;
 }
 
-.JoinTypeTable{
-  overflow: scroll; 
+.JoinTypeTable {
+  overflow: scroll;
   height: 315px;
 }
 
-.result{
+.result {
   margin: 0;
 }
 
 .message.empty {
   margin: 0;
 }
-div.eight.wide.column,
+td.width100 {
+  width: 100px;
+}
+td.width65 {
+  width: 65px;
+}
+td.width40 {
+  width: 40px;
+}
+td.width10 {
+  width: 10px;
+}
+td.widthauto {
+  width: auto;
+  vertical-align: top;
+}
+td {
+  width: 150px;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  /* border: 1px solid red; */
+}
+
+.ui.search .prompt {
+  border: 1px solid lightgrey;
+  /* border-radius: 5px !important; */
+  /* max-width: 70%; */
+}
+/* div.drag * {
+  height: 38px;
+  margin: 0px;
+  padding: 0px;
+}
+
+#custom-btn {
+  height: 27 !important;
+  width: 27 !important;
+} */
+
+/* div.eight.wide.column,
 div.seven.wide.column,
 div.innerrow,
 div.drag {
@@ -132,4 +172,4 @@ div.ui.celled.two.column.grid {
 
 div.inline.fields {
   margin-bottom: 0px;
-}
+} */

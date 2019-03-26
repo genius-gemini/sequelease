@@ -1,13 +1,13 @@
-import React from 'react';
-import { Button } from 'semantic-ui-react';
+import React from "react";
+import { Button } from "semantic-ui-react";
 
 const Buttons = props => {
   //   <Button.Group basic size="small">
 
   const deleteTabIndex = () => {
     [
-      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
-    ].map(elem => elem.removeAttribute('tabindex'));
+      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
+    ].map(elem => elem.removeAttribute("tabindex"));
   };
 
   const { query, rowIndex, updateQueryState, type, joinColumnIndex } = props;
@@ -66,19 +66,19 @@ const Buttons = props => {
   let addFunc = null;
   let removeFunc = null;
   let len = null;
-  if (type === 'fromJoinRow') {
+  if (type === "fromJoinRow") {
     addFunc = handleAddJoinRowClick;
     removeFunc = handleRemoveJoinRowClick;
     len = query.from.fromJoinRows.length;
-  } else if (type === 'joinCondition') {
+  } else if (type === "joinCondition") {
     addFunc = handleAddJoinConditionClick;
     removeFunc = handleRemoveJoinConditionClick;
     len = query.from.fromJoinRows[rowIndex].joinColumns.length;
-  } else if (type === 'selectRow') {
+  } else if (type === "selectRow") {
     addFunc = handleAddSelectRowClick;
     removeFunc = handleRemoveSelectRowClick;
     len = query.select.selectRows.length;
-  } else if (type === 'whereRow') {
+  } else if (type === "whereRow") {
     addFunc = handleAddWhereRowClick;
     removeFunc = handleRemoveWhereRowClick;
     len = query.where.whereRows.length;
@@ -88,18 +88,20 @@ const Buttons = props => {
     <div>
       <Button
         onClick={addFunc}
+        id="custom-btn"
         circular
         color="green"
         icon="plus"
-        size="tiny"
+        size="mini"
       />
       {len > 1 ? (
         <Button
           onClick={removeFunc}
+          id="custom-btn"
           circular
           color="red"
           icon="trash"
-          size="tiny"
+          size="mini"
         />
       ) : null}
     </div>

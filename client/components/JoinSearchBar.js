@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 export default class JoinSearchBar extends Component {
   constructor(props) {
@@ -72,6 +72,23 @@ export default class JoinSearchBar extends Component {
       result.alias + '.' + result.title
     );
 
+  handleSearchMousedown = (e, { value }) => {
+    this.modifyPreviousTableJoinColumn(null, null, value);
+
+    this.setJoinColumnsState();
+
+    setTimeout(() => {
+      //if (this.state.value.length < 1) return this.resetComponent();
+
+      const filteredResults = this.state.previousTablesJoinColumns;
+
+      this.setState({
+        isLoading: false,
+        results: filteredResults,
+      });
+    }, 100);
+  };
+
   handleSearchChange = (e, { value }) => {
     this.modifyPreviousTableJoinColumn(null, null, value);
 
@@ -123,19 +140,38 @@ export default class JoinSearchBar extends Component {
     const { isLoading, results } = this.state;
 
     return (
-      <Search
-        category
-        className="column-search-bar"
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        minCharacters={0}
-        onFocus={this.handleSearchChange}
-        onMouseDown={this.handleSearchChange}
-        results={results}
-        value={this.props.previousTableJoinColumn}
+      <Popup
+        trigger={
+          <Search
+            category
+            input={{
+              error: !this.props.initial && this.props.error,
+            }}
+            className="column-search-bar"
+            loading={isLoading}
+            onResultSelect={this.handleResultSelect}
+            onSearchChange={_.debounce(this.handleSearchChange, 500, {
+              leading: true,
+            })}
+            minCharacters={0}
+            onFocus={this.handleSearchChange}
+            onBlur={(e, data) => {
+              this.props.query.from.fromJoinRows[
+                this.props.rowIndex
+              ].joinColumns[
+                this.props.joinColumnIndex
+              ].previousTableJoinColumn.initial = false;
+              this.handleSearchChange(e, data);
+            }}
+            onMouseDown={this.handleSearchMousedown}
+            results={results}
+            value={this.props.previousTableJoinColumn}
+          />
+        }
+        content={this.props.text}
+        horizontalOffset={!this.props.text ? -10000 : 0}
+        size="tiny"
+        position="top center"
       />
     );
   }

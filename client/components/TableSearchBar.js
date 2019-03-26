@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -11,19 +11,26 @@ export default class TableSearchBar extends Component {
     this.state = {
       isLoading: true,
       results: [],
+      first: true,
     };
   }
 
   componentDidMount() {
     this.resetComponent();
     //this.setState({ value: this.props.selectedTable });
+
+    const searchBar = document.getElementById(
+      `search-bar-table-${this.props.rowIndex}`
+    );
+    searchBar.focus();
+    searchBar.blur();
   }
 
   resetComponent = () =>
     this.setState({
-      isLoading: false,
+      isLoading: true,
       results: [],
-      //value: '',
+      first: true,
     });
 
   modifyFromRowTable = tableName => {
@@ -60,21 +67,53 @@ export default class TableSearchBar extends Component {
 
   render() {
     const { isLoading, results } = this.state;
-
     return (
-      <Search
-        icon="table"
-        placeholder={`Choose Table ${this.props.rowIndex + 1}`}
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        onFocus={this.handleSearchChange}
-        onMouseDown={this.handleSearchChange}
-        results={results}
-        value={this.props.tableText}
-        minCharacters={0}
+      <Popup
+        trigger={
+          <Search
+            id={`search-bar-table-${this.props.rowIndex}`}
+            input={{
+              error: !this.props.tableTextInitial && this.props.tableTextError,
+              icon: 'table',
+            }}
+            placeholder={`Choose Table ${this.props.rowIndex + 1}`}
+            loading={isLoading}
+            onResultSelect={this.handleResultSelect}
+            onSearchChange={_.debounce(this.handleSearchChange, 500, {
+              leading: true,
+            })}
+            onFocus={(e, data) => {
+              this.handleSearchChange(e, data);
+              console.log('focus');
+            }}
+            onBlur={(e, data) => {
+              if (!this.state.first) {
+                this.props.query.from.fromJoinRows[
+                  this.props.rowIndex
+                ].tableTextInitial = false;
+                this.handleSearchChange(e, data);
+              } else {
+                this.props.query.from.fromJoinRows[
+                  this.props.rowIndex
+                ].tableTextInitial = true;
+                this.setState({ first: false });
+              }
+              console.log('blur');
+            }}
+            onMouseDown={(e, data) => {
+              this.handleSearchChange(e, data);
+              console.log('click');
+            }}
+            results={results}
+            value={this.props.tableText}
+            minCharacters={0}
+          />
+        }
+        content={this.props.tableTextText}
+        horizontalOffset={!this.props.tableTextText ? -10000 : 0}
+        position="top center"
+        aligned="left"
+        on={['focus', 'hover', 'click']}
       />
     );
   }

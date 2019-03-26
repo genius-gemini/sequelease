@@ -35,7 +35,7 @@ const FromClause = props => {
       <Droppable droppableId="droppableFrom">
         {(provided, snapshot) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <Grid.Column width={12}>
+            <div style={{ width: '100%' }}>
               {query.from.fromJoinRows.map((row, i) => {
                 return (
                   <FromJoinRow
@@ -48,7 +48,7 @@ const FromClause = props => {
                   />
                 );
               })}
-            </Grid.Column>
+            </div>
             {provided.placeholder}
           </div>
         )}

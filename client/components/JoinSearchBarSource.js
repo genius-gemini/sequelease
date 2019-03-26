@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Search, Label } from 'semantic-ui-react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -84,18 +84,37 @@ export default class JoinSearchBarSource extends Component {
     const { isLoading, results } = this.state;
 
     return (
-      <Search
-        className="column-search-bar"
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        minCharacters={0}
-        onFocus={this.handleSearchChange}
-        onMouseDown={this.handleSearchChange}
-        results={results}
-        value={this.props.columnText}
+      <Popup
+        trigger={
+          <Search
+            input={{
+              error: !this.props.initial && this.props.error,
+            }}
+            className="column-search-bar"
+            loading={isLoading}
+            onResultSelect={this.handleResultSelect}
+            onSearchChange={_.debounce(this.handleSearchChange, 500, {
+              leading: true,
+            })}
+            onBlur={(e, data) => {
+              this.props.query.from.fromJoinRows[
+                this.props.rowIndex
+              ].joinColumns[
+                this.props.joinColumnIndex
+              ].rowTableJoinColumn.initial = false;
+              this.handleSearchChange(e, data);
+            }}
+            minCharacters={0}
+            onFocus={this.handleSearchChange}
+            onMouseDown={this.handleSearchChange}
+            results={results}
+            value={this.props.columnText}
+          />
+        }
+        content={this.props.text}
+        horizontalOffset={!this.props.text ? -10000 : 0}
+        size="tiny"
+        position="top center"
       />
     );
   }

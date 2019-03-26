@@ -11,28 +11,33 @@ const connectPool = (host, user, password, port, database) => {
     // database: 'dbpnauv6i7jjki',
     // user: 'rwbqgxjqwqrxuh',
     // password: process.env.TUTORIAL_DB_PASS,
-    host: host || 'localhost',
-    database: database || 'tutorial-sql',
-    user: user || null,
-    password: password || null,
+    host: host || 'ec2-54-221-201-212.compute-1.amazonaws.com',
+    database: database || 'dbpnauv6i7jjki',
+    user: user || 'rwbqgxjqwqrxuh',
+    password: password || process.env.TUTORIAL_DB_PASS,
     port: port || 5432,
   });
 };
 
 const formatTransformedDbObjectFields = (tAndCResultRow, fkMetadataFromDb) => {
+  const foreignKeyTargetTables = fkMetadataFromDb.rows.filter(
+    fkRow =>
+      fkRow.table === tAndCResultRow.Table &&
+      fkRow.column === tAndCResultRow.Field
+  );
+
+  const foreignKeyTargetTablesNames = foreignKeyTargetTables.map(
+    row => row.target_table
+  );
+
   return {
     name: tAndCResultRow.Field,
     type: tAndCResultRow.Type,
     default: tAndCResultRow.Default,
     constraint:
       tAndCResultRow.Constraint ||
-      (fkMetadataFromDb.rows.find(
-        fkRow =>
-          fkRow.table === tAndCResultRow.Table &&
-          fkRow.column === tAndCResultRow.Field
-      )
-        ? 'FOREIGN KEY'
-        : null),
+      (foreignKeyTargetTables.length ? 'FOREIGN KEY' : null),
+    fkTargetTables: foreignKeyTargetTablesNames,
     nullable: tAndCResultRow.Null === 'YES',
   };
 };

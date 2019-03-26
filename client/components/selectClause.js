@@ -35,7 +35,7 @@ const SelectClause = props => {
       <Droppable droppableId="droppableSelect">
         {(provided, snapshot) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <Grid.Column width={12}>
+            <div>
               {query.select.selectRows.map((row, i) => {
                 return (
                   <SelectRow
@@ -48,7 +48,7 @@ const SelectClause = props => {
                   />
                 );
               })}
-            </Grid.Column>
+            </div>
             {provided.placeholder}
           </div>
         )}

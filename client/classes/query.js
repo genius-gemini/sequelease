@@ -44,25 +44,25 @@ class FromJoinRow {
     tableMetadata: {},
     tableAlias: '',
     tableText: '',
-    tableTextText: `Check out the schema reference to see which tables are available`,
-    tableTextError: null,
-    tableTextInitial: false,
+    tableTextText: 'Enter table',
+    tableTextError: false,
+    tableTextInitial: true,
     previousTablesJoinColumns: [],
     joinColumns: [
       {
         previousTableJoinColumn: {
           name: '',
           type: null,
-          text: null,
-          error: null,
-          initial: false,
+          text: '',
+          error: false,
+          initial: true,
         },
         rowTableJoinColumn: {
           name: '',
           type: null,
-          text: null,
-          error: null,
-          initial: false,
+          text: '',
+          error: false,
+          initial: true,
         },
       },
     ],
@@ -76,6 +76,9 @@ class FromJoinRow {
     this.tableMetadata = FromJoinRow.templateJoinFromRow.tableMetadata;
     this.tableAlias = tableAlias;
     this.tableText = FromJoinRow.templateJoinFromRow.tableText;
+    this.tableTextText = FromJoinRow.templateJoinFromRow.tableTextText;
+    this.tableTextInitial = FromJoinRow.templateJoinFromRow.tableTextInitial;
+    this.tableTextError = FromJoinRow.templateJoinFromRow.tableTextError;
     this.previousTablesJoinColumns = [];
     this.joinColumns = [
       {
@@ -427,7 +430,12 @@ class From {
   toSql = () => {
     let fromString = this.isEmpty() ? '' : '\nFROM\n';
     fromString += this.fromJoinRows
-      .filter(row => row.tableMetadata.name && row.tableMetadata.name.trim())
+      .filter(
+        (row, i) =>
+          (row.joinType || i === 0) &&
+          row.tableMetadata.name &&
+          row.tableMetadata.name.trim()
+      )
       .map((row, index) => '  ' + row.toSql(index))
       .join('\n');
 
@@ -438,33 +446,34 @@ class From {
     // eslint-disable-next-line complexity
     this.fromJoinRows.forEach((row, rowIndex) => {
       // Join type
-      if (!row.joinTypeInitial) {
-        if (
-          row.joinType &&
-          !row.joinColumns.every(
-            column =>
-              column.rowTableJoinColumn.type &&
-              column.previousTableJoinColumn.type
-          )
-        ) {
-          row.joinTypeText = 'Not all join condition in this join are valid';
-          row.joinTypeError = false;
-        } else if (!row.joinType) {
-          row.joinTypeText = 'Choose a join type';
-          row.joinTypeError = true;
-        }
+
+      if (
+        row.joinType &&
+        !row.joinColumns.every(
+          column =>
+            column.rowTableJoinColumn.type &&
+            column.previousTableJoinColumn.type
+        )
+      ) {
+        row.joinTypeText = 'Not all join condition in this join are valid';
+        row.joinTypeError = false;
+      } else if (!row.joinType) {
+        row.joinTypeText = 'Choose a join type';
+        row.joinTypeError = true;
+      } else {
+        row.joinTypeText = 'Choose a join type';
+        row.joinTypeError = false;
       }
-      if (!row.tableTextInitial) {
-        if (row.tableText && !row.tableMetadata.name) {
-          row.tableTextText = 'Table does not exist in database';
-          row.tableTextError = true;
-        } else if (!row.tableText) {
-          row.tableTextText = 'Enter table';
-          row.tableTextError = true;
-        } else {
-          row.tableTextText = '';
-          row.tableTextError = false;
-        }
+
+      if (row.tableText && !row.tableMetadata.name) {
+        row.tableTextText = 'Table does not exist in database';
+        row.tableTextError = true;
+      } else if (!row.tableText) {
+        row.tableTextText = 'Enter table';
+        row.tableTextError = true;
+      } else {
+        row.tableTextText = '';
+        row.tableTextError = false;
       }
 
       const previousTablesTableFirst = row.previousTablesJoinColumns.map(
@@ -478,7 +487,7 @@ class From {
           : `${previousTablesTableFirst
               .slice(0, previousTablesTableFirst.length - 1)
               .join(', ')}${
-              previousTablesTableFirst.length > 2 ? ',' : null
+              previousTablesTableFirst.length > 2 ? ',' : ''
             } and ${
               previousTablesTableFirst[previousTablesTableFirst.length - 1]
             }`;
@@ -495,130 +504,260 @@ class From {
           : `${previousTablesAliasFirst
               .slice(0, previousTablesAliasFirst.length - 1)
               .join(', ')}${
-              previousTablesAliasFirst.length > 2 ? ',' : null
+              previousTablesAliasFirst.length > 2 ? ',' : ''
             } and ${
               previousTablesAliasFirst[previousTablesAliasFirst.length - 1]
             }`;
 
+      const previousTablesWithForeignKeyFieldsForRowTable = row.previousTablesJoinColumns.filter(
+        table =>
+          table.tableMetadata.fields.find(field =>
+            field.fkTargetTables.includes(row.tableMetadata.name)
+          )
+      );
+
+      const previousTablesForeignKeyFieldsForRowTable = previousTablesWithForeignKeyFieldsForRowTable.map(
+        table => {
+          const filteredFieldText = table.tableMetadata.fields
+            .filter(field =>
+              field.fkTargetTables.find(
+                fkTargetTable => fkTargetTable === row.tableMetadata.name
+              )
+            )
+            .map(filteredField => filteredField.name);
+
+          return (
+            table.tableMetadata.name +
+            '(' +
+            table.tableAlias +
+            '): ' +
+            (filteredFieldText.length === 1
+              ? filteredFieldText[0]
+              : `${filteredFieldText
+                  .slice(0, filteredFieldText.length - 1)
+                  .join(', ')}${filteredFieldText.length > 2 ? ',' : ''} and ${
+                  filteredFieldText[filteredFieldText.length - 1]
+                }`)
+          );
+        }
+      );
+
+      const previousTablesForeignKeyFieldsForRowTableText = previousTablesForeignKeyFieldsForRowTable.join(
+        ', '
+      );
+
+      const rowTableFieldsForeignKeyPreviousTables =
+        row.tableMetadata.fields &&
+        row.tableMetadata.fields.filter(field =>
+          row.previousTablesJoinColumns.find(previousTable =>
+            field.fkTargetTables.includes(previousTable.tableMetadata.name)
+          )
+        );
+
+      const rowTableFieldsForeignKeyPreviousTablesMap =
+        rowTableFieldsForeignKeyPreviousTables &&
+        rowTableFieldsForeignKeyPreviousTables.length &&
+        rowTableFieldsForeignKeyPreviousTables.map(field => {
+          const previousForeignKeyTables = row.previousTablesJoinColumns
+            .filter(previousTable =>
+              field.fkTargetTables.includes(previousTable.tableMetadata.name)
+            )
+            .map(
+              previousTable =>
+                previousTable.tableMetadata.name +
+                ' (' +
+                previousTable.tableAlias +
+                ')'
+            );
+
+          return (
+            field.name +
+            ': ' +
+            (previousForeignKeyTables.length === 1
+              ? previousForeignKeyTables[0]
+              : `${previousForeignKeyTables
+                  .slice(0, previousForeignKeyTables.length - 1)
+                  .join(', ')}${
+                  previousForeignKeyTables.length > 2 ? ',' : ''
+                } and ${
+                  previousForeignKeyTables[previousForeignKeyTables.length - 1]
+                }`)
+          );
+        });
+
+      let rowTableFieldsForeignKeyPreviousTablesText = null;
+      if (rowTableFieldsForeignKeyPreviousTablesMap) {
+        rowTableFieldsForeignKeyPreviousTablesText =
+          rowTableFieldsForeignKeyPreviousTablesMap.length === 1
+            ? rowTableFieldsForeignKeyPreviousTablesMap[0]
+            : `${rowTableFieldsForeignKeyPreviousTablesMap
+                .slice(0, rowTableFieldsForeignKeyPreviousTablesMap.length - 1)
+                .join(', ')} ${
+                rowTableFieldsForeignKeyPreviousTablesMap.length > 1 ? ',' : ''
+              } and ${
+                rowTableFieldsForeignKeyPreviousTablesMap[
+                  rowTableFieldsForeignKeyPreviousTablesMap.length - 1
+                ]
+              }`;
+      }
+
       row.joinColumns.forEach((col, colIndex) => {
         // row table join column
-        if (!col.rowTableJoinColumn.initial) {
-          const [tableAlias, columnText] =
-            col.rowTableJoinColumn.name &&
-            col.rowTableJoinColumn.name.split('.');
 
-          const matchingColumnAsAlias =
-            row.tableMetadata.fields &&
-            !!row.tableMetadata.fields.find(field => field.name === tableAlias);
+        let [tableAlias, columnText] =
+          col.rowTableJoinColumn.name && col.rowTableJoinColumn.name.split('.');
 
-          if (!row.tableMetadata.name) {
-            col.rowTableJoinColumn.text = `Choose a valid table from the database for this row`;
-            col.rowTableJoinColumn.error = false;
-          } else if (
-            col.rowTableJoinColumn.name &&
-            !col.rowTableJoinColumn.type &&
-            row.tableAlias !== tableAlias &&
-            row.tableMetadata.fields &&
-            matchingColumnAsAlias &&
-            !columnText
-          ) {
-            col.rowTableJoinColumn.text = `No table alias in text. Format: ${
-              row.tableAlias
-            }.${col.rowTableJoinColumn.name}`;
-            col.rowTableJoinColumn.error = true;
-          } else if (
-            col.rowTableJoinColumn.name &&
-            !col.rowTableJoinColumn.type &&
-            tableAlias !== row.tableAlias &&
-            columnText
-          ) {
-            col.rowTableJoinColumn.text = `Invalid table alias for this row's table (${
-              row.tableMetadata.name
-            }). Use ${row.tableAlias}.`;
-            col.rowTableJoinColumn.error = true;
-          } else if (
-            col.rowTableJoinColumn.name &&
-            !col.rowTableJoinColumn.type &&
-            tableAlias === row.tableAlias &&
-            !columnText
-          ) {
-            col.rowTableJoinColumn.text = `Choose a column from this row's table (${
-              row.tableMetadata.name
-            }). Format: ${row.tableAlias}.[column] e.g. ${row.tableAlias}.id`;
-            col.rowTableJoinColumn.error = true;
-          } else if (
-            col.rowTableJoinColumn.name &&
-            tableAlias === row.tableAlias &&
-            columnText &&
-            !col.rowTableJoinColumn.type
-          ) {
-            col.rowTableJoinColumn.text = `Column not found in this row's table (${
-              row.tableMetadata.name
-            }). Check out the schema reference`;
-            col.rowTableJoinColumn.error = true;
-          } else {
-            col.rowTableJoinColumn.text = '';
-            col.rowTableJoinColumn.error = false;
-          }
+        const matchingColumnAsAlias =
+          row.tableMetadata.fields &&
+          !!row.tableMetadata.fields.find(field => field.name === tableAlias);
+
+        if (!row.tableMetadata.name) {
+          col.rowTableJoinColumn.text = `Choose a valid table from the database for this row.`;
+          col.rowTableJoinColumn.error = false;
+        } else if (!col.rowTableJoinColumn.name) {
+          col.rowTableJoinColumn.text = `Choose a valid column from this row's table ${
+            rowTableFieldsForeignKeyPreviousTablesText
+              ? `Foreign Keys/Related Tables: ${rowTableFieldsForeignKeyPreviousTablesText}.`
+              : ''
+          }`;
+          col.rowTableJoinColumn.error = true;
+        } else if (
+          col.rowTableJoinColumn.name &&
+          !col.rowTableJoinColumn.type &&
+          row.tableAlias !== tableAlias &&
+          row.tableMetadata.fields &&
+          matchingColumnAsAlias &&
+          !columnText
+        ) {
+          col.rowTableJoinColumn.text = `No table alias in text. Format: ${
+            row.tableAlias
+          }.${col.rowTableJoinColumn.name}`;
+          col.rowTableJoinColumn.error = true;
+        } else if (
+          col.rowTableJoinColumn.name &&
+          !col.rowTableJoinColumn.type &&
+          tableAlias !== row.tableAlias
+        ) {
+          col.rowTableJoinColumn.text = `Invalid table alias for this row's table (${
+            row.tableMetadata.name
+          }). Use ${row.tableAlias}.`;
+          col.rowTableJoinColumn.error = true;
+        } else if (
+          col.rowTableJoinColumn.name &&
+          !col.rowTableJoinColumn.type &&
+          tableAlias === row.tableAlias &&
+          !columnText
+        ) {
+          col.rowTableJoinColumn.text = `Choose a column from this row's table (${
+            row.tableMetadata.name
+          }). ${
+            rowTableFieldsForeignKeyPreviousTablesText
+              ? `Foreign Keys/Related Tables: ${rowTableFieldsForeignKeyPreviousTablesText}.`
+              : ''
+          } Format: ${row.tableAlias}.[column] e.g. ${row.tableAlias}.id`;
+          col.rowTableJoinColumn.error = true;
+        } else if (
+          col.rowTableJoinColumn.name &&
+          tableAlias === row.tableAlias &&
+          columnText &&
+          !col.rowTableJoinColumn.type
+        ) {
+          col.rowTableJoinColumn.text = `Column not found in this row's table (${
+            row.tableMetadata.name
+          }). Check out the schema reference. ${
+            rowTableFieldsForeignKeyPreviousTablesText
+              ? `Foreign Keys/Related Tables: ${rowTableFieldsForeignKeyPreviousTablesText}.`
+              : ''
+          }`;
+          col.rowTableJoinColumn.error = true;
+        } else {
+          col.rowTableJoinColumn.text = '';
+          col.rowTableJoinColumn.error = false;
         }
 
-        if (!col.previousTableJoinColumn.initial) {
-          const [
-            tableAlias,
-            columnText,
-          ] = col.previousTableJoinColumn.name.split('.');
+        [tableAlias, columnText] = col.previousTableJoinColumn.name.split('.');
 
-          const previousTableAssociatedWithAlias = row.previousTablesJoinColumns.find(
-            previousTable => previousTable.tableAlias === tableAlias
+        const previousTableAssociatedWithAlias = row.previousTablesJoinColumns.find(
+          previousTable => previousTable.tableAlias === tableAlias
+        );
+
+        const foreignKeysForRow =
+          previousTableAssociatedWithAlias &&
+          previousTableAssociatedWithAlias.tableMetadata.fields.filter(field =>
+            field.fkTargetTables.includes(row.tableMetadata.name)
           );
 
-          const validPreviousTablesAlias = !!previousTableAssociatedWithAlias;
+        const foreignKeysForRowText =
+          foreignKeysForRow && foreignKeysForRow.map(field => field.name);
 
-          const previousTableAssociatedWithAliasText = validPreviousTablesAlias
-            ? `${previousTableAssociatedWithAlias.tableMetadata.name} (${
-                previousTableAssociatedWithAlias.tableAlias
-              })`
-            : '';
+        const validPreviousTablesAlias = !!previousTableAssociatedWithAlias;
 
-          if (!row.previousTablesJoinColumns.length) {
-            col.previousTableJoinColumn.text = `No valid tables available above to join to. Choose some`;
-            col.previousTableJoinColumn.error = false;
-          } else if (
-            col.previousTableJoinColumn.name &&
-            !col.previousTableJoinColumn.type &&
-            !validPreviousTablesAlias &&
-            !columnText
-          ) {
-            col.previousTableJoinColumn.text = `Choose a column from a valid table above (${previousTablesTableFirstText}). Format: [table alias].[column] e.g. a.id`;
-            col.previousTableJoinColumn.error = true;
-          } else if (
-            col.previousTableJoinColumn.name &&
-            !col.previousTableJoinColumn.type &&
-            !validPreviousTablesAlias &&
-            columnText
-          ) {
-            col.previousTableJoinColumn.text = `Choose a valid table alias from the tables above (${previousTablesAliasFirstText})`;
-            col.previousTableJoinColumn.error = true;
-          } else if (
-            col.previousTableJoinColumn.name &&
-            !col.previousTableJoinColumn.type &&
-            validPreviousTablesAlias &&
-            !columnText
-          ) {
-            col.previousTableJoinColumn.text = `Choose a column from table ${previousTableAssociatedWithAliasText}`;
-            col.previousTableJoinColumn.error = true;
-          } else if (
-            col.previousTableJoinColumn.name &&
-            validPreviousTablesAlias &&
-            columnText &&
-            !col.previousTableJoinColumn.type
-          ) {
-            col.previousTableJoinColumn.text = `Column not found in table ${previousTableAssociatedWithAliasText}. Check out the schema reference`;
-            col.previousTableJoinColumn.error = true;
-          } else {
-            col.previousTableJoinColumn.text = '';
-            col.previousTableJoinColumn.error = false;
-          }
+        const previousTableAssociatedWithAliasText = validPreviousTablesAlias
+          ? `${previousTableAssociatedWithAlias.tableMetadata.name} (${
+              previousTableAssociatedWithAlias.tableAlias
+            })`
+          : '';
+
+        if (!row.tableMetadata.name) {
+          col.previousTableJoinColumn.text = `Choose a valid table from the database for this row first.`;
+          col.previousTableJoinColumn.error = false;
+        } else if (!row.previousTablesJoinColumns.length) {
+          col.previousTableJoinColumn.text = `No valid tables available above to join to. Choose some.`;
+          col.previousTableJoinColumn.error = false;
+        } else if (!col.previousTableJoinColumn.name) {
+          col.previousTableJoinColumn.text = `Choose a column from a valid table above (${previousTablesTableFirstText}). ${
+            previousTablesForeignKeyFieldsForRowTableText
+              ? `Foreign keys columns - ${previousTablesForeignKeyFieldsForRowTableText}.`
+              : ''
+          } Format: [table alias].[column] e.g. a.id`;
+          col.previousTableJoinColumn.error = true;
+        } else if (
+          col.previousTableJoinColumn.name &&
+          !col.previousTableJoinColumn.type &&
+          !validPreviousTablesAlias &&
+          !columnText
+        ) {
+          col.previousTableJoinColumn.text = `Choose a column from a valid table above (${previousTablesTableFirstText}). ${
+            previousTablesForeignKeyFieldsForRowTableText
+              ? `Foreign keys columns - ${previousTablesForeignKeyFieldsForRowTableText}.`
+              : ''
+          } Format: [table alias].[column] e.g. a.id`;
+          col.previousTableJoinColumn.error = true;
+        } else if (
+          col.previousTableJoinColumn.name &&
+          !col.previousTableJoinColumn.type &&
+          !validPreviousTablesAlias &&
+          columnText
+        ) {
+          col.previousTableJoinColumn.text = `Choose a valid table alias from the tables above (${previousTablesAliasFirstText})`;
+          col.previousTableJoinColumn.error = true;
+        } else if (
+          col.previousTableJoinColumn.name &&
+          !col.previousTableJoinColumn.type &&
+          validPreviousTablesAlias &&
+          !columnText
+        ) {
+          col.previousTableJoinColumn.text = `Choose a column from table ${previousTableAssociatedWithAliasText}. ${
+            foreignKeysForRowText
+              ? `Foreign keys columns: ${foreignKeysForRowText}`
+              : ''
+          }`;
+          col.previousTableJoinColumn.error = true;
+        } else if (
+          col.previousTableJoinColumn.name &&
+          validPreviousTablesAlias &&
+          columnText &&
+          !col.previousTableJoinColumn.type
+        ) {
+          col.previousTableJoinColumn.text = `Column not found in table ${previousTableAssociatedWithAliasText}. Check out the schema reference. ${
+            foreignKeysForRowText
+              ? `Foreign keys columns: ${foreignKeysForRowText}`
+              : ''
+          }`;
+          col.previousTableJoinColumn.error = true;
+        } else {
+          col.previousTableJoinColumn.text = '';
+          col.previousTableJoinColumn.error = false;
         }
       });
     });
@@ -626,25 +765,27 @@ class From {
 }
 
 class SelectRow {
+  static templateSelectRow = {
+    name: '',
+    type: null,
+    error: false,
+    text: '',
+    initial: true,
+  };
+
   constructor() {
     this.name = SelectRow.templateSelectRow.name;
     this.type = SelectRow.templateSelectRow.type;
     this.error = SelectRow.templateSelectRow.error;
+    this.initial = SelectRow.templateSelectRow.initial;
     this.text = SelectRow.templateSelectRow.text;
   }
 
   toSql() {
     const [tableAlias, fieldName] = this.name.split('.');
-    return `"${tableAlias}"."${fieldName}"`;
+    return `"${tableAlias}"."${fieldName ? fieldName : ''}"`;
   }
 }
-
-SelectRow.templateSelectRow = {
-  name: '',
-  type: null,
-  error: false,
-  text: '',
-};
 
 class Select {
   constructor(fullResults) {
@@ -734,7 +875,7 @@ class Select {
         : '';
 
       if (!this.fullResults.results.length) {
-        row.error = true;
+        row.error = false;
         row.text = `No valid tables available above to select columns from. Choose some in FROM`;
       } else if (row.name && !row.type && !validTableAlias && !columnText) {
         row.text = `Choose a column from a valid table above (${fullTableListWithAliasTableFirstText}). Format: [table alias].[column] e.g. a.id`;
@@ -762,6 +903,7 @@ class WhereRow {
     type: null,
     columnText: '',
     columnError: false,
+    columnInitial: true,
     selectedOperator: { operator: '', hint: null },
     operatorText: '',
     operatorError: false,
@@ -776,6 +918,7 @@ class WhereRow {
     this.type = WhereRow.templeteWhereRow.type;
     this.columnText = WhereRow.templeteWhereRow.columnText;
     this.columnError = WhereRow.templeteWhereRow.columnError;
+    this.columnInitial = WhereRow.templeteWhereRow.columnInitial;
     this.selectedOperator = { ...WhereRow.templeteWhereRow.selectedOperator };
     this.operatorText = WhereRow.templeteWhereRow.operatorText;
     this.operatorTextText = WhereRow.templeteWhereRow.operatorTextText;
@@ -935,7 +1078,7 @@ class Where {
         : '';
 
       if (!this.fullResults.results.length) {
-        row.columnError = true;
+        row.columnError = false;
         row.columnText = `No valid tables available above to select columns from. Choose some in FROM`;
       } else if (row.name && !row.type && !validTableAlias && !columnText) {
         row.columnText = `Choose a column from a valid table above (${fullTableListWithAliasTableFirstText}). Format: [table alias].[column] e.g. a.id`;
@@ -954,8 +1097,8 @@ class Where {
         row.columnError = false;
       }
 
-      if (row.columnError) {
-        row.operatorTextText = 'Choose a valid operator first';
+      if (row.columnError || !row.name) {
+        row.operatorTextText = 'Choose a valid column first';
         row.operatorError = false;
       } else if (!row.operatorText) {
         row.operatorError = true;
@@ -972,23 +1115,23 @@ class Where {
       row.filterText = '';
       if (row.type && row.selectedOperator.name && !row.filter) {
         row.filterError = true;
-        row.filterText += '<div>No input filter</div>';
+        row.filterText += 'No input filter. ';
       } else {
         row.filterError = false;
       }
 
       if (row.selectedOperator.hint) {
-        row.filterText += `<div>${row.selectedOperator.hint}</div>`;
+        row.filterText += `${row.selectedOperator.hint}`;
       }
 
       if (row.type) {
-        row.filterText += `<div>Type: ${row.type}</div>`;
+        row.filterText += `Type: ${row.type}. `;
       } else {
-        row.filterText += `<div>Choose a valid column first</div>`;
+        row.filterText += `Choose a valid column first. `;
       }
 
       if (row.type && row.operatorError) {
-        row.filterText += `<div>Choose a valid operator first</div>`;
+        row.filterText += `Choose a valid operator first.`;
       }
     });
   };
@@ -1019,9 +1162,16 @@ class FullResults {
 
   addResult = fromJoinRow => {
     if (fromJoinRow.hasTableMetadata()) {
-      this.results.push(
-        new FullResultsRow(fromJoinRow.tableMetadata, fromJoinRow.tableAlias)
+      const alreadyHasTable = this.results.find(
+        result =>
+          fromJoinRow.tableAlias === result.tableAlias &&
+          fromJoinRow.tableMetadata.name === result.tableMetadata.name
       );
+      if (!alreadyHasTable) {
+        this.results.push(
+          new FullResultsRow(fromJoinRow.tableMetadata, fromJoinRow.tableAlias)
+        );
+      }
     }
   };
 
