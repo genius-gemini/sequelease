@@ -98,6 +98,7 @@ class WhereRow extends Component {
                         disabled={!query.where.whereRows[rowIndex].filterText}
                         size="tiny"
                         position="top center"
+                        on={['focus', 'hover']}
                       />
                     </div>
                   </div>

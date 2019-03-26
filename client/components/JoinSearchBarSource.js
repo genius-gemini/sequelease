@@ -91,6 +91,7 @@ export default class JoinSearchBarSource extends Component {
               error: !this.props.initial && this.props.error,
             }}
             className="column-search-bar"
+            size="mini"
             loading={isLoading}
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
@@ -115,6 +116,7 @@ export default class JoinSearchBarSource extends Component {
         horizontalOffset={!this.props.text ? -10000 : 0}
         size="tiny"
         position="top center"
+        on={['focus', 'hover']}
       />
     );
   }

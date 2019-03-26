@@ -5,16 +5,29 @@ const queries = require('../../db/queries');
 
 module.exports = router;
 
+const filterTypeQuotes = row => {
+  if (row.type) {
+    const fieldType = row.type.toLowerCase();
+    return (
+      fieldType.includes('char') ||
+      fieldType.includes('date') ||
+      fieldType.includes('time') ||
+      fieldType === 'interval'
+    );
+  }
+  return false;
+};
+
 const connectPool = (host, user, password, port, database) => {
   return new Pool({
     // host: 'ec2-54-221-201-212.compute-1.amazonaws.com',
     // database: 'dbpnauv6i7jjki',
     // user: 'rwbqgxjqwqrxuh',
     // password: process.env.TUTORIAL_DB_PASS,
-    host: host || 'ec2-54-221-201-212.compute-1.amazonaws.com',
-    database: database || 'dbpnauv6i7jjki',
-    user: user || 'rwbqgxjqwqrxuh',
-    password: password || process.env.TUTORIAL_DB_PASS,
+    host: host || 'localhost',
+    database: database || 'tutorial-sql',
+    user: user || null,
+    password: password || null,
     port: port || 5432,
   });
 };
@@ -73,128 +86,127 @@ const formatDbMetadataQueryResults = (
 };
 
 router.post('/getDbMetadata', async (req, res, next) => {
-  const { host, user, password, port, database } = req.body;
+  try {
+    const { host, user, password, port, database } = req.body;
 
-  const pool = connectPool(host, user, password, port, database);
+    const pool = connectPool(host, user, password, port, database);
 
-  const tableAndColumnsDbQueryResults = await pool.query(
-    queries.postgresDbTablesAndColumnsMetadata
-  );
+    const tableAndColumnsDbQueryResults = await pool.query(
+      queries.postgresDbTablesAndColumnsMetadata
+    );
 
-  const fkQueryResults = await pool.query(
-    queries.postgresDbForeignKeysMetadata
-  );
+    const fkQueryResults = await pool.query(
+      queries.postgresDbForeignKeysMetadata
+    );
 
-  await pool.end();
+    await pool.end();
 
-  const transformedResults = formatDbMetadataQueryResults(
-    tableAndColumnsDbQueryResults,
-    fkQueryResults
-  );
+    const transformedResults = formatDbMetadataQueryResults(
+      tableAndColumnsDbQueryResults,
+      fkQueryResults
+    );
 
-  res.send(transformedResults);
+    res.send(transformedResults);
+  } catch (err) {
+    res.status(500).send({ error: 'error' });
+  }
 });
 
 // eslint-disable-next-line complexity
 router.post('/run', async (req, res, next) => {
   const { query } = req.body;
-  let select = 'SELECT ';
 
-  let selectColumns = '';
-  if (
-    query.select.selectedColumns.length &&
-    query.select.selectedColumns[0].name.trim()
-  ) {
-    selectColumns = query.select.selectedColumns
-      .filter(column => column.name.trim())
-      .map(column => {
-        const [table, col] = column.name.split('.');
-        return '"' + table + '"."' + col + '"';
-      })
-      .join(', ');
-  }
-  if (selectColumns) {
-    select += '  ' + selectColumns;
-  } else {
-    select += '  1';
-  }
+  console.log(query);
 
-  let from = ' FROM ';
+  let selectString = 'SELECT ';
 
-  let fromClause = '';
+  selectString += !query.select.selectRows.length
+    ? '  1'
+    : '  ' +
+      query.select.selectRows
+        .filter(row => row.name.trim())
+        .map(row => {
+          const [tableAlias, fieldName] = row.name.split('.');
+          return `"${tableAlias}"."${fieldName ? fieldName : ''}"`;
+        })
+        .join(', ');
 
-  if (
-    query.from.selectedTables.length &&
-    query.from.selectedTables[0].tableText.trim()
-  ) {
-    fromClause = query.from.selectedTables
-      .filter(table => table.table.name)
-      .map((table, i) => {
-        if (i === 0) {
-          return table.table.name;
-        } else {
-          let ij = ' INNER JOIN ' + table.tableText;
-          let [t, col] = table.sourceJoinColumn.name.split('.');
-          let sjc = '"' + t + '"."' + col + '"';
-          [t, col] = table.targetJoinColumn.name.split('.');
-          let tjc = '"' + t + '"."' + col + '"';
-          ij += sjc && tjc ? ' ON ' + sjc + ' = ' + tjc : '';
-          return ij;
-        }
-      })
-      .join('  ');
-  }
-  if (fromClause) {
-    from += '  ' + fromClause;
-  } else {
-    from = '';
-  }
+  let fromString = !query.from.fromJoinRows.length ? '' : ' FROM ';
 
-  let where = ' WHERE ';
-  let whereClause = '';
-  if (
-    query.where.selectedWhereColumns.length &&
-    query.where.selectedWhereColumns[0].name.trim()
-  ) {
-    whereClause = query.where.selectedWhereColumns
+  fromString += query.from.fromJoinRows
+    .filter(
+      (row, i) =>
+        (row.joinType || i === 0) &&
+        row.tableMetadata.name &&
+        row.tableMetadata.name.trim()
+    )
+    .map((row, index) => {
+      const joinColumnString = row.joinColumns
+        .filter(
+          joinColumn =>
+            joinColumn.rowTableJoinColumn.name.trim() &&
+            joinColumn.previousTableJoinColumn.name.trim()
+        )
+        .map(joinColumn => {
+          const [
+            rowTableJoinAlias,
+            rowTableJoinValue,
+          ] = joinColumn.rowTableJoinColumn.name.trim().split('.');
+
+          const [
+            previousTableJoinAlias,
+            previousTableJoinValue,
+          ] = joinColumn.previousTableJoinColumn.name.trim().split('.');
+
+          return `"${rowTableJoinAlias}"."${rowTableJoinValue}" = "${previousTableJoinAlias}"."${previousTableJoinValue}"`;
+        })
+        .join(' AND ');
+      let fromRowString = index > 0 ? `${row.joinType} ` : '';
+      fromRowString += `"${row.tableMetadata.name}" AS "${row.tableAlias}" `;
+      fromRowString += (index > 0 ? 'ON ' : '') + joinColumnString;
+
+      return '  ' + fromRowString.trim();
+    })
+    .join(' ');
+
+  let whereString = !query.where.whereRows.filter(
+    row =>
+      row.name.trim() &&
+      row.selectedOperator.name &&
+      row.selectedOperator.name.trim() &&
+      row.filter.trim()
+  ).length
+    ? ''
+    : ' WHERE ';
+
+  whereString +=
+    '  ' +
+    query.where.whereRows
       .filter(
-        condition =>
-          condition.type &&
-          condition.selectedOperator.operator &&
-          condition.filter
+        row =>
+          row.name.trim() &&
+          row.selectedOperator.name &&
+          row.selectedOperator.name.trim() &&
+          row.filter.trim()
       )
-      .map((condition, i) => {
-        let initText = ' AND ';
-        if (i === 0) {
-          initText = '  ';
-        }
-        const [t, col] = condition.name.split('.');
-        return (
-          initText +
-          '"' +
-          t +
-          '"."' +
-          col +
-          '"' +
-          ' ' +
-          condition.selectedOperator.operator +
-          ' ' +
-          condition.filter
-        );
+      .map(row => {
+        const [tableAlias, value] = row.name.trim().split('.');
+        const filter = filterTypeQuotes(row) ? `'${row.filter}'` : row.filter;
+        return `"${tableAlias}"."${value}" ${
+          row.selectedOperator.name
+        } ${filter}`;
       })
-      .join('  ');
-  }
+      .join(' AND ');
 
-  if (whereClause) {
-    where += whereClause;
-  } else {
-    where = '';
-  }
+  let queryString = selectString + fromString + whereString;
+
+  console.log(queryString);
 
   const pool = connectPool();
-  const queryResults = await pool.query(select + from + where + ' LIMIT 10');
+  const queryResults = await pool.query(queryString + ' LIMIT 10');
 
   await pool.end();
 
+  console.log(queryResults);
   res.send(queryResults);
 });

@@ -149,6 +149,7 @@ export default class JoinSearchBar extends Component {
             }}
             className="column-search-bar"
             loading={isLoading}
+            size="mini"
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,

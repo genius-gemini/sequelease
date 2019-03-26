@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Popup,
   Grid,
@@ -8,7 +8,7 @@ import {
   Image,
   Segment,
   Card,
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 
 class JoinPopup extends Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class JoinPopup extends Component {
         }
         position="right center"
         keepInViewPort
-        on={["click"]}
+        on={['click', 'focus']}
         hoverable
         open={this.state.isOpen}
         onClose={this.handleClose}
@@ -52,10 +52,11 @@ class JoinPopup extends Component {
         <Card.Group itemsPerRow={2} textAlign="center">
           <Card
             image="static1.squarespace.png"
-            header="InnerJoin"
+            header="Inner Join"
+            style={{ textAlign: 'center' }}
             extra={
               <Button
-                onClick={this.handleJoinTypeClick.bind(this, "LEFT JOIN")}
+                onClick={this.handleJoinTypeClick.bind(this, 'INNER JOIN')}
                 positive
                 size="tiny"
               >
@@ -64,11 +65,12 @@ class JoinPopup extends Component {
             }
           />
           <Card
-            image="static1.squarespace.png"
-            header="InnerJoin"
+            image="static1.squarespace-1.png"
+            header="Left Join"
+            style={{ textAlign: 'center' }}
             extra={
               <Button
-                onClick={this.handleJoinTypeClick.bind(this, "LEFT JOIN")}
+                onClick={this.handleJoinTypeClick.bind(this, 'LEFT JOIN')}
                 positive
                 size="tiny"
               >
@@ -77,11 +79,12 @@ class JoinPopup extends Component {
             }
           />
           <Card
-            image="static1.squarespace.png"
-            header="InnerJoin"
+            image="static1.squarespace-2.png"
+            header="Right Join"
+            style={{ textAlign: 'center' }}
             extra={
               <Button
-                onClick={this.handleJoinTypeClick.bind(this, "LEFT JOIN")}
+                onClick={this.handleJoinTypeClick.bind(this, 'RIGHT JOIN')}
                 positive
                 size="tiny"
               >
@@ -90,11 +93,12 @@ class JoinPopup extends Component {
             }
           />
           <Card
-            image="static1.squarespace.png"
-            header="InnerJoin"
+            image="static1.squarespace-3.png"
+            header="Full Join"
+            style={{ textAlign: 'center' }}
             extra={
               <Button
-                onClick={this.handleJoinTypeClick.bind(this, "LEFT JOIN")}
+                onClick={this.handleJoinTypeClick.bind(this, 'FULL JOIN')}
                 positive
                 size="tiny"
               >

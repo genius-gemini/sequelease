@@ -168,6 +168,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
         horizontalOffset={!this.props.text ? -10000 : 0}
         size="tiny"
         position="top center"
+        on={['focus', 'hover']}
       />
     );
   }

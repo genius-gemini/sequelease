@@ -72,7 +72,7 @@ form div {
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   left: 50%;
@@ -116,38 +116,25 @@ form div {
   margin: 0;
 }
 
-.message.empty {
-  margin: 0;
-}
-td.width100 {
-  width: 100px;
-}
-td.width65 {
-  width: 65px;
-}
-td.width40 {
-  width: 40px;
-}
-td.width10 {
-  width: 10px;
-}
-td.widthauto {
-  width: auto;
-  vertical-align: top;
-}
-td {
-  width: 150px;
-  overflow: hidden;
-  display: inline-block;
-  white-space: nowrap;
-  /* border: 1px solid red; */
-}
-
 .ui.search .prompt {
   border: 1px solid lightgrey;
   /* border-radius: 5px !important; */
   /* max-width: 70%; */
 }
+
+.pusher {
+  min-height: 100vh !important;
+}
+
+.ui.table td {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+.accordion .Accordion-Accordion .title {
+  color: black !important;
+}
+
 /* div.drag * {
   height: 38px;
   margin: 0px;

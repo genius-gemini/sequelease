@@ -63,6 +63,7 @@ export default class OperatorSearchBar extends Component {
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,
             })}
+            size="mini"
             onFocus={this.handleSearchChange}
             onMouseDown={this.handleSearchChange}
             results={results}
@@ -74,6 +75,7 @@ export default class OperatorSearchBar extends Component {
         horizontalOffset={!this.props.text ? -10000 : 0}
         size="tiny"
         position="top center"
+        on={['focus', 'hover']}
       />
     );
   }
