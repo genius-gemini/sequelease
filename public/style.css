@@ -173,3 +173,7 @@ div.ui.celled.two.column.grid {
 div.inline.fields {
   margin-bottom: 0px;
 } */
+
+.accordion .Accordion-Accordion .title{
+  color: black !important;
+}
