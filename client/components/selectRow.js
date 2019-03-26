@@ -38,36 +38,32 @@ class SelectRow extends Component {
                 {...provided.draggableProps}
               >
                 <div className="drag" style={{ width: '1400px' }}>
-                  <Grid celled>
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Form>
-                          <Form.Group inline>
-                            <Form.Field>
-                              <Buttons
-                                type="selectRow"
-                                updateQueryState={updateQueryState}
-                                rowIndex={rowIndex}
-                                query={query}
-                              />
-                            </Form.Field>
-                            <Form.Field>
-                              {rowIndex > 0 ? ', ' : null}
-                              <SelectAndWhereColumnSearchBar
-                                type="select"
-                                rowIndex={rowIndex}
-                                updateQueryState={updateQueryState}
-                                query={query}
-                                value={row.name}
-                                text={row.text}
-                                error={row.error}
-                              />
-                            </Form.Field>
-                          </Form.Group>
-                        </Form>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
+                  <table style={{ width: '1100px', overflow: 'scroll' }}>
+                    <tbody>
+                      <tr>
+                        <td className="width65">
+                          <Buttons
+                            type="selectRow"
+                            updateQueryState={updateQueryState}
+                            rowIndex={rowIndex}
+                            query={query}
+                          />
+                        </td>
+                        <td className="widthauto">
+                          {rowIndex > 0 ? ', ' : null}
+                          <SelectAndWhereColumnSearchBar
+                            type="select"
+                            rowIndex={rowIndex}
+                            updateQueryState={updateQueryState}
+                            query={query}
+                            value={row.name}
+                            text={row.text}
+                            error={row.error}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
               {provided.placeholder}

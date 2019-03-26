@@ -130,6 +130,9 @@ export default class SelectAndWhereColumnSearchBar extends Component {
       <Popup
         trigger={
           <Search
+            size="mini"
+            placeholder="placholder"
+            icon="table"
             input={{
               error: !this.props.initial && this.props.error,
             }}

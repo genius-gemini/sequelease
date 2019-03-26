@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Form,
   Input,
@@ -8,20 +8,20 @@ import {
   Header,
   Image,
   Segment,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import { Draggable } from 'react-beautiful-dnd';
-import Buttons from './buttons';
+import { Draggable } from "react-beautiful-dnd";
+import Buttons from "./buttons";
 
-import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
+import SelectAndWhereColumnSearchBar from "./SelectAndWhereColumnSearchBar";
 
-import OperatorSearchBar from './OperatorSearchBar';
+import OperatorSearchBar from "./OperatorSearchBar";
 
 class WhereRow extends Component {
   componentDidMount = () => {
     [
-      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
-    ].map(elem => elem.removeAttribute('tabindex'));
+      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
+    ].map(elem => elem.removeAttribute("tabindex"));
   };
 
   handleFilterChange = value => {
@@ -47,8 +47,42 @@ class WhereRow extends Component {
                 {...provided.dragHandleProps}
                 {...provided.draggableProps}
               >
-                <div className="drag" style={{ width: '1400px' }}>
-                  <Grid celled>
+                <div className="drag" style={{ width: "1400px" }}>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className="width65">
+                          <Buttons
+                            type="whereRow"
+                            updateQueryState={updateQueryState}
+                            rowIndex={rowIndex}
+                            query={query}
+                          />
+                        </td>
+                        <td className="width40">
+                          {rowIndex > 0 ? "AND " : null}
+                        </td>
+                        <td className="widthauto">
+                          <SelectAndWhereColumnSearchBar
+                            type="where"
+                            rowIndex={rowIndex}
+                            updateQueryState={updateQueryState}
+                            query={query}
+                            value={row.name}
+                          />
+                        </td>
+                        <td>
+                          <Input
+                            size="mini"
+                            type="text"
+                            onChange={e => handleFilterChange(e.target.value)}
+                            value={query.where.whereRows[rowIndex].filter}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  {/* <Grid celled>
                     <Grid.Row>
                       <Grid.Column>
                         <Form>
@@ -110,7 +144,7 @@ class WhereRow extends Component {
                         </Form>
                       </Grid.Column>
                     </Grid.Row>
-                  </Grid>
+                  </Grid> */}
                 </div>
               </div>
               {provided.placeholder}

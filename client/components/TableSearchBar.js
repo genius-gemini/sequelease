@@ -112,6 +112,7 @@ export default class TableSearchBar extends Component {
         content={this.props.tableTextText}
         horizontalOffset={!this.props.tableTextText ? -10000 : 0}
         position="top center"
+        aligned="left"
         on={['focus', 'hover', 'click']}
       />
     );

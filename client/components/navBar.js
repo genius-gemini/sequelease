@@ -1,9 +1,12 @@
 import React from "react";
 import { Menu, Container } from "semantic-ui-react";
 
-const Navbar = () => (
+const Navbar = props => (
   <Menu fixed="top" inverted>
     <Container>
+      <Menu.Item as="a" header onClick={props.handleShowClick}>
+        {props.visible ? "Hide DB Strucutre" : "Show DB Strucutre"}
+      </Menu.Item>
       <Menu.Item as="a" header>
         SQLEase
       </Menu.Item>
