@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Form,
   Input,
@@ -8,20 +8,20 @@ import {
   Header,
   Image,
   Segment,
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 
-import { Draggable } from "react-beautiful-dnd";
-import Buttons from "./buttons";
+import { Draggable } from 'react-beautiful-dnd';
+import Buttons from './buttons';
 
-import SelectAndWhereColumnSearchBar from "./SelectAndWhereColumnSearchBar";
+import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
 
-import OperatorSearchBar from "./OperatorSearchBar";
+import OperatorSearchBar from './OperatorSearchBar';
 
 class WhereRow extends Component {
   componentDidMount = () => {
     [
-      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
-    ].map(elem => elem.removeAttribute("tabindex"));
+      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
+    ].map(elem => elem.removeAttribute('tabindex'));
   };
 
   handleFilterChange = value => {
@@ -47,41 +47,60 @@ class WhereRow extends Component {
                 {...provided.dragHandleProps}
                 {...provided.draggableProps}
               >
-                <div className="drag" style={{ width: "1400px" }}>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className="width65">
-                          <Buttons
-                            type="whereRow"
-                            updateQueryState={updateQueryState}
-                            rowIndex={rowIndex}
-                            query={query}
-                          />
-                        </td>
-                        <td className="width40">
-                          {rowIndex > 0 ? "AND " : null}
-                        </td>
-                        <td className="widthauto">
-                          <SelectAndWhereColumnSearchBar
-                            type="where"
-                            rowIndex={rowIndex}
-                            updateQueryState={updateQueryState}
-                            query={query}
-                            value={row.name}
-                          />
-                        </td>
-                        <td>
+                <div className="drag" style={{ width: '1400px' }}>
+                  <div>
+                    <div style={{ display: 'inline-block' }}>
+                      <Buttons
+                        type="whereRow"
+                        updateQueryState={updateQueryState}
+                        rowIndex={rowIndex}
+                        query={query}
+                      />
+                    </div>
+                    <div style={{ display: 'inline-block' }}>
+                      {rowIndex > 0 ? 'AND ' : null}
+                    </div>
+                    <div style={{ display: 'inline-block' }}>
+                      <SelectAndWhereColumnSearchBar
+                        type="where"
+                        rowIndex={rowIndex}
+                        updateQueryState={updateQueryState}
+                        query={query}
+                        value={row.name}
+                        text={row.columnText}
+                        error={row.columnError}
+                      />
+                    </div>
+                    <div style={{ display: 'inline-block' }}>
+                      <OperatorSearchBar
+                        rowIndex={rowIndex}
+                        updateQueryState={updateQueryState}
+                        query={query}
+                        operatorText={row.operatorText}
+                        text={row.operatorTextText}
+                        error={row.operatorError}
+                      />
+                    </div>
+
+                    <div style={{ display: 'inline-block' }}>
+                      <Popup
+                        trigger={
                           <Input
                             size="mini"
                             type="text"
-                            onChange={e => handleFilterChange(e.target.value)}
+                            onChange={e =>
+                              this.handleFilterChange(e.target.value)
+                            }
                             value={query.where.whereRows[rowIndex].filter}
                           />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                        }
+                        content={query.where.whereRows[rowIndex].filterText}
+                        disabled={!query.where.whereRows[rowIndex].filterText}
+                        size="tiny"
+                        position="top center"
+                      />
+                    </div>
+                  </div>
                   {/* <Grid celled>
                     <Grid.Row>
                       <Grid.Column>

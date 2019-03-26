@@ -1,50 +1,69 @@
-import React from "react";
-import { Grid, Header } from "semantic-ui-react";
-import FromClause from "./fromClause";
-import SelectClause from "./selectClause";
-import WhereClause from "./whereClause";
+import React from 'react';
+import { Grid, Header } from 'semantic-ui-react';
+import FromClause from './fromClause';
+import SelectClause from './selectClause';
+import WhereClause from './whereClause';
 
 const OuterGrid = props => {
   const { db, query, updateQueryState } = props;
   return (
-    <Grid celled>
-      <Grid.Row>
-        <Grid.Column width={1}>
+    <div>
+      <div>
+        <div
+          style={{
+            verticalAlign: 'top',
+            marginTop: '10px',
+            display: 'inline-block',
+          }}
+        >
           <Header>FROM</Header>
-        </Grid.Column>
-        <Grid.Column width={12}>
+        </div>
+        <div style={{ display: 'inline-block' }}>
           <FromClause
             db={db}
             query={query}
             updateQueryState={updateQueryState}
           />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={1}>
+        </div>
+      </div>
+
+      <div>
+        <div
+          style={{
+            verticalAlign: 'top',
+            marginTop: '10px',
+            display: 'inline-block',
+          }}
+        >
           <Header>SELECT</Header>
-        </Grid.Column>
-        <Grid.Column width={12}>
+        </div>
+        <div style={{ display: 'inline-block' }}>
           <SelectClause
             db={db}
             query={query}
             updateQueryState={updateQueryState}
           />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={1}>
+        </div>
+      </div>
+      <div>
+        <div
+          style={{
+            verticalAlign: 'top',
+            marginTop: '10px',
+            display: 'inline-block',
+          }}
+        >
           <Header>WHERE</Header>
-        </Grid.Column>
-        <Grid.Column width={12}>
+        </div>
+        <div style={{ display: 'inline-block' }}>
           <WhereClause
             db={db}
             query={query}
             updateQueryState={updateQueryState}
           />
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+        </div>
+      </div>
+    </div>
   );
 };
 

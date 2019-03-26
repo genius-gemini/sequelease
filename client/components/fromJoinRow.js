@@ -45,30 +45,45 @@ class FromJoinRow extends Component {
                 {...provided.draggableProps}
               >
                 <div className="drag">
-                  <table style={{ width: '1100px', overflow: 'scroll' }}>
-                    <tbody>
-                      <tr>
-                        <td className="width65">
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: '1400px',
+                    }}
+                  >
+                    <div style={{ display: 'inline-block' }}>
+                      <div
+                        style={{
+                          verticalAlign: 'top',
+                          display: 'inline-block',
+                        }}
+                      >
+                        <div style={{ display: 'inline-block' }}>
                           <Buttons
                             type="fromJoinRow"
                             updateQueryState={updateQueryState}
                             rowIndex={rowIndex}
                             query={query}
                           />
-                        </td>
+                        </div>
 
                         {rowIndex > 0 ? (
-                          <td>
+                          <div style={{ display: 'inline-block' }}>
                             <JoinPopup
                               updateQueryState={updateQueryState}
                               rowIndex={rowIndex}
                               query={query}
                             />
-                          </td>
+                          </div>
                         ) : null}
 
-                        <td className="widthauto">
+                        <div
+                          style={{
+                            display: 'inline-block',
+                          }}
+                        >
                           <TableSearchBar
+                            style={{ position: 'relative' }}
                             rowIndex={rowIndex}
                             resultTables={db.getTableNames}
                             table={row.tableMetadata.name}
@@ -79,67 +94,83 @@ class FromJoinRow extends Component {
                             updateQueryState={updateQueryState}
                             query={query}
                           />
-                        </td>
+                        </div>
+                      </div>
 
-                        <td className="width40">{`AS ${row.tableAlias}`}</td>
-                        {rowIndex > 0 ? <td className="width40">ON</td> : null}
-                        {rowIndex > 0 ? (
-                          <td className="widthauto">
-                            {/* <table style={{ border: "1px solid blue" }}> */}
-                            <table>
-                              <tbody>
-                                {row.joinColumns.map((col, colIndex) => (
-                                  <tr key={`jc-${rowIndex}-${colIndex}`}>
-                                    {colIndex > 0 ? (
-                                      <td className="width40">AND</td>
-                                    ) : null}
-                                    <td className="widthauto">
-                                      <JoinSearchBarSource
-                                        rowIndex={rowIndex}
-                                        joinColumnIndex={colIndex}
-                                        table={row.tableMetadata}
-                                        tableAlias={row.tableAlias}
-                                        columnText={col.rowTableJoinColumn.name}
-                                        error={col.rowTableJoinColumn.error}
-                                        initial={col.rowTableJoinColumn.initial}
-                                        text={col.rowTableJoinColumn.text}
-                                        query={query}
-                                        updateQueryState={updateQueryState}
-                                      />
-                                    </td>
-                                    <td className="width10">=</td>
-                                    <td className="widthauto">
-                                      <JoinSearchBar
-                                        rowIndex={rowIndex}
-                                        joinColumnIndex={colIndex}
-                                        text={col.previousTableJoinColumn.text}
-                                        previousTablesJoinColumns={
-                                          row.previousTablesJoinColumns
-                                        }
-                                        previousTableJoinColumn={
-                                          col.previousTableJoinColumn.name
-                                        }
-                                        error={
-                                          col.previousTableJoinColumn.error
-                                        }
-                                        initial={
-                                          col.previousTableJoinColumn.initial
-                                        }
-                                        query={query}
-                                        updateQueryState={updateQueryState}
-                                      />
-                                    </td>
-                                    <td className="width65">
-                                      <Buttons
-                                        type="joinCondition"
-                                        updateQueryState={updateQueryState}
-                                        rowIndex={rowIndex}
-                                        query={query}
-                                      />
-                                    </td>
-                                  </tr>
-                                ))}
-                                {/* <tr>
+                      <div
+                        style={{
+                          verticalAlign: 'top',
+                          marginTop: '10px',
+                          display: 'inline-block',
+                        }}
+                      >{`AS ${row.tableAlias}`}</div>
+                      {rowIndex > 0 ? (
+                        <div
+                          style={{
+                            verticalAlign: 'top',
+                            display: 'inline-block',
+                            marginTop: '10px',
+                          }}
+                        >
+                          ON
+                        </div>
+                      ) : null}
+                      {rowIndex > 0 ? (
+                        <div style={{ display: 'inline-block' }}>
+                          {/* <table style={{ border: "1px solid blue" }}> */}
+                          <div>
+                            {row.joinColumns.map((col, colIndex) => (
+                              <div key={`jc-${rowIndex}-${colIndex}`}>
+                                {colIndex > 0 ? (
+                                  <div style={{ display: 'inline-block' }}>
+                                    AND
+                                  </div>
+                                ) : null}
+                                <div style={{ display: 'inline-block' }}>
+                                  <JoinSearchBarSource
+                                    rowIndex={rowIndex}
+                                    joinColumnIndex={colIndex}
+                                    table={row.tableMetadata}
+                                    tableAlias={row.tableAlias}
+                                    columnText={col.rowTableJoinColumn.name}
+                                    error={col.rowTableJoinColumn.error}
+                                    initial={col.rowTableJoinColumn.initial}
+                                    text={col.rowTableJoinColumn.text}
+                                    query={query}
+                                    updateQueryState={updateQueryState}
+                                  />
+                                </div>
+                                <div style={{ display: 'inline-block' }}>=</div>
+                                <div style={{ display: 'inline-block' }}>
+                                  <JoinSearchBar
+                                    rowIndex={rowIndex}
+                                    joinColumnIndex={colIndex}
+                                    text={col.previousTableJoinColumn.text}
+                                    previousTablesJoinColumns={
+                                      row.previousTablesJoinColumns
+                                    }
+                                    previousTableJoinColumn={
+                                      col.previousTableJoinColumn.name
+                                    }
+                                    error={col.previousTableJoinColumn.error}
+                                    initial={
+                                      col.previousTableJoinColumn.initial
+                                    }
+                                    query={query}
+                                    updateQueryState={updateQueryState}
+                                  />
+                                </div>
+                                <div style={{ display: 'inline-block' }}>
+                                  <Buttons
+                                    type="joinCondition"
+                                    updateQueryState={updateQueryState}
+                                    rowIndex={rowIndex}
+                                    query={query}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                            {/* <tr>
                                   <td>TEST</td>
                                 </tr>
                                 <tr>
@@ -154,19 +185,17 @@ class FromJoinRow extends Component {
                                 <tr>
                                   <td>TEST</td>
                                 </tr> */}
-                              </tbody>
-                            </table>
-                          </td>
-                        ) : null}
-                        {/* {rowIndex > 0 ? (
+                          </div>
+                        </div>
+                      ) : null}
+                      {/* {rowIndex > 0 ? (
                           <td>
 
                           </td>
                           {row.joinColumns.map((col, colIdx)) }
                         ) : null} */}
-                      </tr>
-                    </tbody>
-                  </table>
+                    </div>
+                  </div>
                 </div>
               </div>
               {provided.placeholder}
