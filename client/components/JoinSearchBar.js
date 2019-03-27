@@ -145,7 +145,8 @@ export default class JoinSearchBar extends Component {
           <Search
             size="mini"
             icon="columns"
-            placeholder="Smpl Plchldr"
+            placeholder={`Table ${this.props.rowIndex} to table ${this.props
+              .rowIndex + 1} join column`}
             category
             input={{
               error: !this.props.initial && this.props.error,

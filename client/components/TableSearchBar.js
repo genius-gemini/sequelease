@@ -77,7 +77,7 @@ export default class TableSearchBar extends Component {
               error: !this.props.tableTextInitial && this.props.tableTextError,
               icon: "table",
             }}
-            placeholder={`Choose Table ${this.props.rowIndex + 1}`}
+            placeholder={`Table ${this.props.rowIndex + 1}`}
             loading={isLoading}
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
@@ -106,6 +106,7 @@ export default class TableSearchBar extends Component {
               console.log("click");
             }}
             results={results}
+            size="mini"
             value={this.props.tableText}
             minCharacters={0}
           />
@@ -114,7 +115,7 @@ export default class TableSearchBar extends Component {
         horizontalOffset={!this.props.tableTextText ? -10000 : 0}
         position="top center"
         aligned="left"
-        on={["focus", "hover", "click"]}
+        on={['focus', 'hover']}
       />
     );
   }

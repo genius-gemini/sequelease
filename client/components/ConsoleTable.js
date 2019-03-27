@@ -40,36 +40,38 @@ export default class ConsoleTable extends Component {
       <Container id="console">
         <ConsoleSegment querySQL={this.props.query.toSql()} />
 
-        {/*this.props.queryResults ? (
-          <Table sortable celled fixed>
-            <Table.Header>
-              <Table.Row>
-                {_.map(this.props.queryResults.fields, field => {
-                  return (
-                    <Table.HeaderCell
-                      key={field.name}
-                      sorted={column === field.name ? direction : null}
-                      onClick={this.handleSort(field.name)}
-                    >
-                      {field.name}
-                    </Table.HeaderCell>
-                  );
-                })}
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {_.map(this.props.queryResults.rows, (row, i) => (
-                <Table.Row key={i}>
-                  {_.map(Object.entries(row), ([k, value]) => (
-                    <Table.Cell>{value}</Table.Cell>
-                  ))}
+        <div style={{ display: this.props.showTable ? 'block' : 'none' }}>
+          {this.props.query.queryResults ? (
+            <Table sortable celled fixed>
+              <Table.Header>
+                <Table.Row>
+                  {_.map(this.props.query.queryResults.fields, field => {
+                    return (
+                      <Table.HeaderCell
+                        key={field.name}
+                        sorted={column === field.name ? direction : null}
+                        onClick={this.handleSort(field.name)}
+                      >
+                        {field.name}
+                      </Table.HeaderCell>
+                    );
+                  })}
                 </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        ) : (
-          <div>Nothing yet</div>
-        )*/}
+              </Table.Header>
+              <Table.Body>
+                {_.map(this.props.query.queryResults.rows, (row, i) => (
+                  <Table.Row key={i}>
+                    {_.map(Object.entries(row), ([k, value]) => (
+                      <Table.Cell>{value}</Table.Cell>
+                    ))}
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
+          ) : (
+            <div>Nothing yet</div>
+          )}
+        </div>
       </Container>
     );
   }

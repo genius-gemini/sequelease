@@ -10,7 +10,8 @@ import {
   Segment,
   Table,
   Search,
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
+import HandGrab from './handGrab';
 
 import { Draggable } from "react-beautiful-dnd";
 import Buttons from "./buttons";
@@ -51,17 +52,20 @@ class FromJoinRow extends Component {
                       width: "1400px",
                     }}
                   >
-                    <div style={{ display: "inline-block", marginTop: "5px" }}>
+                    <div style={{ display: 'inline-block', marginTop: '5px' }}>
                       <div
                         style={{
                           verticalAlign: "top",
                           display: "inline-block",
                         }}
                       >
+
+                        <div style={{ display: 'inline-block' }}>
+                          <HandGrab />
+                        </div>
                         <div
                           style={{
-                            display: "inline-block",
-                            marginRight: "5px",
+                            display: 'inline-block',
                           }}
                         >
                           <Buttons
@@ -74,7 +78,7 @@ class FromJoinRow extends Component {
 
                         {rowIndex > 0 ? (
                           <div
-                            style={{ display: "inline-block", width: "130px" }}
+                            style={{ display: 'inline-block', width: '130px' }}
                           >
                             <JoinPopup
                               updateQueryState={updateQueryState}
@@ -106,31 +110,39 @@ class FromJoinRow extends Component {
 
                       <div
                         style={{
-                          verticalAlign: "top",
-                          marginTop: "10px",
-                          marginLeft: "4px",
-                          display: "inline-block",
+                          verticalAlign: 'top',
+                          marginTop: '6px',
+                          marginLeft: '4px',
+                          display: 'inline-block',
                         }}
                       >{`AS ${row.tableAlias}`}</div>
                       {rowIndex > 0 ? (
                         <div
                           style={{
-                            verticalAlign: "top",
-                            display: "inline-block",
-                            marginTop: "10px",
-                            marginLeft: "5px",
-                            marginRight: "5px",
+                            verticalAlign: 'top',
+                            display: 'inline-block',
+                            marginTop: '6px',
+                            marginLeft: '5px',
+                            marginRight: '5px',
                           }}
                         >
                           ON
                         </div>
                       ) : null}
                       {rowIndex > 0 ? (
-                        <div style={{ display: "inline-block" }}>
+                        <div
+                          style={{
+                            verticalAlign: 'top',
+                            display: 'inline-block',
+                          }}
+                        >
                           {/* <table style={{ border: "1px solid blue" }}> */}
-                          <div>
+                          <div style={{ verticalAlign: 'top' }}>
                             {row.joinColumns.map((col, colIndex) => (
-                              <div key={`jc-${rowIndex}-${colIndex}`}>
+                              <div
+                                style={{ verticalAlign: 'top' }}
+                                key={`jc-${rowIndex}-${colIndex}`}
+                              >
                                 {colIndex > 0 ? (
                                   <div style={{ display: "inline-block" }}>
                                     AND
@@ -138,9 +150,10 @@ class FromJoinRow extends Component {
                                 ) : null}
                                 <div
                                   style={{
-                                    display: "inline-block",
-                                    marginLeft: "5px",
-                                    marginRight: "5px",
+                                    display: 'inline-block',
+                                    verticalAlign: 'top',
+                                    marginLeft: '5px',
+                                    marginRight: '0px',
                                   }}
                                 >
                                   <JoinSearchBarSource
@@ -158,13 +171,14 @@ class FromJoinRow extends Component {
                                 </div>
                                 <div
                                   style={{
-                                    display: "inline-block",
-                                    margin: "5px",
+                                    display: 'inline-block',
+                                    verticalAlign: 'top',
+                                    margin: '5px',
                                   }}
                                 >
                                   =
                                 </div>
-                                <div style={{ display: "inline-block" }}>
+                                <div style={{ display: 'inline-block' }}>
                                   <JoinSearchBar
                                     rowIndex={rowIndex}
                                     joinColumnIndex={colIndex}
@@ -185,8 +199,10 @@ class FromJoinRow extends Component {
                                 </div>
                                 <div
                                   style={{
-                                    display: "inline-block",
-                                    margin: "5px",
+                                    display: 'inline-block',
+                                    verticalAlign: 'top',
+                                    margin: '5px',
+                                    marginTop: '0px',
                                   }}
                                 >
                                   <Buttons

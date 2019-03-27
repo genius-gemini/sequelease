@@ -40,30 +40,38 @@ export default class Db {
   };
 
   static async build(host, user, password, port, database) {
-    const res = await axios.post('/api/queries/getDbMetadata', {
-      host,
-      user,
-      password,
-      port,
-      database,
-    });
-    const db = res.data;
+    try {
+      const res = await axios.post('/api/queries/getDbMetadata', {
+        host,
+        user,
+        password,
+        port,
+        database,
+      });
+      const db = res.data;
 
-    const tables = db.tables.map(table => {
-      const fields = table.fields.map(
-        field =>
-          new Field(
-            field.name,
-            field.type,
-            field.default,
-            field.constraint,
-            field.fkTargetTables,
-            field.nullable
-          )
-      );
-      return new Table(table.name, fields);
-    });
+      const tables = db.tables.map(table => {
+        const fields = table.fields.map(
+          field =>
+            new Field(
+              field.name,
+              field.type,
+              field.default,
+              field.constraint,
+              field.fkTargetTables,
+              field.nullable
+            )
+        );
+        return new Table(table.name, fields);
+      });
 
-    return new Db(tables);
+      let dbObj = new Db(tables);
+
+      console.log(dbObj);
+
+      return dbObj;
+    } catch (err) {
+      return { error: 'error' };
+    }
   }
 }

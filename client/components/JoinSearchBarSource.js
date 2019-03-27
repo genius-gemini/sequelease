@@ -89,11 +89,15 @@ export default class JoinSearchBarSource extends Component {
           <Search
             size="mini"
             icon="columns"
-            placeholder="Smpl Plchldr"
+
+            placeholder={`Table ${this.props.rowIndex + 1} to table ${
+              this.props.rowIndex
+            } join column`}
             input={{
               error: !this.props.initial && this.props.error,
             }}
             className="column-search-bar"
+            size="mini"
             loading={isLoading}
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
@@ -118,6 +122,7 @@ export default class JoinSearchBarSource extends Component {
         horizontalOffset={!this.props.text ? -10000 : 0}
         size="tiny"
         position="top center"
+        on={['focus', 'hover']}
       />
     );
   }

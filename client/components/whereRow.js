@@ -9,6 +9,7 @@ import {
   Image,
   Segment,
 } from 'semantic-ui-react';
+import HandGrab from './handGrab';
 
 import { Draggable } from 'react-beautiful-dnd';
 import Buttons from './buttons';
@@ -50,6 +51,9 @@ class WhereRow extends Component {
                 <div className="drag" style={{ width: '1400px' }}>
                   <div>
                     <div style={{ display: 'inline-block' }}>
+                      <HandGrab />
+                    </div>
+                    <div style={{ display: 'inline-block' }}>
                       <Buttons
                         type="whereRow"
                         updateQueryState={updateQueryState}
@@ -88,6 +92,7 @@ class WhereRow extends Component {
                           <Input
                             size="mini"
                             type="text"
+                            placeholder={`Filter ${this.props.rowIndex + 1}`}
                             onChange={e =>
                               this.handleFilterChange(e.target.value)
                             }
@@ -98,6 +103,7 @@ class WhereRow extends Component {
                         disabled={!query.where.whereRows[rowIndex].filterText}
                         size="tiny"
                         position="top center"
+                        on={['focus', 'hover']}
                       />
                     </div>
                   </div>

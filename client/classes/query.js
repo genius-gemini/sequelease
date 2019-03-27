@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 /* eslint-disable complexity */
 /* eslint-disable max-statements */
 // eslint-disable-next-line complexity
@@ -120,7 +122,7 @@ class FromJoinRow {
       .join(' AND ');
     let fromRowString = index > 0 ? `${this.joinType} ` : '';
     fromRowString += `"${this.tableMetadata.name}" AS "${this.tableAlias}" `;
-    fromRowString += (index > 0 ? 'ON ' : '') + joinColumnString;
+    fromRowString += (index > 0 ? ' ON ' : '') + joinColumnString;
 
     return fromRowString.trim();
   };
@@ -175,10 +177,19 @@ class From {
 
   addToPreviousTablesJoinColumnsResults = (rowIndex, table) => {
     for (let nextFromJoinRow of this.fromJoinRows.slice(rowIndex + 1)) {
-      nextFromJoinRow.previousTablesJoinColumns.push({
-        tableMetadata: table,
-        tableAlias: this.fromJoinRows[rowIndex].tableAlias,
-      });
+      if (
+        !nextFromJoinRow.previousTablesJoinColumns.find(
+          row =>
+            row.tableAlias === this.fromJoinRows[rowIndex].tableAlias &&
+            row.tableMetadata.name ===
+              this.fromJoinRows[rowIndex].tableMetadata.name
+        )
+      ) {
+        nextFromJoinRow.previousTablesJoinColumns.push({
+          tableMetadata: table,
+          tableAlias: this.fromJoinRows[rowIndex].tableAlias,
+        });
+      }
     }
   };
 
@@ -249,6 +260,7 @@ class From {
       // Add table metadata
       this.fromJoinRows[rowIndex].tableMetadata = table;
       // Add new table to results of subsequent joined tables
+
       this.addToPreviousTablesJoinColumnsResults(rowIndex, table);
 
       this.fullResults.addResult(this.fromJoinRows[rowIndex]);
@@ -384,6 +396,11 @@ class From {
 
     this.rebuildSubsequentTablesPreviousTablesJoinColumns(rowIndex);
 
+    if (rowIndex === 0)
+      this.fromJoinRows[0].joinColumns = [
+        ...FromJoinRow.templateJoinFromRow.joinColumns,
+      ];
+
     this.buildGuidance();
     this.select.buildGuidance();
     this.where.buildGuidance();
@@ -392,6 +409,12 @@ class From {
   handleDraggableDrop(sourceIndex, destinationIndex, startIndex, endIndex) {
     let sourceRow = this.fromJoinRows.splice(sourceIndex, 1)[0];
     this.fromJoinRows.splice(destinationIndex, 0, sourceRow);
+
+    if (destinationIndex === 0) {
+      this.fromJoinRows[0].joinColumns = [
+        ...FromJoinRow.templateJoinFromRow.joinColumns,
+      ];
+    }
 
     this.rebuildSubsequentTablesPreviousTablesJoinColumns(startIndex, endIndex);
     this.buildGuidance();
@@ -889,8 +912,11 @@ class Select {
       } else if (row.name && validTableAlias && columnText && !row.type) {
         row.text = `Column not found in table ${tableAssociatedWithAliasText}. Check out the schema reference`;
         row.error = true;
+      } else if (!row.name && this.fullResults.results.length) {
+        row.text = `Choose a column from a valid table above (${fullTableListWithAliasTableFirstText}). Format: [table alias].[column] e.g. a.id`;
+        row.error = false;
       } else {
-        row.text = '';
+        row.text = ``;
         row.error = false;
       }
     });
@@ -1092,8 +1118,11 @@ class Where {
       } else if (row.name && validTableAlias && columnText && !row.type) {
         row.columnText = `Column not found in table ${tableAssociatedWithAliasText}. Check out the schema reference`;
         row.columnError = true;
+      } else if (!row.name && this.fullResults.results.length) {
+        row.columnText = `Choose a column from a valid table above (${fullTableListWithAliasTableFirstText}). Format: [table alias].[column] e.g. a.id`;
+        row.columnError = false;
       } else {
-        row.columnText = '';
+        row.columnText = ``;
         row.columnError = false;
       }
 
@@ -1207,7 +1236,7 @@ class FullResults {
     return tableList.length === 1
       ? tableList[0]
       : `${tableList.slice(0, tableList.length - 1).join(', ')}
-      ${tableList.length > 2 ? ',' : null} and
+      ${tableList.length > 2 ? ',' : ''} and
       ${tableList[tableList.length - 1]}`;
   }
 }
@@ -1218,6 +1247,7 @@ export default class Query {
     this.from = from;
     this.where = where;
     this.fullResults = fullResults;
+    this.queryResults = [];
   }
 
   static build(db) {
@@ -1230,5 +1260,20 @@ export default class Query {
 
   toSql = () => {
     return this.select.toSql() + this.from.toSql() + this.where.toSql();
+  };
+
+  getQueryResults = async (host, user, password, port, database) => {
+    const results = await axios.post('/api/queries/run', {
+      query: this,
+      host,
+      user,
+      password,
+      port,
+      database,
+    });
+    const queryResults = results.data;
+    //console.log(queryResults);
+    this.queryResults = queryResults;
+    return this;
   };
 }
