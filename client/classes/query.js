@@ -5,8 +5,11 @@ const axios = require('axios');
 // eslint-disable-next-line complexity
 const modifySelectOrWhereColumn = (row, fullResults, alias, value) => {
   const tableAliasAndColumn = value.split('.');
-  const tableAlias = alias || tableAliasAndColumn[0];
-  const columnName = tableAliasAndColumn[1] || value;
+  let tableAlias = alias || tableAliasAndColumn[0];
+  let columnName = tableAliasAndColumn[1] || value;
+
+  tableAlias = tableAlias ? tableAlias.trim() : null;
+  columnName = columnName ? columnName.trim() : null;
 
   let validTable =
     alias || fullResults.tableAliasExistsInFullResults(tableAlias);
@@ -16,13 +19,17 @@ const modifySelectOrWhereColumn = (row, fullResults, alias, value) => {
   if (validTable) {
     foundTable = fullResults.getTableInFullResults(tableAlias);
 
-    foundColumn = foundTable.getField(columnName);
+    foundColumn = foundTable.getField(columnName) || columnName === '*';
     if (foundColumn) {
       row.name = tableAlias + '.' + columnName;
       row.type = foundColumn && foundColumn.type;
     }
   }
-  if (!validTable || !foundColumn) {
+
+  if (!validTable && columnName === '*') {
+    row.name = value;
+    row.type = null;
+  } else if (!validTable || !foundColumn) {
     row.name = value;
     row.type = null;
   }
@@ -107,15 +114,25 @@ class FromJoinRow {
           joinColumn.previousTableJoinColumn.name.trim()
       )
       .map(joinColumn => {
-        const [
+        let [
           rowTableJoinAlias,
           rowTableJoinValue,
         ] = joinColumn.rowTableJoinColumn.name.trim().split('.');
 
-        const [
+        rowTableJoinAlias = rowTableJoinAlias ? rowTableJoinAlias.trim() : null;
+        rowTableJoinValue = rowTableJoinValue ? rowTableJoinValue.trim() : null;
+
+        let [
           previousTableJoinAlias,
           previousTableJoinValue,
         ] = joinColumn.previousTableJoinColumn.name.trim().split('.');
+
+        previousTableJoinAlias = previousTableJoinAlias
+          ? previousTableJoinAlias.trim()
+          : null;
+        previousTableJoinValue = previousTableJoinValue
+          ? previousTableJoinValue.trim()
+          : null;
 
         return `"${rowTableJoinAlias}"."${rowTableJoinValue}" = "${previousTableJoinAlias}"."${previousTableJoinValue}"`;
       })
@@ -212,9 +229,11 @@ class From {
       for (let col of row.joinColumns) {
         if (firstTable) {
           updatedRow = row;
-          const [tableAlias, columnText] = col.rowTableJoinColumn.name.split(
-            '.'
-          );
+          let [tableAlias, columnText] = col.rowTableJoinColumn.name.split('.');
+
+          tableAlias = tableAlias ? tableAlias.trim() : null;
+          columnText = columnText ? columnText.trim() : null;
+
           const foundField =
             row.tableMetadata.fields &&
             row.tableMetadata.fields.find(field => field.name === columnText);
@@ -225,10 +244,13 @@ class From {
             col.rowTableJoinColumn.type = null;
           }
         } else {
-          const [
-            tableAlias,
-            columnText,
-          ] = col.previousTableJoinColumn.name.split('.');
+          let [tableAlias, columnText] = col.previousTableJoinColumn.name.split(
+            '.'
+          );
+
+          tableAlias = tableAlias ? tableAlias.trim() : null;
+          columnText = columnText ? columnText.trim() : null;
+
           const foundField =
             updatedRow.tableMetadata.fields &&
             updatedRow.tableMetadata.fields.find(
@@ -295,8 +317,11 @@ class From {
     value
   ) => {
     const tableAliasAndColumn = value.split('.');
-    const tableAlias = alias || tableAliasAndColumn[0];
-    const columnName = tableAliasAndColumn[1] || value;
+    let tableAlias = alias || tableAliasAndColumn[0];
+    let columnName = tableAliasAndColumn[1] || value;
+
+    tableAlias = tableAlias ? tableAlias.trim() : null;
+    columnName = columnName ? columnName.trim() : null;
 
     let rowTable = this.fromJoinRows[rowIndex];
 
@@ -326,8 +351,11 @@ class From {
     value
   ) => {
     const tableAliasAndColumn = value.split('.');
-    const tableAlias = alias || tableAliasAndColumn[0];
-    const columnName = tableAliasAndColumn[1] || value;
+    let tableAlias = alias || tableAliasAndColumn[0];
+    let columnName = tableAliasAndColumn[1] || value;
+
+    tableAlias = tableAlias ? tableAlias.trim() : null;
+    columnName = columnName ? columnName.trim() : null;
 
     let previousTableWithAlias = this.fromJoinRows
       .slice(0, rowIndex + 1)
@@ -630,6 +658,9 @@ class From {
         let [tableAlias, columnText] =
           col.rowTableJoinColumn.name && col.rowTableJoinColumn.name.split('.');
 
+        tableAlias = tableAlias ? tableAlias.trim() : null;
+        columnText = columnText ? columnText.trim() : null;
+
         const matchingColumnAsAlias =
           row.tableMetadata.fields &&
           !!row.tableMetadata.fields.find(field => field.name === tableAlias);
@@ -699,6 +730,9 @@ class From {
         }
 
         [tableAlias, columnText] = col.previousTableJoinColumn.name.split('.');
+
+        tableAlias = tableAlias ? tableAlias.trim() : null;
+        columnText = columnText ? columnText.trim() : null;
 
         const previousTableAssociatedWithAlias = row.previousTablesJoinColumns.find(
           previousTable => previousTable.tableAlias === tableAlias
@@ -805,8 +839,18 @@ class SelectRow {
   }
 
   toSql() {
-    const [tableAlias, fieldName] = this.name.split('.');
-    return `"${tableAlias}"."${fieldName ? fieldName : ''}"`;
+    if (this.name && this.name.trim() === '*') {
+      return '*';
+    } else {
+      let [tableAlias, fieldName] = this.name.split('.');
+
+      tableAlias = tableAlias ? tableAlias.trim() : null;
+      fieldName = fieldName ? fieldName.trim() : null;
+
+      return `"${tableAlias}".${fieldName === '*' ? '' : '"'}${
+        fieldName ? fieldName : ''
+      }${fieldName === '*' ? '' : '"'}`;
+    }
   }
 }
 
@@ -865,7 +909,11 @@ class Select {
 
   updateColumnTypes = updatedFromRow => {
     for (let row of this.selectRows) {
-      const [tableAlias, columnText] = row.name.split('.');
+      let [tableAlias, columnText] = row.name.split('.');
+
+      tableAlias = tableAlias ? tableAlias.trim() : null;
+      columnText = columnText ? columnText.trim() : null;
+
       const foundField =
         updatedFromRow.tableMetadata.fields &&
         updatedFromRow.tableMetadata.fields.find(
@@ -885,7 +933,10 @@ class Select {
     const fullTableListWithAliasTableFirstText = this.fullResults.listTablesTableFirst();
 
     this.selectRows.forEach(row => {
-      const [tableAlias, columnText] = row.name.split('.');
+      let [tableAlias, columnText] = row.name.split('.');
+
+      tableAlias = tableAlias ? tableAlias.trim() : null;
+      columnText = columnText ? columnText.trim() : null;
 
       const tableAssociatedWithAlias = this.fullResults.results.find(
         table => table.tableAlias === tableAlias
@@ -900,7 +951,13 @@ class Select {
       if (!this.fullResults.results.length) {
         row.error = false;
         row.text = `No valid tables available above to select columns from. Choose some in FROM`;
-      } else if (row.name && !row.type && !validTableAlias && !columnText) {
+      } else if (
+        row.name &&
+        !row.type &&
+        !validTableAlias &&
+        !columnText &&
+        tableAlias !== '*'
+      ) {
         row.text = `Choose a column from a valid table above (${fullTableListWithAliasTableFirstText}). Format: [table alias].[column] e.g. a.id`;
         row.error = true;
       } else if (row.name && !row.type && !validTableAlias && columnText) {
@@ -909,7 +966,12 @@ class Select {
       } else if (row.name && !row.type && validTableAlias && !columnText) {
         row.text = `Choose a column from table ${tableAssociatedWithAliasText}`;
         row.error = true;
-      } else if (row.name && validTableAlias && columnText && !row.type) {
+      } else if (
+        row.name &&
+        validTableAlias &&
+        columnText &&
+        (!row.type && columnText !== '*')
+      ) {
         row.text = `Column not found in table ${tableAssociatedWithAliasText}. Check out the schema reference`;
         row.error = true;
       } else if (!row.name && this.fullResults.results.length) {
@@ -968,7 +1030,11 @@ class WhereRow {
   }
 
   toSql = () => {
-    const [tableAlias, value] = this.name.trim().split('.');
+    let [tableAlias, value] = this.name.split('.');
+
+    tableAlias = tableAlias ? tableAlias.trim() : null;
+    value = value ? value.trim() : null;
+
     const filter = this.filterTypeQuotes() ? `'${this.filter}'` : this.filter;
     return `"${tableAlias}"."${value}" ${this.selectedOperator.name} ${filter}`;
   };
@@ -1071,7 +1137,11 @@ class Where {
 
   updateColumnTypes = updatedFromRow => {
     for (let row of this.whereRows) {
-      const [tableAlias, columnText] = row.name.split('.');
+      let [tableAlias, columnText] = row.name.split('.');
+
+      tableAlias = tableAlias ? tableAlias.trim() : null;
+      columnText = columnText ? columnText.trim() : null;
+
       const foundField =
         updatedFromRow.tableMetadata.fields &&
         updatedFromRow.tableMetadata.fields.find(
@@ -1091,7 +1161,10 @@ class Where {
     const fullTableListWithAliasTableFirstText = this.fullResults.listTablesTableFirst();
 
     this.whereRows.forEach(row => {
-      const [tableAlias, columnText] = row.name.split('.');
+      let [tableAlias, columnText] = row.name.split('.');
+
+      tableAlias = tableAlias ? tableAlias.trim() : null;
+      columnText = columnText ? columnText.trim() : null;
 
       const tableAssociatedWithAlias = this.fullResults.results.find(
         table => table.tableAlias === tableAlias

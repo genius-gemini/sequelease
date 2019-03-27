@@ -1,6 +1,6 @@
-import _ from "lodash";
-import React, { Component } from "react";
-import { Search, Label, Popup } from "semantic-ui-react";
+import _ from 'lodash';
+import React, { Component } from 'react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -20,7 +20,7 @@ export default class TableSearchBar extends Component {
     //this.setState({ value: this.props.selectedTable });
 
     const searchBar = document.getElementById(
-      `search-bar-table-${this.props.rowIndex}`,
+      `search-bar-table-${this.props.rowIndex}`
     );
     searchBar.focus();
     searchBar.blur();
@@ -50,7 +50,7 @@ export default class TableSearchBar extends Component {
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
-      const re = new RegExp(_.escapeRegExp(this.props.tableText), "i");
+      const re = new RegExp(_.escapeRegExp(this.props.tableText), 'i');
       const isMatch = result => re.test(result.title);
 
       this.setState({
@@ -59,8 +59,23 @@ export default class TableSearchBar extends Component {
           this.props.resultTables().map(tablename => {
             return { title: tablename };
           }),
-          isMatch,
+          isMatch
         ),
+      });
+    }, 100);
+  };
+
+  handleSearchChangeMousedown = () => {
+    //this.setState({ isLoading: true /*value */ });
+
+    setTimeout(() => {
+      //if (this.state.value.length < 1) return this.resetComponent();
+
+      this.setState({
+        isLoading: false,
+        results: this.props.resultTables().map(tablename => {
+          return { title: tablename };
+        }),
       });
     }, 100);
   };
@@ -75,7 +90,7 @@ export default class TableSearchBar extends Component {
             id={`search-bar-table-${this.props.rowIndex}`}
             input={{
               error: !this.props.tableTextInitial && this.props.tableTextError,
-              icon: "table",
+              icon: 'table',
             }}
             placeholder={`Table ${this.props.rowIndex + 1}`}
             loading={isLoading}
@@ -83,9 +98,14 @@ export default class TableSearchBar extends Component {
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,
             })}
+            onMouseDown={(e, data) => {
+              this.handleSearchChangeMousedown(e, data);
+              console.log('click');
+            }}
             onFocus={(e, data) => {
               this.handleSearchChange(e, data);
-              console.log("focus");
+              e.target.select();
+              console.log('focus');
             }}
             onBlur={(e, data) => {
               if (!this.state.first) {
@@ -99,14 +119,9 @@ export default class TableSearchBar extends Component {
                 ].tableTextInitial = true;
                 this.setState({ first: false });
               }
-              console.log("blur");
-            }}
-            onMouseDown={(e, data) => {
-              this.handleSearchChange(e, data);
-              console.log("click");
+              console.log('blur');
             }}
             results={results}
-            size="mini"
             value={this.props.tableText}
             minCharacters={0}
           />
@@ -115,7 +130,7 @@ export default class TableSearchBar extends Component {
         horizontalOffset={!this.props.tableTextText ? -10000 : 0}
         position="top center"
         aligned="left"
-        on={["focus", "hover"]}
+        on={['focus', 'hover']}
         size="tiny"
       />
     );
