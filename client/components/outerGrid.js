@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Header } from "semantic-ui-react";
+import { Grid, Header, Icon } from "semantic-ui-react";
 import FromClause from "./fromClause";
 import SelectClause from "./selectClause";
 import WhereClause from "./whereClause";
@@ -7,7 +7,7 @@ import WhereClause from "./whereClause";
 const OuterGrid = props => {
   const { db, query, updateQueryState } = props;
   return (
-    <div style={{ marginLeft: '55px', marginRight: '55px' }}>
+    <div style={{ marginLeft: "55px", marginRight: "55px" }}>
       <Grid celled>
         <Grid.Row>
           <Grid.Column width={1}>

@@ -6,7 +6,6 @@ export default () => (
     style={{ display: "inline-block", marginRight: "5px" }}
     content="Drag"
     icon="arrows alternate vertical"
-    labelPosition="left"
     size="medium"
     basic
   />
