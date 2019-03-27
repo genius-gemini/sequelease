@@ -26,6 +26,7 @@ const connectPool = (host, user, password, port, database) => {
     // password: process.env.TUTORIAL_DB_PASS,
     host: host || 'localhost',
     database: database || 'tutorial-sql',
+
     user: user || null,
     password: password || null,
     port: port || 5432,
@@ -113,7 +114,6 @@ router.post('/getDbMetadata', async (req, res, next) => {
 });
 
 // eslint-disable-next-line complexity
-
 router.post('/run', async (req, res, next) => {
   const { query, host, user, password, port, database } = req.body;
 
