@@ -21,6 +21,12 @@ class App extends Component {
       query: null,
       showTable: false,
       visible: false,
+      dbName: 'tutorial-sql',
+      host: null,
+      user: null,
+      password: null,
+      port: null,
+      database: null,
     };
 
     this.connectToDb();
@@ -37,6 +43,8 @@ class App extends Component {
   connectToDb = async (host, user, password, port, database) => {
     const db = await Db.build(host, user, password, port, database);
 
+    this.setState({ host, user, password, port, database });
+
     if (db.error) {
       this.setState({ error: true });
     } else {
@@ -51,13 +59,24 @@ class App extends Component {
   };
 
   runQuery = async () => {
-    let query = await this.state.query.getQueryResults();
+    const { host, user, password, port, database } = this.state;
+    let query = await this.state.query.getQueryResults(
+      host,
+      user,
+      password,
+      port,
+      database
+    );
 
     this.setState({ query, showTable: true });
   };
 
   showTable = () => {
     this.setState(prevState => ({ showTable: !prevState.showTable }));
+  };
+
+  setDbName = name => {
+    this.setState({ dbName: name });
   };
 
   render() {
@@ -80,7 +99,10 @@ class App extends Component {
                 width="wide"
                 target={this.segmentRef}
               >
-                <AccordionNested db={this.state.db} />
+                <AccordionNested
+                  dbName={this.state.dbName}
+                  db={this.state.db}
+                />
               </Sidebar>
 
               <Sidebar.Pusher>
@@ -89,6 +111,7 @@ class App extends Component {
                   handleShowClick={this.handleShowClick}
                 />
                 <Connect
+                  setDbName={this.setDbName}
                   error={this.state.error}
                   connectToDb={this.connectToDb}
                 />
@@ -132,8 +155,15 @@ class App extends Component {
                     marginBottom: '30px',
                     marginRight: '30px',
                     right: 0,
+                    cursor: 'pointer',
                     bottom: 0,
                     position: 'fixed',
+                    padding: '5px',
+                    paddingLeft: '7px',
+                    paddingRight: '7px',
+                    backgroundColor: 'black',
+                    borderRadius: '3px',
+                    color: 'white',
                   }}
                 >
                   {this.state.showTable ? 'Hide' : 'Show'} Table

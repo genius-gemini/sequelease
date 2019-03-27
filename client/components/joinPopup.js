@@ -42,7 +42,7 @@ class JoinPopup extends Component {
         }
         position="right center"
         keepInViewPort
-        on={['click', 'focus']}
+        on={['click']}
         hoverable
         open={this.state.isOpen}
         onClose={this.handleClose}

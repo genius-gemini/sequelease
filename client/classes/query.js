@@ -1262,8 +1262,15 @@ export default class Query {
     return this.select.toSql() + this.from.toSql() + this.where.toSql();
   };
 
-  getQueryResults = async () => {
-    const results = await axios.post('/api/queries/run', { query: this });
+  getQueryResults = async (host, user, password, port, database) => {
+    const results = await axios.post('/api/queries/run', {
+      query: this,
+      host,
+      user,
+      password,
+      port,
+      database,
+    });
     const queryResults = results.data;
     //console.log(queryResults);
     this.queryResults = queryResults;

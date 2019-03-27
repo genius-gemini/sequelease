@@ -29,6 +29,9 @@ class Connect extends Component {
   handleConnectButtonClick = async () => {
     const { host, user, password, port, database } = this.state;
     await this.props.connectToDb(host, user, password, port, database);
+    if (database) {
+      this.props.setDbName(database);
+    }
     this.setState({ showInfo: true, first: false });
   };
 

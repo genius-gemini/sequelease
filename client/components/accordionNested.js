@@ -218,7 +218,7 @@ const AccordionNested = props => {
   const rootPanels = () => [
     {
       key: 'database',
-      title: { content: 'Tutorial-SQL', icon: 'database' },
+      title: { content: props.dbName, icon: 'database' },
       content: { content: level1Content() },
     },
   ];

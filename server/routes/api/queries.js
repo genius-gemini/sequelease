@@ -114,7 +114,7 @@ router.post('/getDbMetadata', async (req, res, next) => {
 
 // eslint-disable-next-line complexity
 router.post('/run', async (req, res, next) => {
-  const { query } = req.body;
+  const { query, host, user, password, port, database } = req.body;
 
   console.log(query);
 
@@ -202,7 +202,7 @@ router.post('/run', async (req, res, next) => {
 
   console.log(queryString);
 
-  const pool = connectPool();
+  const pool = connectPool(host, user, password, port, database);
   const queryResults = await pool.query(queryString + ' LIMIT 10');
 
   await pool.end();
