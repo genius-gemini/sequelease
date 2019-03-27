@@ -45,28 +45,53 @@ export default class SelectAndWhereColumnSearchBar extends Component {
   };
 
   setFullResultsState = () => {
+    let fullResults = {};
+
+    if (this.props.type === 'select') {
+      fullResults.All = {
+        name: 'all',
+        alias: null,
+        results: [{ tableName: 'all', alias: null, title: '*' }],
+      };
+    }
+
+    fullResults = {
+      ...fullResults,
+      ...this.props.query.fullResults.results.reduce((resultDrop, result) => {
+        // eslint-disable-next-line no-param-reassign
+
+        resultDrop[
+          result.tableMetadata.name + ' (' + result.tableAlias + ')'
+        ] = {
+          name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
+          tableAlias: result.tableAlias,
+          results: result.tableMetadata.fields
+            ? result.tableMetadata.fields.map(column => ({
+                alias: result.tableAlias,
+                tablename: result.tableMetadata.name,
+                title: column.name,
+              }))
+            : [],
+        };
+        return resultDrop;
+      }, {}),
+    };
+
+    if (this.props.type === 'select') {
+      Object.keys(fullResults).forEach(key => {
+        if (key !== 'All') {
+          fullResults[key].results.unshift({
+            tableName: fullResults[key].name,
+            alias: fullResults[key].tableAlias,
+            title: '*',
+          });
+        }
+      });
+    }
+
     this.setState({
       // eslint-disable-next-line react/no-unused-state
-      fullResults: this.props.query.fullResults.results.reduce(
-        (resultDrop, result) => {
-          // eslint-disable-next-line no-param-reassign
-
-          resultDrop[
-            result.tableMetadata.name + ' (' + result.tableAlias + ')'
-          ] = {
-            name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
-            results: result.tableMetadata.fields
-              ? result.tableMetadata.fields.map(column => ({
-                  alias: result.tableAlias,
-                  tablename: result.tableMetadata.name,
-                  title: column.name,
-                }))
-              : [],
-          };
-          return resultDrop;
-        },
-        {}
-      ),
+      fullResults,
     });
   };
 
