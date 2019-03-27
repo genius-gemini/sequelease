@@ -24,10 +24,10 @@ const connectPool = (host, user, password, port, database) => {
     // database: 'dbpnauv6i7jjki',
     // user: 'rwbqgxjqwqrxuh',
     // password: process.env.TUTORIAL_DB_PASS,
-    host: host || 'ec2-54-221-201-212.compute-1.amazonaws.com',
-    database: database || 'dbpnauv6i7jjki',
-    user: user || 'rwbqgxjqwqrxuh',
-    password: password || process.env.TUTORIAL_DB_PASS,
+    host: host || 'localhost',
+    database: database || 'tutorial-sql',
+    user: user || null,
+    password: password || null,
     port: port || 5432,
   });
 };
@@ -126,8 +126,18 @@ router.post('/run', async (req, res, next) => {
       query.select.selectRows
         .filter(row => row.name.trim())
         .map(row => {
-          const [tableAlias, fieldName] = row.name.split('.');
-          return `"${tableAlias}"."${fieldName ? fieldName : ''}"`;
+          if (row.name && row.name.trim() === '*') {
+            return '*';
+          } else {
+            let [tableAlias, fieldName] = row.name.split('.');
+
+            tableAlias = tableAlias ? tableAlias.trim() : null;
+            fieldName = fieldName ? fieldName.trim() : null;
+
+            return `"${tableAlias}".${fieldName === '*' ? '' : '"'}${
+              fieldName ? fieldName : ''
+            }${fieldName === '*' ? '' : '"'}`;
+          }
         })
         .join(', ');
 
@@ -148,15 +158,29 @@ router.post('/run', async (req, res, next) => {
             joinColumn.previousTableJoinColumn.name.trim()
         )
         .map(joinColumn => {
-          const [
+          let [
             rowTableJoinAlias,
             rowTableJoinValue,
-          ] = joinColumn.rowTableJoinColumn.name.trim().split('.');
+          ] = joinColumn.rowTableJoinColumn.name.split('.');
 
-          const [
+          rowTableJoinAlias = rowTableJoinAlias
+            ? rowTableJoinAlias.trim()
+            : null;
+          rowTableJoinValue = rowTableJoinValue
+            ? rowTableJoinValue.trim()
+            : null;
+
+          let [
             previousTableJoinAlias,
             previousTableJoinValue,
-          ] = joinColumn.previousTableJoinColumn.name.trim().split('.');
+          ] = joinColumn.previousTableJoinColumn.name.split('.');
+
+          previousTableJoinAlias = previousTableJoinAlias
+            ? previousTableJoinAlias.trim()
+            : null;
+          previousTableJoinValue = previousTableJoinValue
+            ? previousTableJoinValue.trim()
+            : null;
 
           return `"${rowTableJoinAlias}"."${rowTableJoinValue}" = "${previousTableJoinAlias}"."${previousTableJoinValue}"`;
         })
@@ -190,7 +214,11 @@ router.post('/run', async (req, res, next) => {
           row.filter.trim()
       )
       .map(row => {
-        const [tableAlias, value] = row.name.trim().split('.');
+        let [tableAlias, value] = row.name.split('.');
+
+        tableAlias = tableAlias ? tableAlias.trim() : null;
+        value = value ? value.trim() : null;
+
         const filter = filterTypeQuotes(row) ? `'${row.filter}'` : row.filter;
         return `"${tableAlias}"."${value}" ${
           row.selectedOperator.name

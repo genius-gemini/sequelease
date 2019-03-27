@@ -99,12 +99,16 @@ class WhereRow extends Component {
                             value={query.where.whereRows[rowIndex].filter}
                           />
                         }
-                        content={query.where.whereRows[rowIndex].filterText}
+                        //content={query.where.whereRows[rowIndex].filterText}
                         disabled={!query.where.whereRows[rowIndex].filterText}
                         size="tiny"
                         position="top center"
                         on={['focus', 'hover']}
-                      />
+                      >
+                        <Popup.Content>
+                          {query.where.whereRows[rowIndex].filterText}
+                        </Popup.Content>
+                      </Popup>
                     </div>
                   </div>
                   {/* <Grid celled>
