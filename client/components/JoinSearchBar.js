@@ -74,7 +74,7 @@ export default class JoinSearchBar extends Component {
       result.alias + '.' + result.title
     );
 
-  handleSearchMousedown = (e, { value }) => {
+  handleSearchChangeMousedown = (e, { value }) => {
     this.modifyPreviousTableJoinColumn(null, null, value);
 
     this.setJoinColumnsState();
