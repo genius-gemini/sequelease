@@ -10,7 +10,6 @@ import Connect from './components/Connect';
 import Db from './classes/db';
 import Query from './classes/query';
 import AccordionNested from './components/accordionNested';
-import Axios from 'axios';
 
 class App extends Component {
   constructor(props) {
@@ -69,6 +68,10 @@ class App extends Component {
     );
 
     this.setState({ query, showTable: true });
+  };
+
+  clearQuery = () => {
+    this.setState({ query: Query.build(this.state.db) });
   };
 
   showTable = () => {
@@ -135,11 +138,24 @@ class App extends Component {
                       query={this.state.query}
                       updateQueryState={this.updateQueryState}
                     /> */}
-                <div>
+                <div
+                  style={{
+                    marginLeft: '55px',
+                    marginRight: '5px',
+                    display: 'inline-block',
+                  }}
+                >
                   <button onClick={this.runQuery} type="button">
                     Run Query
                   </button>
                 </div>
+
+                <div style={{ display: 'inline-block' }}>
+                  <button onClick={this.clearQuery} type="button">
+                    Clear Query
+                  </button>
+                </div>
+
                 <div id="consoleBox">
                   <Ref innerRef={this.segmentRef}>
                     <ConsoleTable
