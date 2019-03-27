@@ -1,8 +1,8 @@
-import React from 'react';
-import { Grid, Header } from 'semantic-ui-react';
-import FromClause from './fromClause';
-import SelectClause from './selectClause';
-import WhereClause from './whereClause';
+import React from "react";
+import { Grid, Header } from "semantic-ui-react";
+import FromClause from "./fromClause";
+import SelectClause from "./selectClause";
+import WhereClause from "./whereClause";
 
 const OuterGrid = props => {
   const { db, query, updateQueryState } = props;

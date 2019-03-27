@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Form,
   Input,
@@ -13,19 +13,19 @@ import {
 } from 'semantic-ui-react';
 import HandGrab from './handGrab';
 
-import { Draggable } from 'react-beautiful-dnd';
-import Buttons from './buttons';
+import { Draggable } from "react-beautiful-dnd";
+import Buttons from "./buttons";
 
-import JoinPopup from './joinPopup';
-import TableSearchBar from './TableSearchBar';
-import JoinSearchBarSource from './JoinSearchBarSource';
-import JoinSearchBar from './JoinSearchBar';
+import JoinPopup from "./joinPopup";
+import TableSearchBar from "./TableSearchBar";
+import JoinSearchBarSource from "./JoinSearchBarSource";
+import JoinSearchBar from "./JoinSearchBar";
 
 class FromJoinRow extends Component {
   componentDidMount = () => {
     [
-      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
-    ].map(elem => elem.removeAttribute('tabindex'));
+      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
+    ].map(elem => elem.removeAttribute("tabindex"));
   };
 
   render() {
@@ -48,17 +48,18 @@ class FromJoinRow extends Component {
                 <div className="drag">
                   <div
                     style={{
-                      position: 'relative',
-                      width: '1400px',
+                      position: "relative",
+                      width: "1400px",
                     }}
                   >
                     <div style={{ display: 'inline-block', marginTop: '5px' }}>
                       <div
                         style={{
-                          verticalAlign: 'top',
-                          display: 'inline-block',
+                          verticalAlign: "top",
+                          display: "inline-block",
                         }}
                       >
+
                         <div style={{ display: 'inline-block' }}>
                           <HandGrab />
                         </div>
@@ -89,11 +90,11 @@ class FromJoinRow extends Component {
 
                         <div
                           style={{
-                            display: 'inline-block',
+                            display: "inline-block",
                           }}
                         >
                           <TableSearchBar
-                            style={{ position: 'relative' }}
+                            style={{ position: "relative" }}
                             rowIndex={rowIndex}
                             resultTables={db.getTableNames}
                             table={row.tableMetadata.name}
@@ -143,7 +144,7 @@ class FromJoinRow extends Component {
                                 key={`jc-${rowIndex}-${colIndex}`}
                               >
                                 {colIndex > 0 ? (
-                                  <div style={{ display: 'inline-block' }}>
+                                  <div style={{ display: "inline-block" }}>
                                     AND
                                   </div>
                                 ) : null}

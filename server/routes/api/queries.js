@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { Pool } = require('pg');
-const queries = require('../../db/queries');
+const { Pool } = require("pg");
+const queries = require("../../db/queries");
 
 module.exports = router;
 
@@ -24,10 +24,10 @@ const connectPool = (host, user, password, port, database) => {
     // database: 'dbpnauv6i7jjki',
     // user: 'rwbqgxjqwqrxuh',
     // password: process.env.TUTORIAL_DB_PASS,
-    host: host || 'ec2-54-221-201-212.compute-1.amazonaws.com',
-    database: database || 'dbpnauv6i7jjki',
-    user: user || 'rwbqgxjqwqrxuh',
-    password: password || process.env.TUTORIAL_DB_PASS,
+    host: host || "localhost",
+    database: database || "tutorial-sql",
+    user: user || null,
+    password: password || null,
     port: port || 5432,
   });
 };
@@ -36,11 +36,11 @@ const formatTransformedDbObjectFields = (tAndCResultRow, fkMetadataFromDb) => {
   const foreignKeyTargetTables = fkMetadataFromDb.rows.filter(
     fkRow =>
       fkRow.table === tAndCResultRow.Table &&
-      fkRow.column === tAndCResultRow.Field
+      fkRow.column === tAndCResultRow.Field,
   );
 
   const foreignKeyTargetTablesNames = foreignKeyTargetTables.map(
-    row => row.target_table
+    row => row.target_table,
   );
 
   return {
@@ -49,26 +49,26 @@ const formatTransformedDbObjectFields = (tAndCResultRow, fkMetadataFromDb) => {
     default: tAndCResultRow.Default,
     constraint:
       tAndCResultRow.Constraint ||
-      (foreignKeyTargetTables.length ? 'FOREIGN KEY' : null),
+      (foreignKeyTargetTables.length ? "FOREIGN KEY" : null),
     fkTargetTables: foreignKeyTargetTablesNames,
-    nullable: tAndCResultRow.Null === 'YES',
+    nullable: tAndCResultRow.Null === "YES",
   };
 };
 
 const formatDbMetadataQueryResults = (
   tablesAndColumnsMetadataFromDb,
-  fkMetadataFromDb
+  fkMetadataFromDb,
 ) => {
   const transformedResults = { tables: [] };
 
   tablesAndColumnsMetadataFromDb.rows.reduce(
     (transformedResultsObj, tAndCResultRow) => {
       const tableInObj = transformedResultsObj.tables.find(
-        tableObj => tableObj.name === tAndCResultRow.Table
+        tableObj => tableObj.name === tAndCResultRow.Table,
       );
       if (tableInObj) {
         tableInObj.fields.push(
-          formatTransformedDbObjectFields(tAndCResultRow, fkMetadataFromDb)
+          formatTransformedDbObjectFields(tAndCResultRow, fkMetadataFromDb),
         );
       } else {
         transformedResultsObj.tables.push({
@@ -80,16 +80,18 @@ const formatDbMetadataQueryResults = (
       }
       return transformedResultsObj;
     },
-    transformedResults
+    transformedResults,
   );
   return transformedResults;
 };
+
 
 router.post('/getDbMetadata', async (req, res, next) => {
   try {
     const { host, user, password, port, database } = req.body;
 
     const pool = connectPool(host, user, password, port, database);
+
 
     const tableAndColumnsDbQueryResults = await pool.query(
       queries.postgresDbTablesAndColumnsMetadata
@@ -100,6 +102,7 @@ router.post('/getDbMetadata', async (req, res, next) => {
     );
 
     await pool.end();
+
 
     const transformedResults = formatDbMetadataQueryResults(
       tableAndColumnsDbQueryResults,
@@ -113,7 +116,6 @@ router.post('/getDbMetadata', async (req, res, next) => {
 });
 
 // eslint-disable-next-line complexity
-
 router.post('/run', async (req, res, next) => {
   const { query, host, user, password, port, database } = req.body;
 

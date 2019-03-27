@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Search, Label, Popup } from 'semantic-ui-react';
+import _ from "lodash";
+import React, { Component } from "react";
+import { Search, Label, Popup } from "semantic-ui-react";
 
 export default class JoinSearchBar extends Component {
   constructor(props) {
@@ -24,7 +24,7 @@ export default class JoinSearchBar extends Component {
       this.props.joinColumnIndex,
       alias,
       tableName,
-      column
+      column,
     );
     this.props.updateQueryState();
   };
@@ -39,15 +39,15 @@ export default class JoinSearchBar extends Component {
 
           resultDrop[
             previousTable.tableMetadata.name +
-              ' (' +
+              " (" +
               previousTable.tableAlias +
-              ')'
+              ")"
           ] = {
             name:
               previousTable.tableMetadata.name +
-              ' (' +
+              " (" +
               previousTable.tableAlias +
-              ')',
+              ")",
             results: previousTable.tableMetadata.fields
               ? _.map(previousTable.tableMetadata.fields, column => ({
                   alias: previousTable.tableAlias,
@@ -58,7 +58,7 @@ export default class JoinSearchBar extends Component {
           };
           return resultDrop;
         },
-        {}
+        {},
       ),
     });
   };
@@ -69,7 +69,7 @@ export default class JoinSearchBar extends Component {
     this.modifyPreviousTableJoinColumn(
       result.alias,
       result.tablename,
-      result.alias + '.' + result.title
+      result.alias + "." + result.title,
     );
 
   handleSearchMousedown = (e, { value }) => {
@@ -99,11 +99,11 @@ export default class JoinSearchBar extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.previousTableJoinColumn.split('.')[1] ||
-            this.props.previousTableJoinColumn.split('.')[0] ||
-            this.props.previousTableJoinColumn
+          this.props.previousTableJoinColumn.split(".")[1] ||
+            this.props.previousTableJoinColumn.split(".")[0] ||
+            this.props.previousTableJoinColumn,
         ),
-        'i'
+        "i",
       );
 
       const isMatch = result => {
@@ -126,7 +126,7 @@ export default class JoinSearchBar extends Component {
 
           return memo;
         },
-        {}
+        {},
       );
 
       this.setState({
