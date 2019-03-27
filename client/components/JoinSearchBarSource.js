@@ -1,6 +1,6 @@
-import _ from "lodash";
-import React, { Component } from "react";
-import { Search, Label, Popup } from "semantic-ui-react";
+import _ from 'lodash';
+import React, { Component } from 'react';
+import { Search, Label, Popup } from 'semantic-ui-react';
 
 const resultRenderer = ({ title }) => {
   return <Label content={title} />;
@@ -32,7 +32,7 @@ export default class JoinSearchBarSource extends Component {
       this.props.joinColumnIndex,
       alias,
       tableName,
-      column,
+      column
     );
     this.props.updateQueryState();
   };
@@ -41,7 +41,7 @@ export default class JoinSearchBarSource extends Component {
     this.modifyRowTableJoinColumn(
       result.alias,
       result.tablename,
-      result.alias + "." + result.title,
+      result.alias + '.' + result.title
     );
     //this.setState({ value: `${result.tablename}.${result.title}` });
   };
@@ -55,9 +55,9 @@ export default class JoinSearchBarSource extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.columnText.split(".")[1] || this.props.columnText,
+          this.props.columnText.split('.')[1] || this.props.columnText
         ),
-        "i",
+        'i'
       );
       const isMatch = result =>
         this.props.columnText ? re.test(result.title) : true;
@@ -74,8 +74,27 @@ export default class JoinSearchBarSource extends Component {
                 };
               })
             : [],
-          isMatch,
+          isMatch
         ),
+      });
+    }, 100);
+  };
+
+  handleSearchChangeMousedown = () => {
+    //this.setState({ isLoading: true /*value*/ });
+
+    setTimeout(() => {
+      //if (this.state.value.length < 1) return this.resetComponent();
+
+      this.setState({
+        isLoading: false,
+        results: this.props.table.fields.map(column => {
+          return {
+            tablename: this.props.table.name,
+            title: column.name,
+            alias: this.props.tableAlias,
+          };
+        }),
       });
     }, 100);
   };
@@ -89,7 +108,6 @@ export default class JoinSearchBarSource extends Component {
           <Search
             size="mini"
             icon="columns"
-
             placeholder={`Table ${this.props.rowIndex + 1} to table ${
               this.props.rowIndex
             } join column`}
@@ -112,8 +130,11 @@ export default class JoinSearchBarSource extends Component {
               this.handleSearchChange(e, data);
             }}
             minCharacters={0}
-            onFocus={this.handleSearchChange}
-            onMouseDown={this.handleSearchChange}
+            onFocus={(e, data) => {
+              this.handleSearchChange(e, data);
+              e.target.select();
+            }}
+            onMouseDown={this.handleSearchChangeMousedown}
             results={results}
             value={this.props.columnText}
           />

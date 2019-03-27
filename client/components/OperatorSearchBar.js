@@ -51,6 +51,19 @@ export default class OperatorSearchBar extends Component {
     }, 100);
   };
 
+  handleSearchChangeMousedown = () => {
+    setTimeout(() => {
+      //if (this.state.value.length < 1) return this.resetComponent();
+
+      this.setState({
+        isLoading: false,
+        results: this.props.query.where.operators.map(op => {
+          return { title: op.name };
+        }),
+      });
+    }, 100);
+  };
+
   render() {
     const { isLoading, results } = this.state;
 
@@ -66,8 +79,11 @@ export default class OperatorSearchBar extends Component {
             input={{ icon: false }}
             placeholder={`Operator ${this.props.rowIndex + 1}`}
             size="mini"
-            onFocus={this.handleSearchChange}
-            onMouseDown={this.handleSearchChange}
+            onFocus={(e, data) => {
+              this.handleSearchChange(e, data);
+              e.target.select();
+            }}
+            onMouseDown={this.handleSearchChangeMousedown}
             results={results}
             value={this.props.operatorText}
             minCharacters={0}
