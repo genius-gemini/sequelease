@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Form,
   Input,
@@ -10,21 +10,21 @@ import {
   Segment,
   Table,
   Search,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import { Draggable } from 'react-beautiful-dnd';
-import Buttons from './buttons';
+import { Draggable } from "react-beautiful-dnd";
+import Buttons from "./buttons";
 
-import JoinPopup from './joinPopup';
-import TableSearchBar from './TableSearchBar';
-import JoinSearchBarSource from './JoinSearchBarSource';
-import JoinSearchBar from './JoinSearchBar';
+import JoinPopup from "./joinPopup";
+import TableSearchBar from "./TableSearchBar";
+import JoinSearchBarSource from "./JoinSearchBarSource";
+import JoinSearchBar from "./JoinSearchBar";
 
 class FromJoinRow extends Component {
   componentDidMount = () => {
     [
-      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
-    ].map(elem => elem.removeAttribute('tabindex'));
+      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
+    ].map(elem => elem.removeAttribute("tabindex"));
   };
 
   render() {
@@ -47,18 +47,23 @@ class FromJoinRow extends Component {
                 <div className="drag">
                   <div
                     style={{
-                      position: 'relative',
-                      width: '1400px',
+                      position: "relative",
+                      width: "1400px",
                     }}
                   >
-                    <div style={{ display: 'inline-block' }}>
+                    <div style={{ display: "inline-block", marginTop: "5px" }}>
                       <div
                         style={{
-                          verticalAlign: 'top',
-                          display: 'inline-block',
+                          verticalAlign: "top",
+                          display: "inline-block",
                         }}
                       >
-                        <div style={{ display: 'inline-block' }}>
+                        <div
+                          style={{
+                            display: "inline-block",
+                            marginRight: "5px",
+                          }}
+                        >
                           <Buttons
                             type="fromJoinRow"
                             updateQueryState={updateQueryState}
@@ -68,7 +73,9 @@ class FromJoinRow extends Component {
                         </div>
 
                         {rowIndex > 0 ? (
-                          <div style={{ display: 'inline-block' }}>
+                          <div
+                            style={{ display: "inline-block", width: "130px" }}
+                          >
                             <JoinPopup
                               updateQueryState={updateQueryState}
                               rowIndex={rowIndex}
@@ -79,11 +86,11 @@ class FromJoinRow extends Component {
 
                         <div
                           style={{
-                            display: 'inline-block',
+                            display: "inline-block",
                           }}
                         >
                           <TableSearchBar
-                            style={{ position: 'relative' }}
+                            style={{ position: "relative" }}
                             rowIndex={rowIndex}
                             resultTables={db.getTableNames}
                             table={row.tableMetadata.name}
@@ -99,34 +106,43 @@ class FromJoinRow extends Component {
 
                       <div
                         style={{
-                          verticalAlign: 'top',
-                          marginTop: '10px',
-                          display: 'inline-block',
+                          verticalAlign: "top",
+                          marginTop: "10px",
+                          marginLeft: "4px",
+                          display: "inline-block",
                         }}
                       >{`AS ${row.tableAlias}`}</div>
                       {rowIndex > 0 ? (
                         <div
                           style={{
-                            verticalAlign: 'top',
-                            display: 'inline-block',
-                            marginTop: '10px',
+                            verticalAlign: "top",
+                            display: "inline-block",
+                            marginTop: "10px",
+                            marginLeft: "5px",
+                            marginRight: "5px",
                           }}
                         >
                           ON
                         </div>
                       ) : null}
                       {rowIndex > 0 ? (
-                        <div style={{ display: 'inline-block' }}>
+                        <div style={{ display: "inline-block" }}>
                           {/* <table style={{ border: "1px solid blue" }}> */}
                           <div>
                             {row.joinColumns.map((col, colIndex) => (
                               <div key={`jc-${rowIndex}-${colIndex}`}>
                                 {colIndex > 0 ? (
-                                  <div style={{ display: 'inline-block' }}>
+                                  <div style={{ display: "inline-block" }}>
                                     AND
                                   </div>
                                 ) : null}
-                                <div style={{ display: 'inline-block' }}>
+                                <div
+                                  style={{
+                                    display: "inline-block",
+                                    marginLeft: "5px",
+                                    marginRight: "5px",
+                                  }}
+                                >
                                   <JoinSearchBarSource
                                     rowIndex={rowIndex}
                                     joinColumnIndex={colIndex}
@@ -140,8 +156,15 @@ class FromJoinRow extends Component {
                                     updateQueryState={updateQueryState}
                                   />
                                 </div>
-                                <div style={{ display: 'inline-block' }}>=</div>
-                                <div style={{ display: 'inline-block' }}>
+                                <div
+                                  style={{
+                                    display: "inline-block",
+                                    margin: "5px",
+                                  }}
+                                >
+                                  =
+                                </div>
+                                <div style={{ display: "inline-block" }}>
                                   <JoinSearchBar
                                     rowIndex={rowIndex}
                                     joinColumnIndex={colIndex}
@@ -160,7 +183,12 @@ class FromJoinRow extends Component {
                                     updateQueryState={updateQueryState}
                                   />
                                 </div>
-                                <div style={{ display: 'inline-block' }}>
+                                <div
+                                  style={{
+                                    display: "inline-block",
+                                    margin: "5px",
+                                  }}
+                                >
                                   <Buttons
                                     type="joinCondition"
                                     updateQueryState={updateQueryState}
@@ -170,30 +198,9 @@ class FromJoinRow extends Component {
                                 </div>
                               </div>
                             ))}
-                            {/* <tr>
-                                  <td>TEST</td>
-                                </tr>
-                                <tr>
-                                  <td>TEST</td>
-                                </tr>
-                                <tr>
-                                  <td>TEST</td>
-                                </tr>
-                                <tr>
-                                  <td>TEST</td>
-                                </tr>
-                                <tr>
-                                  <td>TEST</td>
-                                </tr> */}
                           </div>
                         </div>
                       ) : null}
-                      {/* {rowIndex > 0 ? (
-                          <td>
-
-                          </td>
-                          {row.joinColumns.map((col, colIdx)) }
-                        ) : null} */}
                     </div>
                   </div>
                 </div>
