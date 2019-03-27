@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Form,
   Input,
@@ -8,21 +8,21 @@ import {
   Header,
   Image,
   Segment,
-} from "semantic-ui-react";
-import HandGrab from "./handGrab";
+} from 'semantic-ui-react';
+import HandGrab from './handGrab';
 
-import { Draggable } from "react-beautiful-dnd";
-import Buttons from "./buttons";
+import { Draggable } from 'react-beautiful-dnd';
+import Buttons from './buttons';
 
-import SelectAndWhereColumnSearchBar from "./SelectAndWhereColumnSearchBar";
+import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
 
-import OperatorSearchBar from "./OperatorSearchBar";
+import OperatorSearchBar from './OperatorSearchBar';
 
 class WhereRow extends Component {
   componentDidMount = () => {
     [
-      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
-    ].map(elem => elem.removeAttribute("tabindex"));
+      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
+    ].map(elem => elem.removeAttribute('tabindex'));
   };
 
   handleFilterChange = value => {
@@ -48,12 +48,13 @@ class WhereRow extends Component {
                 {...provided.dragHandleProps}
                 {...provided.draggableProps}
               >
+
                 <div className="drag" style={{ width: "1400px", marginTop: '5px'}}>
                   <div>
-                    <div style={{ display: "inline-block" }}>
+                    <div style={{ display: 'inline-block' }}>
                       <HandGrab />
                     </div>
-                    <div style={{ display: "inline-block" }}>
+                    <div style={{ display: 'inline-block' }}>
                       <Buttons
                         type="whereRow"
                         updateQueryState={updateQueryState}
@@ -61,10 +62,12 @@ class WhereRow extends Component {
                         query={query}
                       />
                     </div>
-                    <div style={{ display: "inline-block" }}>
-                      {rowIndex > 0 ? "AND " : null}
+                    <div style={{ display: 'inline-block' }}>
+                      {rowIndex > 0 ? 'AND ' : null}
                     </div>
+
                     <div style={{ display: "inline-block", marginLeft: "5px" }}>
+
                       <SelectAndWhereColumnSearchBar
                         type="where"
                         rowIndex={rowIndex}
@@ -75,7 +78,7 @@ class WhereRow extends Component {
                         error={row.columnError}
                       />
                     </div>
-                    <div style={{ display: "inline-block", marginLeft: "5px" }}>
+                    <div style={{ display: 'inline-block', marginLeft: '5px' }}>
                       <OperatorSearchBar
                         rowIndex={rowIndex}
                         updateQueryState={updateQueryState}
@@ -86,7 +89,7 @@ class WhereRow extends Component {
                       />
                     </div>
 
-                    <div style={{ display: "inline-block", marginLeft: "5px" }}>
+                    <div style={{ display: 'inline-block', marginLeft: '5px' }}>
                       <Popup
                         trigger={
                           <Input
@@ -100,10 +103,13 @@ class WhereRow extends Component {
                           />
                         }
                         //content={query.where.whereRows[rowIndex].filterText}
-                        disabled={!query.where.whereRows[rowIndex].filterText}
+                        horizontalOffset={
+                          !query.where.whereRows[rowIndex].filterText
+                            ? -10000
+                            : 0
+                        }
                         size="tiny"
                         position="top center"
-
                         on={['focus', 'hover']}
                       >
                         <Popup.Content>

@@ -9,6 +9,7 @@ export default class JoinSearchBar extends Component {
       isLoading: true,
       results: [],
       previousTablesJoinColumns: [],
+      firstFocus: true,
     };
   }
 
@@ -63,7 +64,8 @@ export default class JoinSearchBar extends Component {
     });
   };
 
-  resetComponent = () => this.setState({ isLoading: false, results: [] });
+  resetComponent = () =>
+    this.setState({ isLoading: false, results: [], firstFocus: true });
 
   handleResultSelect = (e, { result }) =>
     this.modifyPreviousTableJoinColumn(
@@ -72,7 +74,10 @@ export default class JoinSearchBar extends Component {
       result.alias + '.' + result.title
     );
 
-  handleSearchMousedown = () => {
+  handleSearchChangeMousedown = (e, { value }) => {
+    this.modifyPreviousTableJoinColumn(null, null, value);
+
+    this.setJoinColumnsState();
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
@@ -155,10 +160,16 @@ export default class JoinSearchBar extends Component {
             })}
             minCharacters={0}
             onFocus={(e, data) => {
-              this.handleSearchChange(e, data);
+              if (this.state.firstFocus) {
+                this.handleSearchChangeMousedown(e, data);
+                this.setState({ firstFocus: false });
+              } else {
+                this.handleSearchChange(e, data);
+              }
               e.target.select();
             }}
             onBlur={(e, data) => {
+              this.setState({ firstFocus: true });
               this.props.query.from.fromJoinRows[
                 this.props.rowIndex
               ].joinColumns[
@@ -166,7 +177,7 @@ export default class JoinSearchBar extends Component {
               ].previousTableJoinColumn.initial = false;
               this.handleSearchChange(e, data);
             }}
-            onMouseDown={this.handleSearchMousedown}
+            //onMouseDown={this.handleSearchMousedown}
             results={results}
             value={this.props.previousTableJoinColumn}
           />
