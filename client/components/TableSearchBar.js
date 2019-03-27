@@ -65,8 +65,9 @@ export default class TableSearchBar extends Component {
     }, 100);
   };
 
-  handleSearchChangeMousedown = () => {
+  handleSearchChangeMousedown = (e, { value }) => {
     //this.setState({ isLoading: true /*value */ });
+    this.modifyFromRowTable(value);
 
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
@@ -103,11 +104,16 @@ export default class TableSearchBar extends Component {
               console.log('click');
             }}
             onFocus={(e, data) => {
-              this.handleSearchChange(e, data);
+              if (this.state.firstFocus) {
+                this.handleSearchChangeMousedown(e, data);
+                this.setState({ firstFocus: false });
+              } else {
+                this.handleSearchChange(e, data);
+              }
               e.target.select();
-              console.log('focus');
             }}
             onBlur={(e, data) => {
+              this.setState({ firstFocus: true });
               if (!this.state.first) {
                 this.props.query.from.fromJoinRows[
                   this.props.rowIndex

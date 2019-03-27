@@ -72,7 +72,10 @@ export default class JoinSearchBar extends Component {
       result.alias + '.' + result.title
     );
 
-  handleSearchMousedown = () => {
+  handleSearchMousedown = (e, { value }) => {
+    this.modifyPreviousTableJoinColumn(null, null, value);
+
+    this.setJoinColumnsState();
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
@@ -155,10 +158,16 @@ export default class JoinSearchBar extends Component {
             })}
             minCharacters={0}
             onFocus={(e, data) => {
-              this.handleSearchChange(e, data);
+              if (this.state.firstFocus) {
+                this.handleSearchChangeMousedown(e, data);
+                this.setState({ firstFocus: false });
+              } else {
+                this.handleSearchChange(e, data);
+              }
               e.target.select();
             }}
             onBlur={(e, data) => {
+              this.setState({ firstFocus: true });
               this.props.query.from.fromJoinRows[
                 this.props.rowIndex
               ].joinColumns[

@@ -21,6 +21,7 @@ export default class OperatorSearchBar extends Component {
     this.setState({
       isLoading: false,
       results: [],
+      firstFocus: true,
       //value: '',
     });
 
@@ -51,7 +52,8 @@ export default class OperatorSearchBar extends Component {
     }, 100);
   };
 
-  handleSearchChangeMousedown = () => {
+  handleSearchChangeMousedown = (e, { value }) => {
+    this.modifyOperator(value);
     setTimeout(() => {
       //if (this.state.value.length < 1) return this.resetComponent();
 
@@ -80,8 +82,16 @@ export default class OperatorSearchBar extends Component {
             placeholder={`Operator ${this.props.rowIndex + 1}`}
             size="mini"
             onFocus={(e, data) => {
-              this.handleSearchChange(e, data);
+              if (this.state.firstFocus) {
+                this.handleSearchChangeMousedown(e, data);
+                this.setState({ firstFocus: false });
+              } else {
+                this.handleSearchChange(e, data);
+              }
               e.target.select();
+            }}
+            onBlur={(e, data) => {
+              this.setState({ firstFocus: true });
             }}
             onMouseDown={this.handleSearchChangeMousedown}
             results={results}
