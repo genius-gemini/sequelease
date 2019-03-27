@@ -6,6 +6,7 @@ import {
   Sidebar,
   Ref,
   Button,
+  Divider,
 } from "semantic-ui-react";
 
 import Routes from "./routes";
@@ -125,6 +126,7 @@ class App extends Component {
                   error={this.state.error}
                   connectToDb={this.connectToDb}
                 />
+                <Divider horizontal>Query Builder</Divider>
                 <OuterGrid
                   db={this.state.db}
                   query={this.state.query}

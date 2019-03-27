@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Search, Label, Popup } from 'semantic-ui-react';
+import _ from "lodash";
+import React, { Component } from "react";
+import { Search, Label, Popup } from "semantic-ui-react";
 
 export default class SelectAndWhereColumnSearchBar extends Component {
   constructor(props) {
@@ -19,26 +19,26 @@ export default class SelectAndWhereColumnSearchBar extends Component {
     this.setFullResultsState();
 
     const searchBar = document.getElementById(
-      `search-bar-${this.props.type}-${this.props.rowIndex}`
+      `search-bar-${this.props.type}-${this.props.rowIndex}`,
     );
     searchBar.focus();
     searchBar.blur();
   }
 
   modifyColumn = (alias, tableName, value) => {
-    if (this.props.type === 'select') {
+    if (this.props.type === "select") {
       this.props.query.select.modifySelectColumn(
         this.props.rowIndex,
         alias,
         tableName,
-        value
+        value,
       );
-    } else if (this.props.type === 'where') {
+    } else if (this.props.type === "where") {
       this.props.query.where.modifyWhereColumn(
         this.props.rowIndex,
         alias,
         tableName,
-        value
+        value,
       );
     }
     this.props.updateQueryState();
@@ -52,9 +52,9 @@ export default class SelectAndWhereColumnSearchBar extends Component {
           // eslint-disable-next-line no-param-reassign
 
           resultDrop[
-            result.tableMetadata.name + ' (' + result.tableAlias + ')'
+            result.tableMetadata.name + " (" + result.tableAlias + ")"
           ] = {
-            name: result.tableMetadata.name + ' (' + result.tableAlias + ')',
+            name: result.tableMetadata.name + " (" + result.tableAlias + ")",
             results: result.tableMetadata.fields
               ? result.tableMetadata.fields.map(column => ({
                   alias: result.tableAlias,
@@ -65,7 +65,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
           };
           return resultDrop;
         },
-        {}
+        {},
       ),
     });
   };
@@ -86,11 +86,11 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
       const re = new RegExp(
         _.escapeRegExp(
-          this.props.value.split('.')[1] ||
-            this.props.value.split('.')[0] ||
-            this.props.value
+          this.props.value.split(".")[1] ||
+            this.props.value.split(".")[0] ||
+            this.props.value,
         ),
-        'i'
+        "i",
       );
 
       const isMatch = result => {
@@ -113,7 +113,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
           return resultDrop;
         },
-        {}
+        {},
       );
 
       this.setState({
@@ -132,7 +132,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
           <Search
             size="mini"
             placeholder={`${
-              this.props.type === 'select' ? 'Select' : 'Where'
+              this.props.type === "select" ? "SELECT" : "WHERE"
             } column ${this.props.rowIndex + 1}`}
             icon="columns"
             input={{
@@ -151,12 +151,12 @@ export default class SelectAndWhereColumnSearchBar extends Component {
             onMouseDown={this.handleSearchChange}
             onBlur={(e, data) => {
               if (!this.state.first) {
-                this.props.query[this.props.type][this.props.type + 'Rows'][
+                this.props.query[this.props.type][this.props.type + "Rows"][
                   this.props.rowIndex
                 ].initial = false;
                 this.handleSearchChange(e, data);
               } else {
-                this.props.query[this.props.type][this.props.type + 'Rows'][
+                this.props.query[this.props.type][this.props.type + "Rows"][
                   this.props.rowIndex
                 ].initial = true;
                 this.setState({ first: false });
@@ -170,7 +170,7 @@ export default class SelectAndWhereColumnSearchBar extends Component {
         horizontalOffset={!this.props.text ? -10000 : 0}
         size="tiny"
         position="top center"
-        on={['focus', 'hover']}
+        on={["focus", "hover"]}
       />
     );
   }

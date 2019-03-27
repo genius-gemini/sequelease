@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Form,
   Input,
@@ -7,19 +7,19 @@ import {
   Header,
   Image,
   Segment,
-} from 'semantic-ui-react';
-import HandGrab from './handGrab';
+} from "semantic-ui-react";
+import HandGrab from "./handGrab";
 
-import { Draggable } from 'react-beautiful-dnd';
-import Buttons from './buttons';
+import { Draggable } from "react-beautiful-dnd";
+import Buttons from "./buttons";
 
-import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
+import SelectAndWhereColumnSearchBar from "./SelectAndWhereColumnSearchBar";
 
 class SelectRow extends Component {
   componentDidMount = () => {
     [
-      ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
-    ].map(elem => elem.removeAttribute('tabindex'));
+      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
+    ].map(elem => elem.removeAttribute("tabindex"));
   };
 
   render() {
@@ -40,13 +40,13 @@ class SelectRow extends Component {
               >
                 <div
                   className="drag"
-                  style={{ marginTop: '5px', width: '1400px' }}
+                  style={{ marginTop: "5px", width: "1400px" }}
                 >
                   <div>
-                    <div style={{ display: 'inline-block' }}>
+                    <div style={{ display: "inline-block" }}>
                       <HandGrab />
                     </div>
-                    <div style={{ display: 'inline-block' }}>
+                    <div style={{ display: "inline-block" }}>
                       <Buttons
                         type="selectRow"
                         updateQueryState={updateQueryState}
@@ -54,11 +54,11 @@ class SelectRow extends Component {
                         query={query}
                       />
                     </div>
-                    <div style={{ display: 'inline-block' }}>
-                      {rowIndex > 0 ? (
+                    <div style={{ display: "inline-block" }}>
+                      {/* {rowIndex > 0 ? (
                         <div style={{ display: 'inline-block' }}>,&nbsp;</div>
-                      ) : null}
-                      <div style={{ display: 'inline-block' }}>
+                      ) : null} */}
+                      <div style={{ display: "inline-block" }}>
                         <SelectAndWhereColumnSearchBar
                           type="select"
                           rowIndex={rowIndex}
