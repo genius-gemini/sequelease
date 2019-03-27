@@ -148,6 +148,19 @@ export default class SelectAndWhereColumnSearchBar extends Component {
     }, 100);
   };
 
+  handleSearchChangeMousedown = () => {
+    setTimeout(() => {
+      //if (this.state.value.length < 1) return this.resetComponent();
+
+      const filteredResults = this.state.fullResults;
+
+      this.setState({
+        isLoading: false,
+        results: filteredResults,
+      });
+    }, 100);
+  };
+
   render() {
     const { isLoading, results } = this.state;
 
@@ -172,8 +185,11 @@ export default class SelectAndWhereColumnSearchBar extends Component {
               leading: true,
             })}
             minCharacters={0}
-            onFocus={this.handleSearchChange}
-            onMouseDown={this.handleSearchChange}
+            onFocus={(e, data) => {
+              this.handleSearchChange(e, data);
+              e.target.select();
+            }}
+            onMouseDown={this.handleSearchChangeMousedown}
             onBlur={(e, data) => {
               if (!this.state.first) {
                 this.props.query[this.props.type][this.props.type + 'Rows'][

@@ -65,6 +65,21 @@ export default class TableSearchBar extends Component {
     }, 100);
   };
 
+  handleSearchChangeMousedown = () => {
+    //this.setState({ isLoading: true /*value */ });
+
+    setTimeout(() => {
+      //if (this.state.value.length < 1) return this.resetComponent();
+
+      this.setState({
+        isLoading: false,
+        results: this.props.resultTables().map(tablename => {
+          return { title: tablename };
+        }),
+      });
+    }, 100);
+  };
+
   render() {
     const { isLoading, results } = this.state;
     return (
@@ -83,8 +98,13 @@ export default class TableSearchBar extends Component {
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,
             })}
+            onMouseDown={(e, data) => {
+              this.handleSearchChangeMousedown(e, data);
+              console.log('click');
+            }}
             onFocus={(e, data) => {
               this.handleSearchChange(e, data);
+              e.target.select();
               console.log('focus');
             }}
             onBlur={(e, data) => {
@@ -101,10 +121,6 @@ export default class TableSearchBar extends Component {
               }
               console.log('blur');
             }}
-            onMouseDown={(e, data) => {
-              this.handleSearchChange(e, data);
-              console.log('click');
-            }}
             results={results}
             value={this.props.tableText}
             minCharacters={0}
@@ -114,7 +130,7 @@ export default class TableSearchBar extends Component {
         horizontalOffset={!this.props.tableTextText ? -10000 : 0}
         position="top center"
         aligned="left"
-        on={["focus", "hover"]}
+        on={['focus', 'hover']}
         size="tiny"
       />
     );
