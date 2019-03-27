@@ -1,15 +1,22 @@
-import React, { Component, createRef } from 'react';
-import { Container, Menu, Segment, Sidebar, Ref } from 'semantic-ui-react';
+import React, { Component, createRef } from "react";
+import {
+  Container,
+  Menu,
+  Segment,
+  Sidebar,
+  Ref,
+  Button,
+} from "semantic-ui-react";
 
-import Routes from './routes';
+import Routes from "./routes";
 
-import ConsoleTable from './components/ConsoleTable';
-import Navbar from './components/navBar';
-import OuterGrid from './components/outerGrid';
-import Connect from './components/Connect';
-import Db from './classes/db';
-import Query from './classes/query';
-import AccordionNested from './components/accordionNested';
+import ConsoleTable from "./components/ConsoleTable";
+import Navbar from "./components/navBar";
+import OuterGrid from "./components/outerGrid";
+import Connect from "./components/Connect";
+import Db from "./classes/db";
+import Query from "./classes/query";
+import AccordionNested from "./components/accordionNested";
 
 class App extends Component {
   constructor(props) {
@@ -20,7 +27,7 @@ class App extends Component {
       query: null,
       showTable: false,
       visible: false,
-      dbName: 'tutorial-sql',
+      dbName: "tutorial-sql",
       host: null,
       user: null,
       password: null,
@@ -64,7 +71,7 @@ class App extends Component {
       user,
       password,
       port,
-      database
+      database,
     );
 
     this.setState({ query, showTable: true });
@@ -89,7 +96,7 @@ class App extends Component {
       return (
         <div>
           <div>
-            <Sidebar.Pushable style={{ minHeight: '100vh' }} as={Segment}>
+            <Sidebar.Pushable style={{ minHeight: "100vh" }} as={Segment}>
               <Sidebar
                 as={Menu}
                 animation="push"
@@ -140,21 +147,30 @@ class App extends Component {
                     /> */}
                 <div
                   style={{
-                    marginLeft: '55px',
-                    marginRight: '5px',
-                    display: 'inline-block',
+                    marginLeft: "55px",
+                    marginRight: "5px",
+                    display: "inline-block",
                   }}
                 >
-                  <button onClick={this.runQuery} type="button">
+                  <Button.Group size="mini">
+                    <Button positive onClick={this.runQuery}>
+                      Run Query
+                    </Button>
+                    <Button.Or />
+                    <Button color="red" onClick={this.clearQuery}>
+                      Clear Query
+                    </Button>
+                  </Button.Group>
+                  {/* <button onClick={this.runQuery} type="button">
                     Run Query
-                  </button>
+                  </button> */}
                 </div>
-
+                {/*
                 <div style={{ display: 'inline-block' }}>
                   <button onClick={this.clearQuery} type="button">
                     Clear Query
                   </button>
-                </div>
+                </div> */}
 
                 <div id="consoleBox">
                   <Ref innerRef={this.segmentRef}>
@@ -168,21 +184,21 @@ class App extends Component {
                 <div
                   onClick={this.showTable}
                   style={{
-                    marginBottom: '30px',
-                    marginRight: '30px',
+                    marginBottom: "30px",
+                    marginRight: "30px",
                     right: 0,
-                    cursor: 'pointer',
+                    cursor: "pointer",
                     bottom: 0,
-                    position: 'fixed',
-                    padding: '5px',
-                    paddingLeft: '7px',
-                    paddingRight: '7px',
-                    backgroundColor: 'black',
-                    borderRadius: '3px',
-                    color: 'white',
+                    position: "fixed",
+                    padding: "5px",
+                    paddingLeft: "7px",
+                    paddingRight: "7px",
+                    backgroundColor: "black",
+                    borderRadius: "3px",
+                    color: "white",
                   }}
                 >
-                  {this.state.showTable ? 'Hide' : 'Show'} Table
+                  {this.state.showTable ? "Hide" : "Show"} Table
                 </div>
               </Sidebar.Pusher>
             </Sidebar.Pushable>

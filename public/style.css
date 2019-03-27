@@ -72,7 +72,7 @@ form div {
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
@@ -133,6 +133,10 @@ form div {
 
 .accordion .Accordion-Accordion .title {
   color: black !important;
+}
+
+.one.wide.column {
+  min-width: 10vw;
 }
 
 /* div.drag * {
