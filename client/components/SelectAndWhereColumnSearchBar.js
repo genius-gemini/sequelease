@@ -131,8 +131,10 @@ export default class SelectAndWhereColumnSearchBar extends Component {
         trigger={
           <Search
             size="mini"
-            placeholder="placholder"
-            icon="table"
+            placeholder={`${
+              this.props.type === 'select' ? 'Select' : 'Where'
+            } column ${this.props.rowIndex + 1}`}
+            icon="columns"
             input={{
               error: !this.props.initial && this.props.error,
             }}

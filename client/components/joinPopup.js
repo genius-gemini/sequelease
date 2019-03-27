@@ -37,7 +37,7 @@ class JoinPopup extends Component {
         trigger={
           <Button basic color="violet" size="mini">
             {query.from.fromJoinRows[rowIndex].joinType ||
-              `Choose Join Type ${rowIndex}`}
+              `Join Type ${rowIndex}`}
           </Button>
         }
         position="right center"

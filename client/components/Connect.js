@@ -124,6 +124,7 @@ class Connect extends Component {
               error
               header="Connection Failed"
               content="Check your credentials and try again. By default you are connected to the tutorial database"
+              style={{ marginBottom: '7px' }}
             />
           ) : (
             ''

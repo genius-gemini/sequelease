@@ -8,6 +8,7 @@ import {
   Image,
   Segment,
 } from 'semantic-ui-react';
+import HandGrab from './handGrab';
 
 import { Draggable } from 'react-beautiful-dnd';
 import Buttons from './buttons';
@@ -37,8 +38,14 @@ class SelectRow extends Component {
                 {...provided.dragHandleProps}
                 {...provided.draggableProps}
               >
-                <div className="drag" style={{ width: '1400px' }}>
+                <div
+                  className="drag"
+                  style={{ marginTop: '5px', width: '1400px' }}
+                >
                   <div>
+                    <div style={{ display: 'inline-block' }}>
+                      <HandGrab />
+                    </div>
                     <div style={{ display: 'inline-block' }}>
                       <Buttons
                         type="selectRow"
@@ -49,7 +56,7 @@ class SelectRow extends Component {
                     </div>
                     <div style={{ display: 'inline-block' }}>
                       {rowIndex > 0 ? (
-                        <div style={{ display: 'inline-block' }}>, </div>
+                        <div style={{ display: 'inline-block' }}>,&nbsp;</div>
                       ) : null}
                       <div style={{ display: 'inline-block' }}>
                         <SelectAndWhereColumnSearchBar

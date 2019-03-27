@@ -143,13 +143,16 @@ export default class JoinSearchBar extends Component {
       <Popup
         trigger={
           <Search
+            size="mini"
+            icon="columns"
+            placeholder={`Table ${this.props.rowIndex} to table ${this.props
+              .rowIndex + 1} join column`}
             category
             input={{
               error: !this.props.initial && this.props.error,
             }}
             className="column-search-bar"
             loading={isLoading}
-            size="mini"
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,

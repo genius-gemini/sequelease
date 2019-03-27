@@ -7,63 +7,44 @@ import WhereClause from './whereClause';
 const OuterGrid = props => {
   const { db, query, updateQueryState } = props;
   return (
-    <div>
-      <div>
-        <div
-          style={{
-            verticalAlign: 'top',
-            marginTop: '10px',
-            display: 'inline-block',
-          }}
-        >
+    <Grid celled>
+      <Grid.Row>
+        <Grid.Column width={1}>
           <Header>FROM</Header>
-        </div>
-        <div style={{ display: 'inline-block' }}>
+        </Grid.Column>
+        <Grid.Column width={12}>
           <FromClause
             db={db}
             query={query}
             updateQueryState={updateQueryState}
           />
-        </div>
-      </div>
-
-      <div>
-        <div
-          style={{
-            verticalAlign: 'top',
-            marginTop: '10px',
-            display: 'inline-block',
-          }}
-        >
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column width={1}>
           <Header>SELECT</Header>
-        </div>
-        <div style={{ display: 'inline-block' }}>
+        </Grid.Column>
+        <Grid.Column width={12}>
           <SelectClause
             db={db}
             query={query}
             updateQueryState={updateQueryState}
           />
-        </div>
-      </div>
-      <div>
-        <div
-          style={{
-            verticalAlign: 'top',
-            marginTop: '10px',
-            display: 'inline-block',
-          }}
-        >
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column width={1}>
           <Header>WHERE</Header>
-        </div>
-        <div style={{ display: 'inline-block' }}>
+        </Grid.Column>
+        <Grid.Column width={12}>
           <WhereClause
             db={db}
             query={query}
             updateQueryState={updateQueryState}
           />
-        </div>
-      </div>
-    </div>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
   );
 };
 

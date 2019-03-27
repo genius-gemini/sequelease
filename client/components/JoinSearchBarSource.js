@@ -87,6 +87,11 @@ export default class JoinSearchBarSource extends Component {
       <Popup
         trigger={
           <Search
+            size="mini"
+            icon="columns"
+            placeholder={`Table ${this.props.rowIndex + 1} to table ${
+              this.props.rowIndex
+            } join column`}
             input={{
               error: !this.props.initial && this.props.error,
             }}

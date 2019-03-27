@@ -76,7 +76,7 @@ export default class TableSearchBar extends Component {
               error: !this.props.tableTextInitial && this.props.tableTextError,
               icon: 'table',
             }}
-            placeholder={`Choose Table ${this.props.rowIndex + 1}`}
+            placeholder={`Table ${this.props.rowIndex + 1}`}
             loading={isLoading}
             onResultSelect={this.handleResultSelect}
             onSearchChange={_.debounce(this.handleSearchChange, 500, {

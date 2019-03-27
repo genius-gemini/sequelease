@@ -63,6 +63,8 @@ export default class OperatorSearchBar extends Component {
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,
             })}
+            input={{ icon: false }}
+            placeholder={`Operator ${this.props.rowIndex + 1}`}
             size="mini"
             onFocus={this.handleSearchChange}
             onMouseDown={this.handleSearchChange}
