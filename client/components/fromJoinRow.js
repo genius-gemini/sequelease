@@ -77,7 +77,7 @@ class FromJoinRow extends Component {
 
                         {rowIndex > 0 ? (
                           <div
-                            style={{ display: "inline-block", width: "100px" }}
+                            style={{ display: "inline-block", width: "100px", marginLeft: "10px" }}
                           >
                             <JoinPopup
                               updateQueryState={updateQueryState}
