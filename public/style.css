@@ -121,6 +121,9 @@ form div {
   /* border-radius: 5px !important; */
   /* max-width: 70%; */
 }
+.ui.input > input {
+  border-radius: 500rem !important;
+}
 
 .pusher {
   min-height: 100vh !important;

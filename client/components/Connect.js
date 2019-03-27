@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Form, Input, Header, Icon, Button, Message } from 'semantic-ui-react';
-import db from '../classes/db';
+import React, { Component } from "react";
+import { Form, Input, Header, Icon, Button, Message } from "semantic-ui-react";
+import db from "../classes/db";
 
 class Connect extends Component {
   constructor(props) {
@@ -44,17 +44,20 @@ class Connect extends Component {
     const { open } = this.state;
     return (
       <div
-        style={{ marginTop: '100px', marginLeft: '50px', marginRight: '50px' }}
+        style={{ marginTop: "100px", marginLeft: "50px", marginRight: "50px" }}
       >
         <Header
-          style={{ cursor: 'pointer' }}
+          as="h4"
+          style={{ cursor: "pointer" }}
           onClick={this.handleConnectHeaderClick}
+          color="blue"
         >
           Connect To Database
-          <Icon name={`caret square ${open ? 'up' : 'down'} outline`} />
+          <Icon name={`caret square ${open ? "up" : "down"} outline`} />
         </Header>
         <Form
-          style={{ display: open ? 'block' : 'none' }}
+          size="mini"
+          style={{ display: open ? "block" : "none" }}
           success
           error={this.state.showInfo && this.props.error}
         >
@@ -102,7 +105,9 @@ class Connect extends Component {
           </Form.Group>
           <Form.Group>
             <Button
-              style={{ marginLeft: '30px', maxHeight: '36px' }}
+              color="blue"
+              size="mini"
+              style={{ marginLeft: "30px", maxHeight: "36px" }}
               type="button"
               onClick={this.handleConnectButtonClick}
             >
@@ -117,17 +122,17 @@ class Connect extends Component {
               content={`You are now connected to ${this.state.database}`}
             />
           ) : (
-            ''
+            ""
           )}
           {!this.state.first && this.state.showInfo && this.props.error ? (
             <Message
               error
               header="Connection Failed"
               content="Check your credentials and try again. By default you are connected to the tutorial database"
-              style={{ marginBottom: '7px' }}
+              style={{ marginBottom: "7px" }}
             />
           ) : (
-            ''
+            ""
           )}
         </Form>
       </div>
