@@ -48,7 +48,7 @@ class WhereRow extends Component {
                 {...provided.dragHandleProps}
                 {...provided.draggableProps}
               >
-                <div className="drag" style={{ width: "1400px" }}>
+                <div className="drag" style={{ width: "1400px", marginTop: '5px'}}>
                   <div>
                     <div style={{ display: "inline-block" }}>
                       <HandGrab />
@@ -64,7 +64,7 @@ class WhereRow extends Component {
                     <div style={{ display: "inline-block" }}>
                       {rowIndex > 0 ? "AND " : null}
                     </div>
-                    <div style={{ display: "inline-block" }}>
+                    <div style={{ display: "inline-block", marginLeft: "5px" }}>
                       <SelectAndWhereColumnSearchBar
                         type="where"
                         rowIndex={rowIndex}
