@@ -93,7 +93,7 @@ export default class OperatorSearchBar extends Component {
             onBlur={(e, data) => {
               this.setState({ firstFocus: true });
             }}
-            onMouseDown={this.handleSearchChangeMousedown}
+            //onMouseDown={this.handleSearchChangeMousedown}
             results={results}
             value={this.props.operatorText}
             minCharacters={0}

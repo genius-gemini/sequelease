@@ -12,6 +12,7 @@ export default class TableSearchBar extends Component {
       isLoading: true,
       results: [],
       first: true,
+      firstFocus: true,
     };
   }
 
@@ -31,6 +32,7 @@ export default class TableSearchBar extends Component {
       isLoading: true,
       results: [],
       first: true,
+      firstFocus: true,
     });
 
   modifyFromRowTable = tableName => {
@@ -99,10 +101,10 @@ export default class TableSearchBar extends Component {
             onSearchChange={_.debounce(this.handleSearchChange, 500, {
               leading: true,
             })}
-            onMouseDown={(e, data) => {
-              this.handleSearchChangeMousedown(e, data);
-              console.log('click');
-            }}
+            //onMouseDown={(e, data) => {
+            //  this.handleSearchChangeMousedown(e, data);
+            //  console.log('click');
+            //}}
             onFocus={(e, data) => {
               if (this.state.firstFocus) {
                 this.handleSearchChangeMousedown(e, data);
@@ -111,6 +113,7 @@ export default class TableSearchBar extends Component {
                 this.handleSearchChange(e, data);
               }
               e.target.select();
+              console.log('click');
             }}
             onBlur={(e, data) => {
               this.setState({ firstFocus: true });

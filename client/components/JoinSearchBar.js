@@ -9,6 +9,7 @@ export default class JoinSearchBar extends Component {
       isLoading: true,
       results: [],
       previousTablesJoinColumns: [],
+      firstFocus: true,
     };
   }
 
@@ -63,7 +64,8 @@ export default class JoinSearchBar extends Component {
     });
   };
 
-  resetComponent = () => this.setState({ isLoading: false, results: [] });
+  resetComponent = () =>
+    this.setState({ isLoading: false, results: [], firstFocus: true });
 
   handleResultSelect = (e, { result }) =>
     this.modifyPreviousTableJoinColumn(
@@ -175,7 +177,7 @@ export default class JoinSearchBar extends Component {
               ].previousTableJoinColumn.initial = false;
               this.handleSearchChange(e, data);
             }}
-            onMouseDown={this.handleSearchMousedown}
+            //onMouseDown={this.handleSearchMousedown}
             results={results}
             value={this.props.previousTableJoinColumn}
           />
