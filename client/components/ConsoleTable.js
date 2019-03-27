@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import _ from 'lodash';
-import { Table, Container } from 'semantic-ui-react';
-import ConsoleSegment from './ConsoleSegment';
+import React, { Component } from "react";
+import _ from "lodash";
+import { Table, Container } from "semantic-ui-react";
+import ConsoleSegment from "./ConsoleSegment";
 
 const tableData = [
-  { name: 'John', age: 15, gender: 'Male' },
-  { name: 'Amber', age: 40, gender: 'Female' },
-  { name: 'Leslie', age: 25, gender: 'Female' },
-  { name: 'Ben', age: 70, gender: 'Male' },
+  { name: "John", age: 15, gender: "Male" },
+  { name: "Amber", age: 40, gender: "Female" },
+  { name: "Leslie", age: 25, gender: "Female" },
+  { name: "Ben", age: 70, gender: "Male" },
 ];
 
 export default class ConsoleTable extends Component {
@@ -24,25 +24,31 @@ export default class ConsoleTable extends Component {
       this.setState({
         column: clickedColumn,
         data: _.sortBy(data, [clickedColumn]),
-        direction: 'ascending',
+        direction: "ascending",
       });
       return;
     }
     this.setState({
       data: data.reverse(),
-      direction: direction === 'ascending' ? 'descending' : 'ascending',
+      direction: direction === "ascending" ? "descending" : "ascending",
     });
   };
 
   render() {
     const { column, data, direction } = this.state;
     return (
-      <Container id="console">
-        <ConsoleSegment querySQL={this.props.query.toSql()} />
+      <div id="console">
+        {/* <Container id="console"> */}
+        {/* <Container id="console"> */}
+        <ConsoleSegment
+          style={{ width: "60%" }}
+          querySQL={this.props.query.toSql()}
+        />
 
-        <div style={{ display: this.props.showTable ? 'block' : 'none' }}>
+        <div style={{ display: this.props.showTable ? "block" : "none" }}>
           {this.props.query.queryResults ? (
-            <Table sortable celled fixed>
+            // <Table sortable celled fixed>
+            <Table striped color="blue" size="small" compact="very">
               <Table.Header>
                 <Table.Row>
                   {_.map(this.props.query.queryResults.fields, field => {
@@ -72,7 +78,8 @@ export default class ConsoleTable extends Component {
             <div>Nothing yet</div>
           )}
         </div>
-      </Container>
+        {/* </Container> */}
+      </div>
     );
   }
 }

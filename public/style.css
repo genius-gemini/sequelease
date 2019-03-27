@@ -141,6 +141,9 @@ form div {
 .one.wide.column {
   min-width: 10vw;
 }
+.ui.inverted.segment {
+  background: rgb(60, 60, 60) !important;
+}
 
 /* div.drag * {
   height: 38px;
