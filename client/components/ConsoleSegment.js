@@ -8,7 +8,7 @@ const ConsoleSegment = props => {
   return (
     <div style={{ textAlign: "center" }}>
       <Segment
-        style={{ width: "60%", margin: "0 auto" }}
+        style={{ width: "60%", margin: "0 auto", overflow: "auto" }}
         inverted
         size="small"
         textAlign="left"
