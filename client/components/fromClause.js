@@ -5,7 +5,7 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import FromJoinRow from './fromJoinRow';
 
 const FromClause = props => {
-  const { query, updateQueryState, db } = props;
+  const { query, updateQueryState, db, runPopupFix } = props;
 
   const handleDraggableDrop = result => {
     if (result.destination) {
@@ -42,6 +42,7 @@ const FromClause = props => {
                     key={`fromJoinRow-${i}`}
                     query={query}
                     updateQueryState={updateQueryState}
+                    runPopupFix={runPopupFix}
                     rowIndex={i}
                     row={row}
                     db={db}

@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import React, { Component, createRef } from 'react';
 import {
   Container,
   Menu,
@@ -7,17 +7,17 @@ import {
   Ref,
   Button,
   Divider,
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 
-import Routes from "./routes";
+import Routes from './routes';
 
-import ConsoleTable from "./components/ConsoleTable";
-import Navbar from "./components/navBar";
-import OuterGrid from "./components/outerGrid";
-import Connect from "./components/Connect";
-import Db from "./classes/db";
-import Query from "./classes/query";
-import AccordionNested from "./components/accordionNested";
+import ConsoleTable from './components/ConsoleTable';
+import Navbar from './components/navBar';
+import OuterGrid from './components/outerGrid';
+import Connect from './components/Connect';
+import Db from './classes/db';
+import Query from './classes/query';
+import AccordionNested from './components/accordionNested';
 
 class App extends Component {
   constructor(props) {
@@ -28,7 +28,7 @@ class App extends Component {
       query: null,
       showTable: false,
       visible: false,
-      dbName: "tutorial-sql",
+      dbName: 'tutorial-sql',
       host: null,
       user: null,
       password: null,
@@ -72,14 +72,18 @@ class App extends Component {
       user,
       password,
       port,
-      database,
+      database
     );
 
     this.setState({ query, showTable: true });
   };
 
   clearQuery = () => {
-    this.setState({ query: Query.build(this.state.db) });
+    this.setState({ query: null });
+
+    setTimeout(() => {
+      this.setState({ query: Query.build(this.state.db) });
+    }, 0);
   };
 
   showTable = () => {
@@ -93,18 +97,18 @@ class App extends Component {
   render() {
     const { visible } = this.state;
 
-    if (this.state.db) {
+    if (this.state.query) {
       return (
         <div>
           <div>
-            <Sidebar.Pushable style={{ minHeight: "100vh" }} as={Segment}>
+            <Sidebar.Pushable style={{ minHeight: '100vh' }} as={Segment}>
               <Sidebar
                 as={Menu}
                 animation="push"
                 icon="labeled"
                 inverted
                 direction="left"
-                onHide={this.handleSidebarHide}
+                //onHide={this.handleSidebarHide}
                 vertical
                 visible={visible}
                 width="wide"
@@ -130,6 +134,7 @@ class App extends Component {
                 <OuterGrid
                   db={this.state.db}
                   query={this.state.query}
+                  runPopupFix={this.runPopupFix}
                   updateQueryState={this.updateQueryState}
                 />
                 <Routes />
@@ -149,12 +154,12 @@ class App extends Component {
                     /> */}
                 <div
                   style={{
-                    marginLeft: "55px",
-                    marginRight: "5px",
-                    display: "inline-block",
+                    marginLeft: '55px',
+                    marginRight: '5px',
+                    display: 'inline-block',
                   }}
                 >
-                  <Button.Group size="mini">
+                  <Button.Group style={{ marginBottom: '900px' }} size="mini">
                     <Button positive onClick={this.runQuery}>
                       Run Query
                     </Button>
@@ -183,24 +188,25 @@ class App extends Component {
                     />
                   </Ref>
                 </div>
+
                 <div
+                  id="consoleButton"
                   onClick={this.showTable}
                   style={{
-                    marginBottom: "30px",
-                    marginRight: "30px",
+                    marginBottom: '30px',
+                    marginRight: '30px',
                     right: 0,
-                    cursor: "pointer",
-                    bottom: 0,
-                    position: "fixed",
-                    padding: "5px",
-                    paddingLeft: "7px",
-                    paddingRight: "7px",
-                    backgroundColor: "black",
-                    borderRadius: "3px",
-                    color: "white",
+                    cursor: 'pointer',
+                    position: 'fixed',
+                    padding: '5px',
+                    paddingLeft: '7px',
+                    paddingRight: '7px',
+                    backgroundColor: 'black',
+                    borderRadius: '3px',
+                    color: 'white',
                   }}
                 >
-                  {this.state.showTable ? "Hide" : "Show"} Table
+                  {this.state.showTable ? 'Hide' : 'Show'} Table
                 </div>
               </Sidebar.Pusher>
             </Sidebar.Pushable>

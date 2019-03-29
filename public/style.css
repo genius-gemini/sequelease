@@ -37,7 +37,7 @@ form div {
   position: fixed;
   padding-bottom: 11px;
   padding-top: 11px;
-  bottom: 0;
+  /*bottom: 0;*/
   width: 80%;
   text-align: center;
 }
@@ -72,7 +72,7 @@ form div {
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   left: 50%;

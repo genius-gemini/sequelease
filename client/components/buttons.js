@@ -28,6 +28,7 @@ const Buttons = props => {
   const handleAddJoinConditionClick = () => {
     query.from.handleAddJoinConditionClick(rowIndex, joinColumnIndex);
 
+    deleteTabIndex();
     updateQueryState();
   };
 
