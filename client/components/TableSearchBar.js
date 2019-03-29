@@ -20,12 +20,16 @@ export default class TableSearchBar extends Component {
     this.resetComponent();
     //this.setState({ value: this.props.selectedTable });
 
+    this.runPopupFix();
+  }
+
+  runPopupFix = () => {
     const searchBar = document.getElementById(
       `search-bar-table-${this.props.rowIndex}`
     );
     searchBar.focus();
     searchBar.blur();
-  }
+  };
 
   resetComponent = () =>
     this.setState({

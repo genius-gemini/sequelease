@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import {
   Form,
   Input,
@@ -10,24 +11,223 @@ import {
   Segment,
   Table,
   Search,
-} from "semantic-ui-react";
-import HandGrab from "./handGrab";
+} from 'semantic-ui-react';
+import HandGrab from './handGrab';
 
-import { Draggable } from "react-beautiful-dnd";
-import Buttons from "./buttons";
+import { Draggable } from 'react-beautiful-dnd';
+import Buttons from './buttons';
 
-import JoinPopup from "./joinPopup";
-import TableSearchBar from "./TableSearchBar";
-import JoinSearchBarSource from "./JoinSearchBarSource";
-import JoinSearchBar from "./JoinSearchBar";
+import JoinPopup from './joinPopup';
+import TableSearchBar from './TableSearchBar';
+import JoinSearchBarSource from './JoinSearchBarSource';
+import JoinSearchBar from './JoinSearchBar';
+
+let portal = document.createElement('div');
+document.body.appendChild(portal);
+
+const PortalDraggableItem = props => {
+  const {
+    provided,
+    snapshot,
+    rowIndex,
+    db,
+    query,
+    row,
+    updateQueryState,
+  } = props;
+  let result = (
+    <div ref={provided.innerRef} {...provided.draggableProps}>
+      <div className="drag">
+        <div
+          style={{
+            position: 'relative',
+            width: '1400px',
+          }}
+        >
+          <div style={{ display: 'inline-block', marginTop: '5px' }}>
+            <div
+              style={{
+                verticalAlign: 'top',
+                display: 'inline-block',
+              }}
+            >
+              <div
+                {...props.provided.dragHandleProps}
+                style={{ display: 'inline-block' }}
+              >
+                <HandGrab />
+              </div>
+              <div
+                style={{
+                  display: 'inline-block',
+                }}
+              >
+                <Buttons
+                  type="fromJoinRow"
+                  updateQueryState={updateQueryState}
+                  rowIndex={rowIndex}
+                  query={query}
+                />
+              </div>
+
+              {rowIndex > 0 ? (
+                <div
+                  style={{
+                    display: 'inline-block',
+                    width: '100px',
+                    marginLeft: '10px',
+                  }}
+                >
+                  <JoinPopup
+                    updateQueryState={updateQueryState}
+                    rowIndex={rowIndex}
+                    query={query}
+                  />
+                </div>
+              ) : null}
+
+              <div
+                style={{
+                  display: 'inline-block',
+                }}
+              >
+                <TableSearchBar
+                  style={{ position: 'relative' }}
+                  rowIndex={rowIndex}
+                  resultTables={db.getTableNames}
+                  table={row.tableMetadata.name}
+                  tableText={row.tableText}
+                  tableTextText={row.tableTextText}
+                  tableTextInitial={row.tableTextInitial}
+                  tableTextError={row.tableTextError}
+                  updateQueryState={updateQueryState}
+                  query={query}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                verticalAlign: 'top',
+                marginTop: '7px',
+                marginLeft: '4px',
+                width: '40px',
+                display: 'inline-block',
+              }}
+            >
+              {`AS ${row.tableAlias}`}
+            </div>
+            {rowIndex > 0 ? (
+              <div
+                style={{
+                  verticalAlign: 'top',
+                  display: 'inline-block',
+                  marginTop: '7px',
+                  marginLeft: '5px',
+                  marginRight: '5px',
+                }}
+              >
+                ON
+              </div>
+            ) : null}
+            {rowIndex > 0 ? (
+              <div
+                style={{
+                  verticalAlign: 'top',
+                  display: 'inline-block',
+                }}
+              >
+                <div style={{ verticalAlign: 'top' }}>
+                  {row.joinColumns.map((col, colIndex) => (
+                    <div
+                      style={{
+                        verticalAlign: 'top',
+                      }}
+                      key={`jc-${rowIndex}-${colIndex}`}
+                    >
+                      {colIndex > 0 ? (
+                        <div style={{ display: 'inline-block' }}>AND</div>
+                      ) : null}
+                      <div
+                        style={{
+                          display: 'inline-block',
+                          verticalAlign: 'top',
+                          marginLeft: '5px',
+                          marginRight: '0px',
+                        }}
+                      >
+                        <JoinSearchBarSource
+                          rowIndex={rowIndex}
+                          joinColumnIndex={colIndex}
+                          table={row.tableMetadata}
+                          tableAlias={row.tableAlias}
+                          columnText={col.rowTableJoinColumn.name}
+                          error={col.rowTableJoinColumn.error}
+                          initial={col.rowTableJoinColumn.initial}
+                          text={col.rowTableJoinColumn.text}
+                          query={query}
+                          updateQueryState={updateQueryState}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          display: 'inline-block',
+                          verticalAlign: 'top',
+                          margin: '5px',
+                        }}
+                      >
+                        =
+                      </div>
+                      <div style={{ display: 'inline-block' }}>
+                        <JoinSearchBar
+                          rowIndex={rowIndex}
+                          joinColumnIndex={colIndex}
+                          text={col.previousTableJoinColumn.text}
+                          previousTablesJoinColumns={
+                            row.previousTablesJoinColumns
+                          }
+                          previousTableJoinColumn={
+                            col.previousTableJoinColumn.name
+                          }
+                          error={col.previousTableJoinColumn.error}
+                          initial={col.previousTableJoinColumn.initial}
+                          query={query}
+                          updateQueryState={updateQueryState}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          display: 'inline-block',
+                          verticalAlign: 'top',
+                          margin: '5px',
+                          marginTop: '0px',
+                        }}
+                      >
+                        <Buttons
+                          type="joinCondition"
+                          updateQueryState={updateQueryState}
+                          rowIndex={rowIndex}
+                          query={query}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (snapshot.isDragging) {
+    return ReactDOM.createPortal(result, portal);
+  }
+  return result;
+};
 
 class FromJoinRow extends Component {
-  componentDidMount = () => {
-    [
-      ...document.querySelectorAll("[data-react-beautiful-dnd-drag-handle]"),
-    ].map(elem => elem.removeAttribute("tabindex"));
-  };
-
   render() {
     const { rowIndex, query, updateQueryState, db, row } = this.props;
 
@@ -40,190 +240,15 @@ class FromJoinRow extends Component {
         {(provided, snapshot) => {
           return (
             <div>
-              <div
-                ref={provided.innerRef}
-                {...provided.dragHandleProps}
-                {...provided.draggableProps}
-              >
-                <div className="drag">
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "1400px",
-                    }}
-                  >
-                    <div style={{ display: "inline-block", marginTop: "5px" }}>
-                      <div
-                        style={{
-                          verticalAlign: "top",
-                          display: "inline-block",
-                        }}
-                      >
-                        <div style={{ display: "inline-block" }}>
-                          <HandGrab />
-                        </div>
-                        <div
-                          style={{
-                            display: "inline-block",
-                          }}
-                        >
-                          <Buttons
-                            type="fromJoinRow"
-                            updateQueryState={updateQueryState}
-                            rowIndex={rowIndex}
-                            query={query}
-                          />
-                        </div>
-
-                        {rowIndex > 0 ? (
-                          <div
-                            style={{ display: "inline-block", width: "100px", marginLeft: "10px" }}
-                          >
-                            <JoinPopup
-                              updateQueryState={updateQueryState}
-                              rowIndex={rowIndex}
-                              query={query}
-                            />
-                          </div>
-                        ) : null}
-
-                        <div
-                          style={{
-                            display: "inline-block",
-                          }}
-                        >
-                          <TableSearchBar
-                            style={{ position: "relative" }}
-                            rowIndex={rowIndex}
-                            resultTables={db.getTableNames}
-                            table={row.tableMetadata.name}
-                            tableText={row.tableText}
-                            tableTextText={row.tableTextText}
-                            tableTextInitial={row.tableTextInitial}
-                            tableTextError={row.tableTextError}
-                            updateQueryState={updateQueryState}
-                            query={query}
-                          />
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          verticalAlign: "top",
-                          marginTop: "7px",
-                          marginLeft: "4px",
-                          width: "40px",
-                          display: "inline-block",
-                        }}
-                      >
-                        {`AS ${row.tableAlias}`}
-                      </div>
-                      {rowIndex > 0 ? (
-                        <div
-                          style={{
-                            verticalAlign: "top",
-                            display: "inline-block",
-                            marginTop: "7px",
-                            marginLeft: "5px",
-                            marginRight: "5px",
-                          }}
-                        >
-                          ON
-                        </div>
-                      ) : null}
-                      {rowIndex > 0 ? (
-                        <div
-                          style={{
-                            verticalAlign: "top",
-                            display: "inline-block",
-                          }}
-                        >
-                          <div style={{ verticalAlign: "top" }}>
-                            {row.joinColumns.map((col, colIndex) => (
-                              <div
-                                style={{
-                                  verticalAlign: "top",
-                                }}
-                                key={`jc-${rowIndex}-${colIndex}`}
-                              >
-                                {colIndex > 0 ? (
-                                  <div style={{ display: "inline-block" }}>
-                                    AND
-                                  </div>
-                                ) : null}
-                                <div
-                                  style={{
-                                    display: "inline-block",
-                                    verticalAlign: "top",
-                                    marginLeft: "5px",
-                                    marginRight: "0px",
-                                  }}
-                                >
-                                  <JoinSearchBarSource
-                                    rowIndex={rowIndex}
-                                    joinColumnIndex={colIndex}
-                                    table={row.tableMetadata}
-                                    tableAlias={row.tableAlias}
-                                    columnText={col.rowTableJoinColumn.name}
-                                    error={col.rowTableJoinColumn.error}
-                                    initial={col.rowTableJoinColumn.initial}
-                                    text={col.rowTableJoinColumn.text}
-                                    query={query}
-                                    updateQueryState={updateQueryState}
-                                  />
-                                </div>
-                                <div
-                                  style={{
-                                    display: "inline-block",
-                                    verticalAlign: "top",
-                                    margin: "5px",
-                                  }}
-                                >
-                                  =
-                                </div>
-                                <div style={{ display: "inline-block" }}>
-                                  <JoinSearchBar
-                                    rowIndex={rowIndex}
-                                    joinColumnIndex={colIndex}
-                                    text={col.previousTableJoinColumn.text}
-                                    previousTablesJoinColumns={
-                                      row.previousTablesJoinColumns
-                                    }
-                                    previousTableJoinColumn={
-                                      col.previousTableJoinColumn.name
-                                    }
-                                    error={col.previousTableJoinColumn.error}
-                                    initial={
-                                      col.previousTableJoinColumn.initial
-                                    }
-                                    query={query}
-                                    updateQueryState={updateQueryState}
-                                  />
-                                </div>
-                                <div
-                                  style={{
-                                    display: "inline-block",
-                                    verticalAlign: "top",
-                                    margin: "5px",
-                                    marginTop: "0px",
-                                  }}
-                                >
-                                  <Buttons
-                                    type="joinCondition"
-                                    updateQueryState={updateQueryState}
-                                    rowIndex={rowIndex}
-                                    query={query}
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <PortalDraggableItem
+                provided={provided}
+                snapshot={snapshot}
+                query={query}
+                updateQueryState={updateQueryState}
+                row={row}
+                rowIndex={rowIndex}
+                db={db}
+              />
               {provided.placeholder}
             </div>
           );

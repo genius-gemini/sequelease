@@ -16,15 +16,18 @@ export default class SelectAndWhereColumnSearchBar extends Component {
 
   componentDidMount() {
     this.resetComponent();
-
+    //this.setState({ value: this.props.selectedTable });
     this.setFullResultsState();
+    this.runPopupFix();
+  }
 
+  runPopupFix = () => {
     const searchBar = document.getElementById(
       `search-bar-${this.props.type}-${this.props.rowIndex}`
     );
     searchBar.focus();
     searchBar.blur();
-  }
+  };
 
   modifyColumn = (alias, tableName, value) => {
     if (this.props.type === 'select') {

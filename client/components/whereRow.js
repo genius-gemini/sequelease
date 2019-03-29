@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import {
   Form,
   Input,
@@ -18,18 +19,118 @@ import SelectAndWhereColumnSearchBar from './SelectAndWhereColumnSearchBar';
 
 import OperatorSearchBar from './OperatorSearchBar';
 
+let portal = document.createElement('div');
+document.body.appendChild(portal);
+
+const PortalDraggableItem = props => {
+  const handleFilterChange = value => {
+    const { rowIndex, query, updateQueryState } = props;
+    query.where.handleFilterChange(value, rowIndex);
+
+    updateQueryState();
+  };
+
+  let result = (
+    <div ref={props.provided.innerRef} {...props.provided.draggableProps}>
+      <div className="drag">
+        <div style={{ width: '1400px', position: 'relative' }}>
+          <div
+            {...props.provided.dragHandleProps}
+            style={{ marginTop: '5px', display: 'inline-block' }}
+          >
+            <HandGrab />
+          </div>
+          <div style={{ marginTop: '5px', display: 'inline-block' }}>
+            <Buttons
+              type="whereRow"
+              updateQueryState={props.updateQueryState}
+              rowIndex={props.rowIndex}
+              query={props.query}
+            />
+          </div>
+          {props.rowIndex > 0 ? (
+            <div style={{ marginRight: '5px', display: 'inline-block' }}>
+              AND
+            </div>
+          ) : null}
+
+          <div style={{ marginTop: '5px', display: 'inline-block' }}>
+            <SelectAndWhereColumnSearchBar
+              type="where"
+              rowIndex={props.rowIndex}
+              updateQueryState={props.updateQueryState}
+              query={props.query}
+              value={props.row.name}
+              text={props.row.columnText}
+              error={props.row.columnError}
+              initial={props.row.initial}
+            />
+          </div>
+          <div
+            style={{
+              marginTop: '5px',
+              display: 'inline-block',
+              marginLeft: '5px',
+            }}
+          >
+            <OperatorSearchBar
+              rowIndex={props.rowIndex}
+              updateQueryState={props.updateQueryState}
+              query={props.query}
+              operatorText={props.row.operatorText}
+              text={props.row.operatorTextText}
+              error={props.row.operatorError}
+            />
+          </div>
+
+          <div
+            style={{
+              marginTop: '5px',
+              display: 'inline-block',
+              marginLeft: '5px',
+            }}
+          >
+            <Popup
+              trigger={
+                <Input
+                  size="mini"
+                  type="text"
+                  placeholder={`Filter ${props.rowIndex + 1}`}
+                  onChange={e => handleFilterChange(e.target.value)}
+                  value={props.query.where.whereRows[props.rowIndex].filter}
+                />
+              }
+              //content={query.where.whereRows[rowIndex].filterText}
+              horizontalOffset={
+                !props.query.where.whereRows[props.rowIndex].filterText
+                  ? -10000
+                  : 0
+              }
+              size="tiny"
+              position="top center"
+              on={['focus', 'hover']}
+            >
+              <Popup.Content>
+                {props.query.where.whereRows[props.rowIndex].filterText}
+              </Popup.Content>
+            </Popup>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (props.snapshot.isDragging) {
+    return ReactDOM.createPortal(result, portal);
+  }
+  return result;
+};
+
 class WhereRow extends Component {
   componentDidMount = () => {
     [
       ...document.querySelectorAll('[data-react-beautiful-dnd-drag-handle]'),
     ].map(elem => elem.removeAttribute('tabindex'));
-  };
-
-  handleFilterChange = value => {
-    const { rowIndex, query, updateQueryState } = this.props;
-    query.where.handleFilterChange(value, rowIndex);
-
-    updateQueryState();
   };
 
   render() {
@@ -43,146 +144,14 @@ class WhereRow extends Component {
         {(provided, snapshot) => {
           return (
             <div>
-              <div
-                ref={provided.innerRef}
-                {...provided.dragHandleProps}
-                {...provided.draggableProps}
-              >
-
-                <div className="drag" style={{ width: "1400px", marginTop: '5px'}}>
-                  <div>
-                    <div style={{ display: 'inline-block' }}>
-                      <HandGrab />
-                    </div>
-                    <div style={{ display: 'inline-block' }}>
-                      <Buttons
-                        type="whereRow"
-                        updateQueryState={updateQueryState}
-                        rowIndex={rowIndex}
-                        query={query}
-                      />
-                    </div>
-                    <div style={{ display: 'inline-block' }}>
-                      {rowIndex > 0 ? 'AND ' : null}
-                    </div>
-
-                    <div style={{ display: "inline-block", marginLeft: "5px" }}>
-
-                      <SelectAndWhereColumnSearchBar
-                        type="where"
-                        rowIndex={rowIndex}
-                        updateQueryState={updateQueryState}
-                        query={query}
-                        value={row.name}
-                        text={row.columnText}
-                        error={row.columnError}
-                      />
-                    </div>
-                    <div style={{ display: 'inline-block', marginLeft: '5px' }}>
-                      <OperatorSearchBar
-                        rowIndex={rowIndex}
-                        updateQueryState={updateQueryState}
-                        query={query}
-                        operatorText={row.operatorText}
-                        text={row.operatorTextText}
-                        error={row.operatorError}
-                      />
-                    </div>
-
-                    <div style={{ display: 'inline-block', marginLeft: '5px' }}>
-                      <Popup
-                        trigger={
-                          <Input
-                            size="mini"
-                            type="text"
-                            placeholder={`Filter ${this.props.rowIndex + 1}`}
-                            onChange={e =>
-                              this.handleFilterChange(e.target.value)
-                            }
-                            value={query.where.whereRows[rowIndex].filter}
-                          />
-                        }
-                        //content={query.where.whereRows[rowIndex].filterText}
-                        horizontalOffset={
-                          !query.where.whereRows[rowIndex].filterText
-                            ? -10000
-                            : 0
-                        }
-                        size="tiny"
-                        position="top center"
-                        on={['focus', 'hover']}
-                      >
-                        <Popup.Content>
-                          {query.where.whereRows[rowIndex].filterText}
-                        </Popup.Content>
-                      </Popup>
-                    </div>
-                  </div>
-                  {/* <Grid celled>
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Form>
-                          <Form.Group inline>
-                            <Form.Field>
-                              <Buttons
-                                type="whereRow"
-                                updateQueryState={updateQueryState}
-                                rowIndex={rowIndex}
-                                query={query}
-                              />
-                            </Form.Field>
-
-                            <Form.Field>
-                              {rowIndex > 0 ? 'AND ' : null}
-                              <SelectAndWhereColumnSearchBar
-                                type="where"
-                                rowIndex={rowIndex}
-                                updateQueryState={updateQueryState}
-                                query={query}
-                                value={row.name}
-                                text={row.columnText}
-                                error={row.columnError}
-                              />
-                            </Form.Field>
-                            <Form.Field>
-                              <OperatorSearchBar
-                                rowIndex={rowIndex}
-                                updateQueryState={updateQueryState}
-                                query={query}
-                                operatorText={row.operatorText}
-                                text={row.operatorTextText}
-                              />
-                            </Form.Field>
-                            <Form.Field>
-                              <Popup
-                                trigger={
-                                  <input
-                                    type="text"
-                                    onChange={e =>
-                                      this.handleFilterChange(e.target.value)
-                                    }
-                                    value={
-                                      query.where.whereRows[rowIndex].filter
-                                    }
-                                  />
-                                }
-                                content={
-                                  query.where.whereRows[rowIndex].filterText
-                                }
-                                disabled={
-                                  !query.where.whereRows[rowIndex].filterText
-                                }
-                                size="tiny"
-                                position="top center"
-                              />
-                            </Form.Field>
-                          </Form.Group>
-                        </Form>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid> */}
-                </div>
-              </div>
+              <PortalDraggableItem
+                rowIndex={rowIndex}
+                query={query}
+                updateQueryState={updateQueryState}
+                row={row}
+                provided={provided}
+                snapshot={snapshot}
+              />
               {provided.placeholder}
             </div>
           );
